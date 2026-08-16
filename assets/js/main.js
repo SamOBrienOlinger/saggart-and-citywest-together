@@ -12,7 +12,7 @@ const replaceShamrockTokens=root=>{
     const fragment=document.createDocumentFragment();
     node.nodeValue.split(shamrockToken).forEach((part,index,array)=>{
       fragment.append(document.createTextNode(part));
-      if(index<array.length-1){const icon=document.createElement('img');icon.src='assets/images/shamrock-separator-v1.png';icon.alt='shamrock';icon.className='shamrock-separator';fragment.append(icon)}
+      if(index<array.length-1){if(page==='home'){const icon=document.createElement('img');icon.src='assets/images/shamrock-separator-v1.png';icon.alt='shamrock';icon.className='shamrock-separator';fragment.append(icon)}else{fragment.append(document.createTextNode('—'))}}
     });
     node.replaceWith(fragment)
   })
