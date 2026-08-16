@@ -4,7 +4,7 @@ export const sources = {
   heritage: { title: 'South Dublin County Heritage Plan', url: 'https://www.sdcc.ie/en/services/planning-building-control/heritage-and-conservation/heritage-plan-2010-2015.pdf', publisher: 'South Dublin County Council' },
   areaPlan: { title: 'Mill Road, Saggart Area Plan', url: 'https://www.sdcc.ie/en/services/planning/local-area-plans/non-statutory-plans/existing/saggart/mill-road-saggart-area-plan.pdf', publisher: 'South Dublin County Council' },
   fortunestown: { title: 'Fortunestown Local Area Plan', url: 'https://www.sdcc.ie/en/services/planning-building-control/local-area-plans/existing/fortunestown/fortunestown-lap-2012.pdf', publisher: 'South Dublin County Council' },
-  growth: { title: 'Saggart [[shamrock]] Self-Sustaining Town', url: 'https://www.sdcc.ie/en/devplan2022/adopted-plan/county-development-plan-written-statement/county-development-plan-written-statement1.pdf', publisher: 'South Dublin County Council' },
+  growth: { title: 'Saggart — Self-Sustaining Town', url: 'https://www.sdcc.ie/en/devplan2022/adopted-plan/county-development-plan-written-statement/county-development-plan-written-statement1.pdf', publisher: 'South Dublin County Council' },
   walking: { title: 'Walking and Hiking', url: 'https://www.sdcc.ie/en/services/tourism/activities/the-dublin-mountains/walking-and-hiking/', publisher: 'South Dublin County Council' },
   community: { title: 'Community Development', url: 'https://www.sdcc.ie/en/services/community/community-development/', publisher: 'South Dublin County Council' },
   logainm: { title: 'Teach Sagard / Saggart', url: 'https://www.logainm.ie/en/57080', publisher: 'Placenames Database of Ireland' },
