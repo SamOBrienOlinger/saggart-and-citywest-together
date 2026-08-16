@@ -1,3 +1,4 @@
+
 const toggle=document.querySelector('.nav-toggle');const menu=document.querySelector('#site-menu');if(toggle&&menu){toggle.addEventListener('click',()=>{const open=toggle.getAttribute('aria-expanded')==='true';toggle.setAttribute('aria-expanded',String(!open));menu.classList.toggle('open',!open)});menu.addEventListener('click',event=>{if(event.target.closest('a')){toggle.setAttribute('aria-expanded','false');menu.classList.remove('open')}})}
 const page=document.body.dataset.page;const current=document.querySelector(`[data-nav="${page}"]`);if(current)current.setAttribute('aria-current','page');
 document.querySelectorAll('a[target="_blank"]').forEach(link=>{link.rel='noopener noreferrer'});
@@ -39,7 +40,7 @@ document.querySelectorAll('h1,h2,h3').forEach(heading=>{const replacement=plainE
 const sectionLabels={'Start exploring':'Start here','Featured learning':'Discover the area','About SaCT':'About the group','Ready to play?':'Quick challenge','Learning hub':'Local guide','Put learning into practice':'Next step','Knowledge quiz':'Local quiz','Contact and corrections':'Contact'};
 document.querySelectorAll('.eyebrow').forEach(label=>{const replacement=sectionLabels[label.textContent.trim()];if(replacement)label.textContent=replacement});
 
-document.querySelectorAll('.site-footer h2').forEach(heading=>{if(heading.textContent.trim()==='Explore')heading.textContent='Quick links';if(heading.textContent.trim()==='Connect')heading.textContent='Follow and contact'});
+document.querySelectorAll('.site-footer h2').forEach(heading=>{if(heading.textContent.trim()==='Explore')heading.textContent='Quick links';if(['Connect','Find local links'].includes(heading.textContent.trim()))heading.textContent='Follow and contact'});
 document.querySelectorAll('.site-footer a').forEach(link=>{const label=link.textContent.trim();if(label==='Learn')link.textContent='Explore the area';if(label==='Quiz')link.textContent='Take the quiz';if(label==='About')link.textContent='About us'});
 
 const topicNavigation=document.querySelector('.topic-nav');
@@ -56,3 +57,4 @@ if(page==='about'){
   const hero=document.querySelector('.page-hero');
   if(hero&&available.length){const wrapper=document.createElement('div');wrapper.className='container page-jump-wrap';const label=document.createElement('p');label.className='topic-nav-label';label.textContent='On this page';const nav=document.createElement('nav');nav.className='topic-nav page-jump-nav';nav.setAttribute('aria-label','Sections on this page');available.forEach(([text,id])=>{const link=document.createElement('a');link.href=`#${id}`;link.textContent=text;nav.append(link)});wrapper.append(label,nav);hero.after(wrapper)}
 }
+
