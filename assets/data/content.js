@@ -7,7 +7,9 @@ export const sources = {
   growth: { title: 'Saggart — Self-Sustaining Town', url: 'https://www.sdcc.ie/en/devplan2022/adopted-plan/county-development-plan-written-statement/county-development-plan-written-statement1.pdf', publisher: 'South Dublin County Council' },
   walking: { title: 'Walking and Hiking', url: 'https://www.sdcc.ie/en/services/tourism/activities/the-dublin-mountains/walking-and-hiking/', publisher: 'South Dublin County Council' },
   community: { title: 'Community Development', url: 'https://www.sdcc.ie/en/services/community/community-development/', publisher: 'South Dublin County Council' },
-  logainm: { title: 'Teach Sagard / Saggart', url: 'https://www.logainm.ie/en/57080', publisher: 'Placenames Database of Ireland' }
+  logainm: { title: 'Teach Sagard / Saggart', url: 'https://www.logainm.ie/en/57080', publisher: 'Placenames Database of Ireland' },
+  inar: { title: 'Learn About Racism in Ireland', url: 'https://inar.ie/racism-in-ireland/learn-about-racism/', publisher: 'Irish Network Against Racism' },
+  reportRacism: { title: 'Responding to Racism Guide', url: 'https://inar.ie/reporting-racism-in-ireland/', publisher: 'Irish Network Against Racism' }
 };
 
 export const learningSections = [
@@ -33,9 +35,10 @@ export const learningSections = [
   ] },
   { id: 'community', title: 'Community and belonging', intro: 'Belonging grows through shared facilities, inclusive services, local knowledge and participation in the future of the area.', items: [
     { title: 'Shared community infrastructure', scope: 'Local services', body: 'Parks, playgrounds and community centres help turn new development into sustainable neighbourhoods. Council planning identifies facilities such as Carrigmore Green, Citywest playground and Saggart Community Centre.', source: 'neighbourhood' },
-    { title: 'Inclusive community development', scope: 'Public service', body: 'South Dublin County Council’s community team works with young people, older people, minority communities, voluntary groups and public agencies to support inclusive local communities.', source: 'community' },
-    { title: 'Explore primary sources', scope: 'Continue learning', body: 'Use the Council’s village, planning, heritage and walking resources together with Logainm.ie to explore how local history and future development connect.', source: 'village' }
+    { title: 'Equal and inclusive participation', scope: 'Community development', body: 'Inclusive community development should support equal participation across age groups and backgrounds, including minority ethnic communities, and remove barriers to local services and decision-making.', source: 'community' },
+    { title: 'Responding to racism', scope: 'Anti-racism', body: 'Racism can be individual, institutional or structural. INAR provides guidance for people who experience or witness racism, including how to seek support, report incidents and take action as a community.', source: 'reportRacism' },
+    { title: 'Explore primary sources', scope: 'Continue learning', body: 'Use the Council’s village, planning, heritage and walking resources together with Logainm.ie and INAR’s anti-racism resources to explore local history, equality and community participation.', source: 'inar' }
   ] }
 ];
 
-export const reviewedAt = '2026-08-14';
+export const reviewedAt = '2026-08-16';
