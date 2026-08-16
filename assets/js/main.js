@@ -60,4 +60,3 @@ if(page==='about'){
   const hero=document.querySelector('.page-hero');
   if(hero&&available.length){const wrapper=document.createElement('div');wrapper.className='container page-jump-wrap';const label=document.createElement('p');label.className='topic-nav-label';label.textContent='On this page';const nav=document.createElement('nav');nav.className='topic-nav page-jump-nav';nav.setAttribute('aria-label','Sections on this page');available.forEach(([text,id])=>{const link=document.createElement('a');link.href=`#${id}`;link.textContent=text;nav.append(link)});wrapper.append(label,nav);hero.after(wrapper)}
 }
-
