@@ -37,7 +37,6 @@ const plainEnglishHeadings={
   'Our purpose':'What we do',
   'A place shaped by movement':'How the area has changed',
   'Our anti-racism approach':'How we challenge racism',
-  'About this learning project':'About this website',
   'Editorial approach':'How we check our content',
   'Connect with us':'Get in touch',
   'Primary source register':'Sources we use',
@@ -67,7 +66,7 @@ if(topicNavigation){const label=document.createElement('p');label.className='top
 if(page==='about'){
   const aboutSections=[
     ['What we do','what-we-do'],['How we work','our-work'],['How the area has changed','area-changed'],
-    ['How we challenge racism','challenge-racism'],['About this website','about-website'],['Sources we use','sources']
+    ['How we challenge racism','challenge-racism'],['Sources we use','sources']
   ];
   const headings=[...document.querySelectorAll('.prose h2')];
   aboutSections.forEach(([text,id])=>{const heading=headings.find(item=>item.textContent.trim()===text);if(heading)heading.id=id});
