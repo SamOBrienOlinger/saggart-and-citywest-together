@@ -5,6 +5,21 @@ if(toggle&&menu){document.addEventListener('keydown',event=>{if(event.key==='Esc
 const page=document.body.dataset.page;const current=document.querySelector(`[data-nav="${page}"]`);if(current)current.setAttribute('aria-current','page');
 document.querySelectorAll('a[target="_blank"]').forEach(link=>{link.rel='noopener noreferrer'});
 
+const shamrockToken='[[shamrock]]';
+const replaceShamrockTokens=root=>{
+  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:node=>node.nodeValue.includes(shamrockToken)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT});
+  [...(() => {const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);return nodes})()].forEach(node=>{
+    const fragment=document.createDocumentFragment();
+    node.nodeValue.split(shamrockToken).forEach((part,index,array)=>{
+      fragment.append(document.createTextNode(part));
+      if(index<array.length-1){const icon=document.createElement('img');icon.src='assets/images/shamrock-separator-v1.png';icon.alt='shamrock';icon.className='shamrock-separator';fragment.append(icon)}
+    });
+    node.replaceWith(fragment)
+  })
+};
+replaceShamrockTokens(document.body);
+new MutationObserver(records=>records.forEach(record=>record.addedNodes.forEach(node=>{if(node.nodeType===Node.TEXT_NODE&&node.nodeValue.includes(shamrockToken))replaceShamrockTokens(node.parentNode);else if(node.nodeType===Node.ELEMENT_NODE)replaceShamrockTokens(node)}))).observe(document.body,{childList:true,subtree:true});
+
 const navigationLabels={home:'Home',learn:'Explore the area',quiz:'Take the quiz',about:'About us',contact:'Get in touch'};
 document.querySelectorAll('[data-nav]').forEach(link=>{const label=navigationLabels[link.dataset.nav];if(label)link.textContent=label});
 
