@@ -1,5 +1,7 @@
-const toggle=document.querySelector('.nav-toggle');const menu=document.querySelector('#site-menu');if(toggle&&menu){toggle.addEventListener('click',()=>{const open=toggle.getAttribute('aria-expanded')==='true';toggle.setAttribute('aria-expanded',String(!open));menu.classList.toggle('open',!open)});menu.addEventListener('click',event=>{if(event.target.closest('a')){toggle.setAttribute('aria-expanded','false');menu.classList.remove('open')}})}
-if(toggle&&menu){document.addEventListener('keydown',event=>{if(event.key==='Escape'&&toggle.getAttribute('aria-expanded')==='true'){toggle.setAttribute('aria-expanded','false');menu.classList.remove('open');toggle.focus()}})}
+const toggle=document.querySelector('.nav-toggle');const menu=document.querySelector('#site-menu');const toggleLabel=toggle?.querySelector('[aria-hidden="true"]');
+const setMenuState=open=>{if(!toggle||!menu)return;toggle.setAttribute('aria-expanded',String(open));menu.classList.toggle('open',open);document.body.classList.toggle('menu-open',open);if(toggleLabel)toggleLabel.textContent=open?'Close':'Menu'};
+if(toggle&&menu){setMenuState(false);toggle.addEventListener('click',()=>setMenuState(toggle.getAttribute('aria-expanded')!=='true'));menu.addEventListener('click',event=>{if(event.target.closest('a'))setMenuState(false)});window.addEventListener('resize',()=>{if(window.innerWidth>760)setMenuState(false)})}
+if(toggle&&menu){document.addEventListener('keydown',event=>{if(event.key==='Escape'&&toggle.getAttribute('aria-expanded')==='true'){setMenuState(false);toggle.focus()}})}
 const page=document.body.dataset.page;const current=document.querySelector(`[data-nav="${page}"]`);if(current)current.setAttribute('aria-current','page');
 document.querySelectorAll('a[target="_blank"]').forEach(link=>{link.rel='noopener noreferrer'});
 
@@ -58,3 +60,4 @@ if(page==='about'){
   const hero=document.querySelector('.page-hero');
   if(hero&&available.length){const wrapper=document.createElement('div');wrapper.className='container page-jump-wrap';const label=document.createElement('p');label.className='topic-nav-label';label.textContent='On this page';const nav=document.createElement('nav');nav.className='topic-nav page-jump-nav';nav.setAttribute('aria-label','Sections on this page');available.forEach(([text,id])=>{const link=document.createElement('a');link.href=`#${id}`;link.textContent=text;nav.append(link)});wrapper.append(label,nav);hero.after(wrapper)}
 }
+
