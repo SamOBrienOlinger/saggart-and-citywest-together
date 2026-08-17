@@ -42,7 +42,7 @@ const plainEnglishHeadings={
   'Primary source register':'Sources we use',
   'Brand and status':'Who runs this website',
   'Help us make this resource better':'Contact us or suggest a correction',
-  'Contact the organisation':'Contact SaCT directly',
+  'Contact the organisation':'Contact S&CT directly',
   'Experiencing or witnessing racism?':'Report racism and find support',
   'A minimal-data prototype':'How this website uses your data',
   'Quiz storage':'Your quiz score',
@@ -53,7 +53,7 @@ const plainEnglishHeadings={
 };
 document.querySelectorAll('h1,h2,h3').forEach(heading=>{const replacement=plainEnglishHeadings[heading.textContent.trim()];if(replacement)heading.textContent=replacement});
 
-const sectionLabels={'Start exploring':'Start here','Featured learning':'Discover the area','About SaCT':'About the group','Ready to play?':'Quick challenge','Learning hub':'Local guide','Put learning into practice':'Next step','Knowledge quiz':'Local quiz','Contact and corrections':'Contact'};
+const sectionLabels={'Start exploring':'Start here','Featured learning':'Discover the area','About S&CT':'About the group','Ready to play?':'Quick challenge','Learning hub':'Local guide','Put learning into practice':'Next step','Knowledge quiz':'Local quiz','Contact and corrections':'Contact'};
 document.querySelectorAll('.eyebrow').forEach(label=>{const replacement=sectionLabels[label.textContent.trim()];if(replacement)label.textContent=replacement});
 
 document.querySelectorAll('.site-footer h2').forEach(heading=>{if(heading.textContent.trim()==='Explore')heading.textContent='Quick links';if(['Connect','Find local links'].includes(heading.textContent.trim()))heading.textContent='Follow and contact'});
