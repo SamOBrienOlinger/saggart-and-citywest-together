@@ -129,3 +129,6 @@ h2{font-size:clamp(1.9rem,4vw,3rem)}
 .local-gallery-item img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
 .local-gallery-item figcaption{position:absolute;inset:auto .75rem .75rem auto;padding:.45rem .7rem;border-radius:999px;background:rgba(7,30,45,.88);color:var(--white);font-size:.82rem;font-weight:750;line-height:1.2}
 @media(max-width:760px){.local-gallery{display:flex;gap:1rem;overflow-x:auto;padding:0 1rem 1rem;margin-inline:-.75rem;scroll-snap-type:x mandatory;scroll-padding-inline:1rem}.local-gallery-item,.local-gallery-feature{flex:0 0 min(86vw,34rem);scroll-snap-align:start}.local-gallery-item figcaption{font-size:.76rem}}
+
+/* Preserve AA contrast for the normal-size link text on the coral quiz card. */
+.card-quiz{color:#082f30}
