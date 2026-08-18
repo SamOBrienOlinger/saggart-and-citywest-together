@@ -18,7 +18,15 @@ export const sources = {
   clondalkinGarda: { title: 'Clondalkin Garda Station', url: 'https://www.garda.ie/en/contact-us/station-directory/clondalkin.html', publisher: 'An Garda Síochána' },
   rathcooleGarda: { title: 'Rathcoole Garda Station', url: 'https://www.garda.ie/en/contact-us/station-directory/rathcoole.html', publisher: 'An Garda Síochána' },
   schoolhouse: { title: 'Saggart Schoolhouse Community Centre', url: 'https://www.sdcc.ie/en/services/community/community-centres/saggart-schoolhouse-community-centre/', publisher: 'South Dublin County Council' },
-  stMarys: { title: 'St Mary’s GAA contact information', url: 'https://www.facebook.com/p/St-Marys-GAA-100077974162822/', publisher: 'St Mary’s GAA' }
+  stMarys: { title: 'St Mary’s GAA contact information', url: 'https://www.facebook.com/p/St-Marys-GAA-100077974162822/', publisher: 'St Mary’s GAA' },
+  tallaghtHospital: { title: 'Contact Tallaght University Hospital', url: 'https://www.tuh.ie/contact-us/', publisher: 'Tallaght University Hospital' },
+  rathcooleHealthCentre: { title: 'Rathcoole Health Centre', url: 'https://www2.hse.ie/services/primary-care-centres/rathcoole-health-centre/', publisher: 'Health Service Executive' },
+  springfieldPrimaryCare: { title: 'Springfield-Tallaght Primary Care Centre', url: 'https://www2.hse.ie/services/primary-care-centres/springfield-tallaght-primary-care-centre/', publisher: 'Health Service Executive' },
+  tlcDocTallaght: { title: 'TLC Doc Tallaght', url: 'https://www2.hse.ie/services/find-urgent-emergency-care/tlc-doc-tallaght/', publisher: 'Health Service Executive' },
+  saggartMedical: { title: 'Saggart Medical Centre', url: 'https://www.saggartmedical.ie/', publisher: 'Saggart Medical Centre' },
+  citywestMedical: { title: 'Citywest Medical', url: 'https://centrichealth.ie/locations/citywest-medical/', publisher: 'Centric Health' },
+  rathcooleMedical: { title: 'Rathcoole Medical Centre', url: 'https://rathcoolemedicalcentre.ie/', publisher: 'Rathcoole Medical Centre' },
+  hseFindGP: { title: 'Find a GP in Ireland', url: 'https://www2.hse.ie/services/find-a-gp/', publisher: 'Health Service Executive' }
 };
 
 export const learningSections = [
@@ -53,6 +61,16 @@ export const learningSections = [
     { title: 'Equal and inclusive participation', scope: 'Community development', body: 'Inclusive community development should support equal participation across age groups and backgrounds, including minority ethnic communities, and remove barriers to local services and decision-making.', source: 'community' },
     { title: 'Responding to racism', scope: 'Anti-racism', body: 'Racism can be individual, institutional or structural. INAR provides guidance for people who experience or witness racism, including how to seek support, report incidents and take action as a community.', source: 'reportRacism' },
     { title: 'Explore primary sources', scope: 'Continue learning', body: 'Use the Council’s village, planning, heritage and walking resources together with Logainm.ie and INAR’s anti-racism resources to explore local history, equality and community participation.', source: 'inar' }
+  ] },
+  { id: 'health', title: 'Health services', intro: '<strong>Call 112 or 999 for a life-threatening emergency.</strong> Contact services directly to confirm appointments, eligibility, opening hours and whether a GP practice is accepting new patients.', items: [
+    { title: 'Tallaght University Hospital', scope: 'Hospital', body: 'Tallaght, Dublin 24, D24 NR0A. Main hospital switchboard: <a href="tel:+35314142000">01 414 2000</a>.', source: 'tallaghtHospital' },
+    { title: 'Rathcoole Health Centre', scope: 'HSE community services', body: 'Main Street, Rathcoole, Dublin, D24 EY68. Phone: <a href="tel:+35314589979">01 458 9979</a> or <a href="tel:+35314586560">01 458 6560</a>.', source: 'rathcooleHealthCentre' },
+    { title: 'Springfield-Tallaght Primary Care Centre', scope: 'HSE primary care', body: 'The Russell Building, Tallaght Cross West, Tallaght, Dublin, D24 DH74. Phone: <a href="tel:+35317957500">01 795 7500</a> or <a href="tel:+35317957501">01 795 7501</a>.', source: 'springfieldPrimaryCare' },
+    { title: 'TLC Doc Tallaght', scope: 'GP out-of-hours', body: 'Carbury House, Tallaght, Dublin, D24 FKT7. Phone: <a href="tel:+35345848707">045 848 707</a>. For urgent GP care when your surgery is closed; appointments are arranged by phone and there is no walk-in service.', source: 'tlcDocTallaght' },
+    { title: 'Saggart Medical Centre', scope: 'General practice (GP)', body: 'Main Street, Garter Lane, Saggart Village, Co. Dublin, D24 AK65. Phone: <a href="tel:+35314586805">01 458 6805</a>.', source: 'saggartMedical' },
+    { title: 'Citywest Medical', scope: 'General practice (GP)', body: 'Unit 5, Citywest Shopping Centre, Citywest, Dublin 24, D24 K0YT. Phone: <a href="tel:+35314693630">01 469 3630</a>.', source: 'citywestMedical' },
+    { title: 'Rathcoole Medical Centre', scope: 'General practice (GP)', body: 'Main Street, Rathcoole, Co. Dublin, D24 Y53K. Phone: <a href="tel:+35314589655">01 458 9655</a>.', source: 'rathcooleMedical' },
+    { title: 'Find another GP', scope: 'HSE directory', body: 'Use the HSE’s national GP finder for current practice locations, contact details and opening hours.', source: 'hseFindGP' }
   ] },
   { id: 'resources', title: 'Local contacts and resources', intro: '<strong>In an emergency, call 999 or 112.</strong> Use the station and organisation numbers below for non-emergency contact and local information.', items: [
     { title: 'Rathcoole Garda Station', scope: 'An Garda Síochána', body: 'Main Street, Rathcoole, Co. Dublin, D24 YF22. Phone: <a href="tel:+35316667900">01 666 7900</a>.', source: 'rathcooleGarda' },

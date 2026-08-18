@@ -35,3 +35,26 @@ test('requested local resources include official links and callable phone number
   }
   assert.match(resources.intro, /999 or 112/);
 });
+
+test('health services include hospital, HSE centres, out-of-hours care and local GPs', () => {
+  const health = learningSections.find(section => section.id === 'health');
+  assert.ok(health, 'health services section is missing');
+  const expected = new Map([
+    ['Tallaght University Hospital', 'tel:+35314142000'],
+    ['Rathcoole Health Centre', 'tel:+35314589979'],
+    ['Springfield-Tallaght Primary Care Centre', 'tel:+35317957500'],
+    ['TLC Doc Tallaght', 'tel:+35345848707'],
+    ['Saggart Medical Centre', 'tel:+35314586805'],
+    ['Citywest Medical', 'tel:+35314693630'],
+    ['Rathcoole Medical Centre', 'tel:+35314589655']
+  ]);
+  for (const [title, phone] of expected) {
+    const item = health.items.find(service => service.title === title);
+    assert.ok(item, `${title} is missing`);
+    assert.match(item.body, new RegExp(phone.replace('+', '\\+')));
+    assert.ok(sources[item.source]?.url.startsWith('https://'), `${title} source is missing`);
+  }
+  assert.ok(health.items.some(service => service.source === 'hseFindGP'), 'HSE GP directory is missing');
+  assert.match(health.intro, /112 or 999/);
+  assert.match(health.intro, /accepting new patients/);
+});
