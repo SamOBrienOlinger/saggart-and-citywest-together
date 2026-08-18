@@ -1,10 +1,10 @@
 export const translationLanguages = Object.freeze([
-  { code: 'ar', label: 'Arabic', nativeLabel: 'العربية' },
-  { code: 'fr', label: 'French', nativeLabel: 'Français' },
-  { code: 'nl', label: 'Dutch', nativeLabel: 'Nederlands' },
-  { code: 'de', label: 'German', nativeLabel: 'Deutsch' },
-  { code: 'it', label: 'Italian', nativeLabel: 'Italiano' },
-  { code: 'es', label: 'Spanish', nativeLabel: 'Español' }
+  { code: 'ar', label: 'Arabic', nativeLabel: 'العربية', direction: 'rtl' },
+  { code: 'fr', label: 'French', nativeLabel: 'Français', direction: 'ltr' },
+  { code: 'nl', label: 'Dutch', nativeLabel: 'Nederlands', direction: 'ltr' },
+  { code: 'de', label: 'German', nativeLabel: 'Deutsch', direction: 'ltr' },
+  { code: 'it', label: 'Italian', nativeLabel: 'Italiano', direction: 'ltr' },
+  { code: 'es', label: 'Spanish', nativeLabel: 'Español', direction: 'ltr' }
 ]);
 
 export const buildTranslationUrl = (language, pageUrl) => {
@@ -17,7 +17,16 @@ export const buildTranslationUrl = (language, pageUrl) => {
 };
 
 export const initialiseTranslationControl = menu => {
-  if (!menu || menu.querySelector('.translate-menu') || location.hostname.endsWith('.translate.goog')) return;
+  if (location.hostname.endsWith('.translate.goog')) {
+    const target = new URLSearchParams(location.search).get('_x_tr_tl');
+    const language = translationLanguages.find(item => item.code === target);
+    if (language) {
+      document.documentElement.lang = language.code;
+      document.documentElement.dir = language.direction;
+    }
+    return;
+  }
+  if (!menu || menu.querySelector('.translate-menu')) return;
 
   const item = document.createElement('li');
   item.className = 'translate-menu notranslate';

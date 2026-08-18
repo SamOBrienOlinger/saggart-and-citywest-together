@@ -5,6 +5,8 @@ import { buildTranslationUrl, translationLanguages } from '../assets/js/translat
 
 test('translation control offers only the requested languages', () => {
   assert.deepEqual(translationLanguages.map(language => language.code), ['ar', 'fr', 'nl', 'de', 'it', 'es']);
+  assert.equal(translationLanguages.find(language => language.code === 'ar').direction, 'rtl');
+  assert.ok(translationLanguages.filter(language => language.direction === 'ltr').length === 5);
 });
 
 test('translation links preserve the source page and requested target language', () => {
@@ -24,6 +26,7 @@ test('translation control is accessible and loads no third-party code until a la
   assert.match(source, /target = '_blank'/);
   assert.match(source, /noopener noreferrer/);
   assert.doesNotMatch(source, /translate_a\/element\.js/);
+  assert.match(source, /document\.documentElement\.dir = language\.direction/);
   assert.match(source, /toggle\.addEventListener\('click',/);
 });
 
