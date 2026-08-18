@@ -23,7 +23,7 @@ test('requested local resources include official links and callable phone number
   const expected = new Map([
     ['Rathcoole Garda Station', 'tel:+35316667900'],
     ['Tallaght Garda Station', 'tel:+35316666000'],
-    ['Kildare Garda Station', 'tel:+35345527730'],
+    ['Clondalkin Garda Station', 'tel:+35316667600'],
     ['Saggart Schoolhouse Community Centre', 'tel:+35315782377'],
     ['St Mary’s GAA Club', 'tel:+353868371963']
   ]);

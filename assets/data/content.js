@@ -15,7 +15,7 @@ export const sources = {
   csoHouseholds: { title: 'Census 2022 Profile 3 — Households, Families and Childcare: Dublin', url: 'https://www.cso.ie/en/csolatestnews/pressreleases/2023pressreleases/pressstatementcensus2022resultsprofile3-householdsfamiliesandchildcaredublin/', publisher: 'Central Statistics Office' },
   csoMap: { title: 'Census 2022 Interactive Map', url: 'https://visual.cso.ie/?body=entity%2Fima%2Fcop%2F2022', publisher: 'Central Statistics Office' },
   tallaghtGarda: { title: 'Tallaght Garda Station', url: 'https://www.garda.ie/en/contact-us/station-directory/tallaght.html', publisher: 'An Garda Síochána' },
-  kildareGarda: { title: 'Kildare Garda Station', url: 'https://www.garda.ie/en/contact-us/station-directory/kildare.html', publisher: 'An Garda Síochána' },
+  clondalkinGarda: { title: 'Clondalkin Garda Station', url: 'https://www.garda.ie/en/contact-us/station-directory/clondalkin.html', publisher: 'An Garda Síochána' },
   rathcooleGarda: { title: 'Rathcoole Garda Station', url: 'https://www.garda.ie/en/contact-us/station-directory/rathcoole.html', publisher: 'An Garda Síochána' },
   schoolhouse: { title: 'Saggart Schoolhouse Community Centre', url: 'https://www.sdcc.ie/en/services/community/community-centres/saggart-schoolhouse-community-centre/', publisher: 'South Dublin County Council' },
   stMarys: { title: 'St Mary’s GAA contact information', url: 'https://www.facebook.com/p/St-Marys-GAA-100077974162822/', publisher: 'St Mary’s GAA' }
@@ -57,7 +57,7 @@ export const learningSections = [
   { id: 'resources', title: 'Local contacts and resources', intro: '<strong>In an emergency, call 999 or 112.</strong> Use the station and organisation numbers below for non-emergency contact and local information.', items: [
     { title: 'Rathcoole Garda Station', scope: 'An Garda Síochána', body: 'Main Street, Rathcoole, Co. Dublin, D24 YF22. Phone: <a href="tel:+35316667900">01 666 7900</a>.', source: 'rathcooleGarda' },
     { title: 'Tallaght Garda Station', scope: 'An Garda Síochána', body: 'Belgard Road East, Tallaght, Dublin 24, D24 K796. Phone: <a href="tel:+35316666000">01 666 6000</a>.', source: 'tallaghtGarda' },
-    { title: 'Kildare Garda Station', scope: 'An Garda Síochána', body: 'Dublin Road, Kildare, Co. Kildare, R51 VA48. Phone: <a href="tel:+35345527730">045 527730</a>.', source: 'kildareGarda' },
+    { title: 'Clondalkin Garda Station', scope: 'An Garda Síochána', body: 'Orchard Road, Clondalkin, Dublin 22, D22 W268. Phone: <a href="tel:+35316667600">01 666 7600</a>.', source: 'clondalkinGarda' },
     { title: 'Saggart Schoolhouse Community Centre', scope: 'Community facilities', body: 'School Road, Saggart, Co. Dublin, D24 V04D. The centre offers a café, classes, youth and older-person activities, community meetings and rentable spaces. Phone: <a href="tel:+35315782377">01 578 2377</a>. Email: <a href="mailto:info@schoolhouse.onmicrosoft.com">info@schoolhouse.onmicrosoft.com</a>.', source: 'schoolhouse' },
     { title: 'St Mary’s GAA Club', scope: 'Sport and community', body: 'St Mary’s serves the Saggart, Rathcoole and Citywest area from Páirc Mhuire in Saggart. Phone: <a href="tel:+353868371963">086 837 1963</a>. Email: <a href="mailto:pro.stmarys.dublin@gaa.ie">pro.stmarys.dublin@gaa.ie</a>. <a href="https://stmarysgaasaggart.clubzap.com/" target="_blank" rel="noopener noreferrer">Visit the club website <span class="sr-only">(opens in a new tab)</span></a>.', source: 'stMarys' }
   ] }
