@@ -138,4 +138,9 @@ h2{font-size:clamp(1.9rem,4vw,3rem)}
 .card-quiz{color:#082f30}
 
 /* Keep the community illustration visible in the first mobile viewport. */
-@media(max-width:900px){.hero-photo.hero-illustration{order:-1}}
+@media(max-width:900px){
+  .hero-grid{grid-template-areas:"visual" "copy"}
+  .hero-copy{grid-area:copy}
+  .hero-photo.hero-illustration{grid-area:visual;order:initial;width:100%;min-height:0;aspect-ratio:auto}
+  .hero-photo.hero-illustration img{position:static;inset:auto;display:block;width:100%;height:auto}
+}
