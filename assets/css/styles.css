@@ -144,3 +144,49 @@ h2{font-size:clamp(1.9rem,4vw,3rem)}
   .hero-photo.hero-illustration{grid-area:visual;order:initial;width:100%;min-height:0;aspect-ratio:auto}
   .hero-photo.hero-illustration img{position:static;inset:auto;display:block;width:100%;height:auto}
 }
+
+/* Illustration-led colour roles: warm orientation, clear action and calm feedback. */
+:root{
+  --ink:#143f3d;
+  --muted:#4b645f;
+  --blue:#4f786b;
+  --blue-dark:#005759;
+  --yellow:#e8c36e;
+  --cream:#fff8e8;
+  --ice:#eef0df;
+  --coral:#f08b70;
+  --aqua:#d5c9a6;
+  --border:#aeb99f;
+  --green:#617451;
+  --sand:#fce5ae;
+  --sage:#617451;
+  --sage-dark:#425740;
+  --shadow:0 12px 34px rgba(20,63,61,.14)
+}
+body{background:var(--cream)}
+.pathways{background:var(--sand)}
+.card-learn{background:var(--blue-dark);color:var(--white)}
+.card-quiz{background:var(--coral);color:var(--ink)}
+.card-connect{background:var(--yellow);color:var(--ink)}
+.button{background:var(--yellow);border-color:var(--yellow);color:var(--ink)}
+.button:hover{background:var(--blue-dark);border-color:var(--blue-dark);color:var(--white)}
+.button-light{background:var(--white);border-color:var(--white);color:var(--blue-dark)}
+.button-light:hover{background:var(--yellow);border-color:var(--yellow);color:var(--ink)}
+.topic-nav a,.page-jump-nav a{background:var(--white);color:var(--ink)}
+.topic-nav a:hover,.topic-nav a[aria-current=page]{background:var(--sage);border-color:var(--sage);color:var(--white)}
+.learning-section-header{border-bottom-color:var(--coral)}
+.learning-card{border-top:4px solid var(--sage)}
+.scope-tag{background:var(--sand);color:var(--ink)}
+.progress-track{background:var(--ice)}
+.progress-track span{background:var(--coral)}
+.answer-button:hover:not(:disabled){border-color:var(--sage-dark);background:var(--ice)}
+.answer-button.correct{border-color:var(--green);background:#edf3e7}
+.answer-button.incorrect{border-color:var(--red);background:#fff0ea}
+.feedback,.status-message,.values-grid div{background:var(--ice)}
+.feedback.incorrect{background:#fff0ea}
+.principle-grid section{border-top-color:var(--yellow);background:#fffdf7}
+.translation-panel{border-color:var(--border);background:var(--cream)}
+.nav-list .translation-link{background:var(--ice);color:var(--ink)}
+.nav-list .translation-link:hover{background:var(--sand);border-color:var(--sage-dark);color:var(--ink)}
+.translate-toggle:hover,.translate-toggle[aria-expanded=true]{background:var(--yellow);color:var(--ink)}
+[hidden]{display:none!important}
