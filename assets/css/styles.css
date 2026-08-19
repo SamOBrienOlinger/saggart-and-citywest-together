@@ -136,3 +136,6 @@ h2{font-size:clamp(1.9rem,4vw,3rem)}
 
 /* Preserve AA contrast for the normal-size link text on the coral quiz card. */
 .card-quiz{color:#082f30}
+
+/* Keep the community illustration visible in the first mobile viewport. */
+@media(max-width:900px){.hero-photo.hero-illustration{order:-1}}
