@@ -190,3 +190,9 @@ body{background:var(--cream)}
 .nav-list .translation-link:hover{background:var(--sand);border-color:var(--sage-dark);color:var(--ink)}
 .translate-toggle:hover,.translate-toggle[aria-expanded=true]{background:var(--yellow);color:var(--ink)}
 [hidden]{display:none!important}
+.card-link{padding:0;overflow:hidden;color:var(--white);text-decoration:none}
+.card-link:hover{text-decoration:none}
+.card-map{display:block;width:100%;aspect-ratio:3/2;object-fit:cover}
+.card-content{display:flex;flex:1;flex-direction:column;padding:clamp(1.3rem,2.5vw,2rem)}
+.card-title{display:block;font-family:Georgia,"Times New Roman",serif;font-size:clamp(1.8rem,3vw,2.35rem);font-weight:700;line-height:1.12;letter-spacing:-.025em;margin-bottom:.7em}
+.card-content .text-link{margin-top:auto}
