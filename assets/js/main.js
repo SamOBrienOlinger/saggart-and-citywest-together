@@ -3,7 +3,9 @@ const toggle=document.querySelector('.nav-toggle');const menu=document.querySele
 const setMenuState=open=>{if(!toggle||!menu)return;toggle.setAttribute('aria-expanded',String(open));menu.classList.toggle('open',open);document.body.classList.toggle('menu-open',open);if(toggleLabel)toggleLabel.textContent=open?'Close':'Menu'};
 if(toggle&&menu){setMenuState(false);toggle.addEventListener('click',()=>setMenuState(toggle.getAttribute('aria-expanded')!=='true'));menu.addEventListener('click',event=>{if(event.target.closest('a'))setMenuState(false)});window.addEventListener('resize',()=>{if(window.innerWidth>760)setMenuState(false)})}
 if(toggle&&menu){document.addEventListener('keydown',event=>{if(event.key==='Escape'&&toggle.getAttribute('aria-expanded')==='true'){setMenuState(false);toggle.focus()}})}
-const page=document.body.dataset.page;const current=document.querySelector(`[data-nav="${page}"]`);if(current)current.setAttribute('aria-current','page');
+const page=document.body.dataset.page;
+if(menu&&!menu.querySelector('[data-nav="gallery"]')){const item=document.createElement('li');const link=document.createElement('a');link.href='gallery.html';link.dataset.nav='gallery';link.textContent='Gallery';item.append(link);const quizItem=menu.querySelector('[data-nav="quiz"]')?.closest('li');if(quizItem)quizItem.before(item);else menu.append(item)}
+const current=document.querySelector(`[data-nav="${page}"]`);if(current)current.setAttribute('aria-current','page');
 document.querySelectorAll('a[target="_blank"]').forEach(link=>{link.rel='noopener noreferrer'});
 
 const shamrockToken='[[shamrock]]';
@@ -21,7 +23,7 @@ const replaceShamrockTokens=root=>{
 replaceShamrockTokens(document.body);
 new MutationObserver(records=>records.forEach(record=>record.addedNodes.forEach(node=>{if(node.nodeType===Node.TEXT_NODE&&node.nodeValue.includes(shamrockToken))replaceShamrockTokens(node.parentNode);else if(node.nodeType===Node.ELEMENT_NODE)replaceShamrockTokens(node)}))).observe(document.body,{childList:true,subtree:true});
 
-const navigationLabels={home:'Home',learn:'Explore the area',quiz:'Take the quiz',about:'About us',contact:'Get in touch'};
+const navigationLabels={home:'Home',learn:'Explore the area',gallery:'Gallery',quiz:'Take the quiz',about:'About us',contact:'Get in touch'};
 document.querySelectorAll('[data-nav]').forEach(link=>{const label=navigationLabels[link.dataset.nav];if(label)link.textContent=label});
 
 const plainEnglishHeadings={
@@ -59,7 +61,7 @@ document.querySelectorAll('.eyebrow').forEach(label=>{const replacement=sectionL
 
 document.querySelectorAll('.site-footer h2').forEach(heading=>{if(heading.textContent.trim()==='Explore')heading.textContent='Quick links';if(['Connect','Find local links'].includes(heading.textContent.trim()))heading.textContent='Follow and contact'});
 document.querySelectorAll('.site-footer a').forEach(link=>{const label=link.textContent.trim();if(label==='Learn')link.textContent='Explore the area';if(label==='Quiz')link.textContent='Take the quiz';if(label==='About')link.textContent='About us'});
-document.querySelectorAll('.site-footer ul').forEach(list=>{if(!list.querySelector('a[href="accessibility.html"]')){const item=document.createElement('li');const link=document.createElement('a');link.href='accessibility.html';link.textContent='Accessibility';item.append(link);list.append(item)}});
+document.querySelectorAll('.site-footer ul').forEach(list=>{if(!list.querySelector('a[href="gallery.html"]')){const item=document.createElement('li');const link=document.createElement('a');link.href='gallery.html';link.textContent='Gallery';item.append(link);const learnItem=list.querySelector('a[href="learn.html"]')?.closest('li');if(learnItem)learnItem.after(item);else list.prepend(item)}if(!list.querySelector('a[href="accessibility.html"]')){const item=document.createElement('li');const link=document.createElement('a');link.href='accessibility.html';link.textContent='Accessibility';item.append(link);list.append(item)}});
 
 const topicNavigation=document.querySelector('.topic-nav');
 if(topicNavigation){const label=document.createElement('p');label.className='topic-nav-label';label.textContent='On this page';topicNavigation.before(label)}
