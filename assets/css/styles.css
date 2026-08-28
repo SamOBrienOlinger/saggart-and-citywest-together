@@ -128,6 +128,10 @@ h2{font-size:clamp(1.9rem,4vw,3rem)}
 .gallery-photo img{display:block;width:100%;height:auto;aspect-ratio:1/1;object-fit:cover}
 .gallery-photo--historic{width:min(100%,25rem);justify-self:center}
 .gallery-photo--historic img{aspect-ratio:400/276;object-fit:contain;background:#e9e3d6}
+.gallery-photo--village{width:min(100%,29.75rem);justify-self:center}
+.gallery-photo--village img{aspect-ratio:476/280;object-fit:contain;background:#e9e3d6}
+.gallery-photo--mill{width:min(100%,32rem);justify-self:center}
+.gallery-photo--mill img{aspect-ratio:1024/779;object-fit:contain;background:#111}
 .gallery-photo figcaption{position:absolute;right:.8rem;bottom:.8rem;margin:0;padding:.45rem .75rem;border-radius:999px;background:rgba(7,30,45,.88);color:var(--white);font-size:.85rem;font-weight:800}
 .gallery-details{padding:clamp(1.5rem,4vw,3rem);border:1px solid var(--border);border-radius:1.25rem;background:var(--white);box-shadow:var(--shadow)}
 .gallery-details h2{max-width:12ch}
