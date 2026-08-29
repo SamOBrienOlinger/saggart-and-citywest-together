@@ -125,7 +125,9 @@ h2{font-size:clamp(1.9rem,4vw,3rem)}
 .gallery-section-archive{background:var(--ice)}
 .gallery-showcase{display:grid;grid-template-columns:minmax(0,1fr) minmax(18rem,.85fr);gap:clamp(1.5rem,5vw,4.5rem);align-items:center}
 .gallery-photo{position:relative;margin:0;overflow:hidden;border:1px solid var(--border);border-radius:1.25rem;background:var(--white);box-shadow:var(--shadow)}
+.gallery-photo a{display:block}
 .gallery-photo img{display:block;width:100%;height:auto;aspect-ratio:1/1;object-fit:cover}
+.gallery-photo--welcome{width:min(100%,32rem);justify-self:center}
 .gallery-photo--historic{width:min(100%,25rem);justify-self:center}
 .gallery-photo--historic img{aspect-ratio:400/276;object-fit:contain;background:#e9e3d6}
 .gallery-photo--village{width:min(100%,29.75rem);justify-self:center}
