@@ -127,7 +127,6 @@ h2{font-size:clamp(1.9rem,4vw,3rem)}
 .gallery-photo{position:relative;margin:0;overflow:hidden;border:1px solid var(--border);border-radius:1.25rem;background:var(--white);box-shadow:var(--shadow)}
 .gallery-photo a{display:block}
 .gallery-photo img{display:block;width:100%;height:auto;aspect-ratio:1/1;object-fit:cover}
-.gallery-photo--welcome{width:min(100%,32rem);justify-self:center}
 .gallery-photo--historic{width:min(100%,25rem);justify-self:center}
 .gallery-photo--historic img{aspect-ratio:400/276;object-fit:contain;background:#e9e3d6}
 .gallery-photo--village{width:min(100%,29.75rem);justify-self:center}
@@ -142,7 +141,11 @@ h2{font-size:clamp(1.9rem,4vw,3rem)}
 .gallery-details{padding:clamp(1.5rem,4vw,3rem);border:1px solid var(--border);border-radius:1.25rem;background:var(--white);box-shadow:var(--shadow)}
 .gallery-details h2{max-width:12ch}
 .gallery-details .button{margin-top:.6rem}
-@media(max-width:760px){.gallery-showcase{grid-template-columns:1fr;gap:1.25rem}.gallery-details{padding:1.5rem}.gallery-details h2{max-width:none}}
+.gallery-card{width:min(100%,58rem);margin-inline:auto}
+.gallery-card--welcome{display:grid;grid-template-columns:minmax(13rem,.75fr) minmax(0,1fr);column-gap:clamp(1.5rem,4vw,3rem);align-items:center}
+.gallery-card--welcome .gallery-card-image{grid-row:1 / span 4;display:block;overflow:hidden;border:1px solid var(--border);border-radius:.85rem;background:var(--cream)}
+.gallery-card--welcome .gallery-card-image img{display:block;width:100%;height:auto;aspect-ratio:1/1;object-fit:cover}
+@media(max-width:760px){.gallery-showcase{grid-template-columns:1fr;gap:1.25rem}.gallery-details{padding:1.5rem}.gallery-details h2{max-width:none}.gallery-card--welcome{grid-template-columns:1fr;gap:1.25rem}.gallery-card--welcome .gallery-card-image{grid-row:auto;width:min(100%,22rem);justify-self:center}}
 
 .local-gallery-section{background:var(--cream)}
 .local-gallery-heading{max-width:48rem;margin-bottom:clamp(1.5rem,4vw,2.5rem)}
