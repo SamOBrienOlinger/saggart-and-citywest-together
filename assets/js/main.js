@@ -1,4 +1,5 @@
 import{initialiseTranslationControl}from'./translation.js?v=translation-control-v1';
+const responsiveStylesheet=document.createElement('link');responsiveStylesheet.rel='stylesheet';responsiveStylesheet.href='assets/css/responsive-fixes.css?v=20260904';document.head.append(responsiveStylesheet);
 const toggle=document.querySelector('.nav-toggle');const menu=document.querySelector('#site-menu');const toggleLabel=toggle?.querySelector('[aria-hidden="true"]');
 const setMenuState=open=>{if(!toggle||!menu)return;toggle.setAttribute('aria-expanded',String(open));menu.classList.toggle('open',open);document.body.classList.toggle('menu-open',open);if(toggleLabel)toggleLabel.textContent=open?'Close':'Menu'};
 if(toggle&&menu){setMenuState(false);toggle.addEventListener('click',()=>setMenuState(toggle.getAttribute('aria-expanded')!=='true'));menu.addEventListener('click',event=>{if(event.target.closest('a'))setMenuState(false)});window.addEventListener('resize',()=>{if(window.innerWidth>760)setMenuState(false)})}
