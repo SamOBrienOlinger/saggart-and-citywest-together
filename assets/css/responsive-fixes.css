@@ -1,0 +1,65 @@
+/* Cross-site responsive and card layout corrections */
+html,body{max-width:100%;overflow-x:hidden}
+img,svg,video,canvas{max-width:100%;height:auto}
+
+/* Home pathway cards */
+.pathways{overflow:hidden}
+.card-grid.three{align-items:stretch}
+.card-link{display:flex;flex-direction:column;min-width:0;padding:0!important;overflow:hidden;border-radius:var(--radius);text-decoration:none;background:var(--white)}
+.card-link .card-map{display:block;width:100%;max-width:none;height:auto;margin:0;flex:none;object-fit:cover;object-position:center;background:var(--cream)}
+.card-link .card-content{display:flex;flex:1;flex-direction:column;align-items:flex-start;gap:.85rem;padding:clamp(1.35rem,3vw,2rem);min-width:0}
+.card-link .card-title{display:block;max-width:100%;font-size:clamp(2rem,4vw,3.15rem);line-height:1.05;font-weight:850;letter-spacing:-.035em;color:var(--ink);overflow-wrap:anywhere}
+.card-link .text-link{display:inline-flex;align-items:center;gap:.35rem;max-width:100%;font-size:clamp(1rem,2vw,1.15rem);line-height:1.35;white-space:normal;overflow-wrap:anywhere}
+.card-link:focus-visible{outline:3px solid #e45c2f;outline-offset:4px}
+
+/* Keep square illustration assets contained and stop them bleeding into adjacent cards */
+.card-quiz .card-map,.card-connect .card-map{aspect-ratio:1/1;object-fit:cover}
+.card-learn .card-map{aspect-ratio:3/2;object-fit:cover}
+
+/* General grid resilience */
+.hero-grid,.split,.learning-grid,.community-intro,.footer-grid,.principle-grid,.gallery-grid,.card-grid{min-width:0}
+.hero-grid>* ,.split>* ,.learning-grid>* ,.community-intro>* ,.footer-grid>* ,.principle-grid>* ,.gallery-grid>* ,.card-grid>*{min-width:0}
+
+/* Mobile navigation and content widths */
+@media(max-width:760px){
+  .container{width:min(calc(100% - 1.25rem),var(--max))}
+  .nav{gap:.75rem;min-height:4.25rem}
+  .brand{min-width:0;gap:.55rem}
+  .brand span{font-size:clamp(.92rem,4vw,1.05rem);line-height:1.15;white-space:normal}
+  .brand-logo{width:2.5rem;height:2.5rem}
+  .nav-toggle{flex:none}
+  .nav-list{max-height:calc(100svh - 4.25rem);overflow-y:auto;-webkit-overflow-scrolling:touch}
+
+  .hero{padding:clamp(2.5rem,8vw,4rem) 0}
+  .hero-grid{gap:1.5rem}
+  .hero-photo{min-height:0;aspect-ratio:4/3;border-radius:1.25rem;box-shadow:0 0 0 .5rem rgba(255,255,255,.06)}
+  .hero-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+
+  .pathways{padding-inline:0}
+  .card-grid.three{grid-template-columns:minmax(0,1fr);gap:1rem}
+  .card-link{width:100%;max-width:100%;border-radius:1.25rem}
+  .card-link .card-map{width:100%;max-width:100%;margin:0}
+  .card-learn .card-map{aspect-ratio:16/10}
+  .card-quiz .card-map,.card-connect .card-map{aspect-ratio:16/11;object-fit:cover;object-position:center}
+  .card-link .card-content{padding:1.35rem 1.25rem 1.5rem}
+  .card-link .card-title{font-size:clamp(2rem,10vw,2.75rem)}
+  .card-link .text-link{font-size:1rem}
+
+  .section{padding:3.25rem 0}
+  .callout{width:min(calc(100% - 1.25rem),var(--max));margin-block:3rem;padding:1.5rem}
+  .topic-links a{padding:1rem .15rem}
+  .prose{max-width:100%}
+  .prose h2{font-size:clamp(1.7rem,8vw,2.15rem)}
+  .footer-grid{grid-template-columns:1fr;gap:1.5rem}
+  .footer-connect{flex-wrap:wrap}
+}
+
+@media(max-width:430px){
+  h1{font-size:clamp(2.35rem,13vw,3.6rem)}
+  h2{font-size:clamp(1.75rem,9vw,2.35rem)}
+  .container{width:calc(100% - 1rem)}
+  .card-link .card-content{padding:1.2rem 1.1rem 1.35rem}
+  .card-link .card-title{font-size:clamp(1.85rem,10vw,2.45rem)}
+  .card-quiz .card-map,.card-connect .card-map{aspect-ratio:4/3}
+  .callout{width:calc(100% - 1rem)}
+}
