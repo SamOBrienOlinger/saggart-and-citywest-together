@@ -25,7 +25,7 @@ A community information website supporting connection, inclusion and local knowl
 
 ## Getting started
 
-Requires a browser and a local HTTP server. Python 3 provides one without installing application packages.
+Requires Git, a browser and a local HTTP server. Python 3 provides one without installing application packages.
 
 ```bash
 git clone https://github.com/SamOBrienOlinger/saggart-and-citywest-together.git
@@ -35,7 +35,7 @@ python3 -m http.server 8000 --bind 127.0.0.1
 
 Open [localhost:8000](http://localhost:8000). Serve the repository over HTTP so module imports, relative assets and page links resolve correctly.
 
-The existing `npm run serve` command is another development-server option. See [package.json](package.json) for its port and Node.js requirement.
+Alternatively, use Node.js `>=20` and npm: run `npm run serve` from the repository root and open [localhost:4173](http://localhost:4173). This command uses `npx` to obtain and run `http-server`, so its first run needs an internet connection.
 
 ## Repository guide
 
@@ -49,7 +49,7 @@ The existing `npm run serve` command is another development-server option. See [
 
 ## Checks and review
 
-Use Node.js `>=20` and npm for the package commands below. Install the package dependencies first when the command uses a local build or test tool.
+Use Node.js `>=20` and npm for the command below. The tests use Node's built-in test runner and need no dependency installation.
 
 | Command | Purpose |
 | --- | --- |
@@ -68,6 +68,18 @@ A GitHub Pages site is configured for this repository. Its published URL is link
 Review [.github/workflows/pages.yml](.github/workflows/pages.yml) before changing the publishing workflow or source directory.
 
 ## Credits and reuse
+
+Website development by Sam O'Brien-Olinger / Sam Tim Solutions for Saggart & Citywest Together.
+
+Local and civic content draws on South Dublin County Council, the Placenames Database of Ireland, CSO Census 2022 and other named public sources. The [About page source register](about.html#sources) records the exact references.
+
+Media acknowledgements already recorded on the site include:
+
+- **The Echo** — the community-potluck article screenshot and coverage linked from [Community in action](about.html#our-work).
+- **Citywest Business Campus** — the campus history imagery, linked to its source in the [Gallery](gallery.html).
+- **P L Chadwick / Geograph Ireland** — the Luas-at-Saggart photograph, credited on the Gallery page under CC BY-SA 2.0.
+
+Other gallery items retain their individual source links. These acknowledgements do not grant additional rights to the photographs, article screenshot, illustrations or third-party content.
 
 Design decisions, original feature notes, historical testing evidence and detailed acknowledgements remain available in the preserved project record:
 
