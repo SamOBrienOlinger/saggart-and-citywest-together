@@ -1,9 +1,58 @@
-import{initialiseTranslationControl}from'./translation.js?v=translation-control-v1';
-const responsiveStylesheet=document.createElement('link');responsiveStylesheet.rel='stylesheet';responsiveStylesheet.href='assets/css/responsive-fixes.css?v=20260904';document.head.append(responsiveStylesheet);
-const toggle=document.querySelector('.nav-toggle');const menu=document.querySelector('#site-menu');const toggleLabel=toggle?.querySelector('[aria-hidden="true"]');
-const setMenuState=open=>{if(!toggle||!menu)return;toggle.setAttribute('aria-expanded',String(open));menu.classList.toggle('open',open);document.body.classList.toggle('menu-open',open);if(toggleLabel)toggleLabel.textContent=open?'Close':'Menu'};
-if(toggle&&menu){setMenuState(false);toggle.addEventListener('click',()=>setMenuState(toggle.getAttribute('aria-expanded')!=='true'));menu.addEventListener('click',event=>{if(event.target.closest('a'))setMenuState(false)});window.addEventListener('resize',()=>{if(window.innerWidth>760)setMenuState(false)})}
-if(toggle&&menu){document.addEventListener('keydown',event=>{if(event.key==='Escape'&&toggle.getAttribute('aria-expanded')==='true'){setMenuState(false);toggle.focus()}})}
+import{initialiseTranslationControl}from'./translation.js?v=responsive-20260911-2';
+const toggle = document.querySelector('.nav-toggle');
+const menu = document.querySelector('#site-menu');
+const header = document.querySelector('.site-header');
+const toggleLabel = toggle?.querySelector('[aria-hidden="true"]');
+const compactNavigation = window.matchMedia('(max-width: 70rem)');
+
+const updateMenuHeight = () => {
+  if (!header) return;
+  const viewport = window.visualViewport;
+  const bottom = viewport ? viewport.height + viewport.offsetTop : window.innerHeight;
+  header.style.setProperty('--menu-max-height', `${Math.max(0, bottom - header.getBoundingClientRect().bottom)}px`);
+};
+const setMenuState = open => {
+  if (!toggle || !menu) return;
+  toggle.setAttribute('aria-expanded', String(open));
+  menu.classList.toggle('open', open);
+  if (toggleLabel) toggleLabel.textContent = open ? 'Close' : 'Menu';
+  if (!open) menu.dispatchEvent(new Event('navigationclose'));
+  updateMenuHeight();
+};
+if (toggle && menu) {
+  setMenuState(false);
+  header.classList.add('nav-ready');
+  toggle.addEventListener('click', () => setMenuState(toggle.getAttribute('aria-expanded') !== 'true'));
+  menu.addEventListener('click', event => {
+    if (event.target.closest('a') && !event.target.closest('.translation-panel')) setMenuState(false);
+  });
+  document.addEventListener('click', event => {
+    if (!header.contains(event.target)) setMenuState(false);
+  });
+  header.addEventListener('focusout', event => {
+    if (!header.contains(event.relatedTarget)) setMenuState(false);
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !event.defaultPrevented && toggle.getAttribute('aria-expanded') === 'true') {
+      event.preventDefault();
+      setMenuState(false);
+      toggle.focus();
+    }
+  });
+  const resetNavigation = () => {
+    const focusInMenu = menu.contains(document.activeElement);
+    const focusOnToggle = document.activeElement === toggle;
+    setMenuState(false);
+    if (compactNavigation.matches && focusInMenu) toggle.focus();
+    else if (!compactNavigation.matches && focusOnToggle) menu.querySelector('a')?.focus();
+  };
+  if (compactNavigation.addEventListener) compactNavigation.addEventListener('change', resetNavigation);
+  else compactNavigation.addListener(resetNavigation);
+  window.addEventListener('resize', updateMenuHeight);
+  window.visualViewport?.addEventListener('resize', updateMenuHeight);
+  window.visualViewport?.addEventListener('scroll', updateMenuHeight);
+  if ('ResizeObserver' in window) new ResizeObserver(updateMenuHeight).observe(header);
+}
 const page=document.body.dataset.page;
 if(menu&&!menu.querySelector('[data-nav="gallery"]')){const item=document.createElement('li');const link=document.createElement('a');link.href='gallery.html';link.dataset.nav='gallery';link.textContent='Gallery';item.append(link);const quizItem=menu.querySelector('[data-nav="quiz"]')?.closest('li');if(quizItem)quizItem.before(item);else menu.append(item)}
 const current=document.querySelector(`[data-nav="${page}"]`);if(current)current.setAttribute('aria-current','page');

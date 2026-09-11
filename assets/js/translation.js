@@ -93,10 +93,18 @@ export const initialiseTranslationControl = menu => {
     toggle.setAttribute('aria-expanded', String(open));
   });
   list.addEventListener('click', () => closePanel(false));
+  menu.addEventListener('navigationclose', () => closePanel(false));
+  item.addEventListener('focusout', event => {
+    if (!item.contains(event.relatedTarget)) closePanel(false);
+  });
   document.addEventListener('click', event => {
     if (!panel.hidden && !item.contains(event.target)) closePanel(false);
   });
   document.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && !panel.hidden) closePanel(true);
-  });
+    if (event.key === 'Escape' && !panel.hidden) {
+      event.preventDefault();
+      event.stopPropagation();
+      closePanel(true);
+    }
+  }, true);
 };
