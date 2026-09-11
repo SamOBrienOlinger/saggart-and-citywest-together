@@ -35,7 +35,16 @@ python3 -m http.server 8000 --bind 127.0.0.1
 
 Open [localhost:8000](http://localhost:8000). Serve the repository over HTTP so module imports, relative assets and page links resolve correctly.
 
-Alternatively, use Node.js `>=20` and npm: run `npm run serve` from the repository root and open [localhost:4173](http://localhost:4173). This command uses `npx` to obtain and run `http-server`, so its first run needs an internet connection.
+For a development preview with automatic updates, use Node.js 20.19+ (20.x), or 22.12+ and npm:
+
+```bash
+npm ci
+npm run dev -- --port 4173
+```
+
+Open [localhost:4173](http://localhost:4173). Vite is a development dependency only; publishing still serves the original static HTML, CSS, JavaScript and images without a build step.
+
+Alternatively, `npm run serve` starts a simple server on port 4173. This command uses `npx` to obtain `http-server`, so its first run needs an internet connection. The Python option above does not need Node.js or npm.
 
 ## Repository guide
 
@@ -49,7 +58,7 @@ Alternatively, use Node.js `>=20` and npm: run `npm run serve` from the reposito
 
 ## Checks and review
 
-Use Node.js `>=20` and npm for the command below. The tests use Node's built-in test runner and need no dependency installation.
+Use a supported Node.js version and npm for the command below. The tests use Node's built-in test runner and need no dependency installation.
 
 | Command | Purpose |
 | --- | --- |
@@ -60,6 +69,8 @@ For a manual review, follow the main user journey, check keyboard navigation and
 Supporting notes: [TESTING.md](TESTING.md) · [design-qa.md](design-qa.md).
 
 Generate fresh results from the revision you are working on; historical test reports describe earlier runs.
+
+The shared responsive stylesheet loads directly on all ten pages. Compact navigation remains available when JavaScript is disabled; when enabled, the menu and translation panel support keyboard dismissal and available-height scrolling. The supports directory reflows into labelled entries on smaller screens. Browser coverage and remaining device checks are recorded in [TESTING.md](TESTING.md).
 
 ## Deployment
 
