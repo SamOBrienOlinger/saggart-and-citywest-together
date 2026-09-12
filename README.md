@@ -103,3 +103,16 @@ No repository-level licence file is present in this snapshot. This README does n
 Repository maintained in [Sam O’Brien-Olinger’s GitHub account](https://github.com/SamOBrienOlinger). For a problem or suggested improvement, [open an issue](https://github.com/SamOBrienOlinger/saggart-and-citywest-together/issues) with the affected page or command, steps to reproduce, and expected behaviour.
 
 [Back to top](#saggart--citywest-together)
+
+### Photo gallery
+
+The gallery presents six local photographs one at a time. Use the previous/next
+buttons, swipe the main photograph, or select a thumbnail. The selected photograph
+has a gold thumbnail outline; thumbnails have accessible names without visible
+captions. Arrow keys, Home and End work while a gallery control is focused.
+Descriptions, original source links and image credits stay with each photograph.
+If JavaScript is unavailable, all six photographs remain readable in page order.
+
+Gallery styles and behaviour are isolated in `assets/css/gallery.css` and
+`assets/js/gallery.js`. The small gallery icons are from Bootstrap Icons (MIT;
+licence in `assets/icons/LICENSE-bootstrap-icons.txt`).
