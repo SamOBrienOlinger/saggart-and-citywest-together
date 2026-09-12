@@ -1,0 +1,110 @@
+/* The Explore page keeps the shared palette, with one colour per topic. */
+body[data-page="learn"] .page-hero { padding: clamp(2.2rem, 4vw, 3.6rem) 0; }
+body[data-page="learn"] .page-hero .narrow { max-width: var(--max); }
+body[data-page="learn"] .page-hero .eyebrow { margin-bottom: .8rem; }
+body[data-page="learn"] .page-hero h1 { font-size: clamp(2.2rem, 4.5vw, 3.75rem); max-width: 21ch; line-height: 1.06; margin-bottom: .35em; }
+body[data-page="learn"] .page-hero .lede { font-size: clamp(1rem, 1.6vw, 1.2rem); max-width: 42rem; margin: 0; color: #e0f0ea; }
+body[data-page="learn"] .explore-section { padding-top: clamp(1.75rem, 4vw, 3rem); }
+.explore-directory { margin-bottom: clamp(3rem, 6vw, 5rem); }
+.explore-directory h2 { font-size: clamp(1.7rem, 3vw, 2.1rem); margin-bottom: 1.25rem; }
+.explore-topic-nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .9rem; }
+.explore-topic {
+  --topic-bg: #005759;
+  --topic-fg: #fff;
+  --icon-filter: invert(1);
+  position: relative;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) 20px;
+  align-items: center;
+  gap: .85rem;
+  min-width: 0;
+  min-height: 96px;
+  padding: 1.25rem;
+  border: 1px solid rgba(6,62,64,.16);
+  border-radius: 1.15rem;
+  background: var(--topic-bg);
+  color: var(--topic-fg);
+  text-decoration: none;
+  box-shadow: 0 3px 0 rgba(6,62,64,.07);
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+.explore-topic--place { --topic-bg: #005759; }
+.explore-topic--people { --topic-bg: #b9ddda; --topic-fg: #063e40; --icon-filter: none; }
+.explore-topic--heritage { --topic-bg: #e3a63b; --topic-fg: #063e40; --icon-filter: none; }
+.explore-topic--connections { --topic-bg: #ff9185; --topic-fg: #063e40; --icon-filter: none; }
+.explore-topic--nature { --topic-bg: #28745c; }
+.explore-topic--community { --topic-bg: #f7c8bb; --topic-fg: #063e40; --icon-filter: none; }
+.explore-topic--health { --topic-bg: #dff3e7; --topic-fg: #063e40; --icon-filter: none; }
+.explore-topic--resources { --topic-bg: #f1d4a2; --topic-fg: #063e40; --icon-filter: none; }
+.explore-topic--supports { --topic-bg: #164448; }
+.explore-topic-label { min-width: 0; font-size: 1.05rem; font-weight: 750; line-height: 1.3; }
+.explore-topic-icon { display: block; width: 24px; height: 24px; filter: var(--icon-filter); transition: transform 220ms ease; }
+.explore-topic-arrow { display: block; width: 20px; height: 20px; filter: var(--icon-filter); transition: transform 220ms ease; }
+.explore-topic[aria-current="location"] { border-color: var(--topic-fg); box-shadow: inset 0 0 0 2px var(--topic-fg); }
+.explore-topic[aria-current="location"] .explore-topic-label { text-decoration: underline; text-underline-offset: .2em; }
+.explore-topic:focus-visible { outline: 3px solid #fff; outline-offset: 2px; box-shadow: 0 0 0 6px #063e40; }
+.explore-topic:active { transform: scale(.98); box-shadow: 0 1px 0 rgba(6,62,64,.12); }
+body[data-page="learn"] .nav-toggle { transition: transform 180ms ease, background-color 180ms ease; }
+body[data-page="learn"] .nav-toggle:active { transform: scale(.96); }
+body[data-page="learn"] .button { transition: transform 180ms ease, box-shadow 180ms ease; }
+body[data-page="learn"] .button[href="citywest-supports.html"] { background: #b9ddda; border-color: #b9ddda; color: #063e40; }
+body[data-page="learn"] .button[href="quiz.html"] { background: #ff9185; border-color: #ff9185; color: #063e40; }
+body[data-page="learn"] .button:active { transform: scale(.98); }
+body[data-page="learn"] .learning-section:target .learning-section-header { border-bottom-color: var(--blue-dark); }
+@media (hover: hover) and (pointer: fine) {
+  .explore-topic:hover { color: var(--topic-fg); transform: translateY(-3px); box-shadow: 0 9px 18px rgba(6,62,64,.13); }
+  .explore-topic:hover .explore-topic-arrow { transform: translate(2px, 2px); }
+  .explore-topic--supports:hover .explore-topic-arrow { transform: translate(2px, -2px); }
+  .explore-topic--place:hover .explore-topic-icon { transform: translateY(-3px); }
+  .explore-topic--people:hover .explore-topic-icon,
+  .explore-topic--community:hover .explore-topic-icon { transform: scale(1.12); }
+  .explore-topic--heritage:hover .explore-topic-icon { transform: translateY(-2px); }
+  .explore-topic--connections:hover .explore-topic-icon { transform: translateX(3px); }
+  .explore-topic--nature:hover .explore-topic-icon { transform: rotate(-7deg); }
+  .explore-topic--health:hover .explore-topic-icon { animation: explore-heartbeat 650ms ease 1; }
+  .explore-topic--resources:hover .explore-topic-icon { animation: explore-ring 450ms ease 1; }
+  .explore-topic--supports:hover .explore-topic-icon { transform: rotate(15deg); }
+  .explore-topic:active { transform: translateY(0) scale(.98); }
+  body[data-page="learn"] .button:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(6,62,64,.12); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .explore-topic { animation: explore-topic-in 420ms cubic-bezier(.2,.7,.25,1) both; animation-delay: calc(var(--reveal-order, 0) * 45ms); }
+}
+@keyframes explore-topic-in { from { opacity: 0; translate: 0 10px; } to { opacity: 1; translate: 0 0; } }
+@keyframes explore-heartbeat { 0%, 100% { transform: scale(1); } 25%, 65% { transform: scale(1.13); } 45% { transform: scale(1); } }
+@keyframes explore-ring { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-12deg); } 65% { transform: rotate(10deg); } }
+@media (max-width: 850px) {
+  .explore-topic-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .explore-topic--supports { grid-column: 1 / -1; }
+}
+@media (max-width: 540px) {
+  body[data-page="learn"] .page-hero { padding: 1.75rem 0 2rem; }
+  body[data-page="learn"] .page-hero h1 { font-size: clamp(2rem, 8.8vw, 2.6rem); max-width: 17ch; }
+  .explore-topic-nav { gap: .7rem; }
+  .explore-topic { grid-template-columns: minmax(0, 1fr) 20px; grid-template-rows: 24px auto; align-content: start; align-items: start; gap: .65rem .3rem; padding: 1rem .85rem; min-height: 108px; border-radius: 1rem; }
+  .explore-topic-icon { grid-area: 1 / 1; width: 22px; height: 22px; }
+  .explore-topic-arrow { grid-area: 1 / 2; width: 18px; height: 18px; }
+  .explore-topic-label { grid-area: 2 / 1 / 3 / -1; font-size: .98rem; line-height: 1.3; }
+  .explore-topic--supports { grid-template-columns: 24px minmax(0, 1fr) 20px; grid-template-rows: auto; align-items: center; align-content: center; gap: .75rem; min-height: 76px; }
+  .explore-topic--supports .explore-topic-label { grid-area: 1 / 2; }
+  .explore-topic--supports .explore-topic-arrow { grid-area: 1 / 3; }
+}
+@media (max-width: 340px) {
+  .explore-topic { padding-inline: .7rem; }
+  .explore-topic-label { font-size: .9rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .explore-topic, .explore-topic-icon, .explore-topic-arrow,
+  body[data-page="learn"] .button, body[data-page="learn"] .nav-toggle { animation: none !important; transition: none !important; transform: none !important; translate: none !important; }
+}
+@media (forced-colors: active) {
+  .explore-topic { background: Canvas; color: LinkText; border: 2px solid LinkText; box-shadow: none; }
+  .explore-topic-icon, .explore-topic-arrow { filter: none; }
+  .explore-topic[aria-current="location"] { border: 3px solid Highlight; box-shadow: none; }
+  .explore-topic:focus-visible { outline: 3px solid Highlight; box-shadow: none; }
+}
+@media print {
+  .explore-directory { display: none; }
+}
