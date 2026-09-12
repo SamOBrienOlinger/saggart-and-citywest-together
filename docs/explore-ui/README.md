@@ -5,7 +5,7 @@ site's teal, aqua, gold, coral and green palette. The hero is more compact and
 adds a short introduction. Existing topic names and destinations are preserved.
 
 Each button enters once with a 45 ms stagger. Hover gives a small lift and a
-relevant icon response (pin lift, hourglass tilt, tree sway, heartbeat or telephone
+relevant icon response (pin or building lift, tree sway, heartbeat or telephone
 ring). Tap feedback is a small press; keyboard focus has a visible ring.
 Animations are finite. Reduced-motion CSS removes the animations/transitions and
 smooth page scrolling. The support and quiz CTAs have separate matching colours.
@@ -24,7 +24,11 @@ Validation, 12 September 2026:
 - Reduced-motion behaviour was checked in CSS; an OS preference change was not
   emulated. Physical phones and independent Safari/Firefox were not tested.
 
-`desktop.jpg` is the browser viewport capture. `mobile.jpg` shows the 390 px
+`desktop.jpg` is the updated 1348 by 926 px browser viewport capture. `mobile.jpg` shows the 390 px
 iframe at 80% display scale, cropped to its 375 px content area (300 px saved).
 Only the Explore page loads `assets/css/explore.css` and `assets/js/explore.js`.
+The crossed-out topic introduction has been removed, and History & heritage now
+uses a classical building icon. The updated desktop and mobile previews confirm
+the heading spacing and that the new icon loads.
+
 Icons are Bootstrap Icons, using the existing MIT licence in `assets/icons`.

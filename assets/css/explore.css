@@ -6,8 +6,7 @@ body[data-page="learn"] .page-hero h1 { font-size: clamp(2.2rem, 4.5vw, 3.75rem)
 body[data-page="learn"] .page-hero .lede { font-size: clamp(1rem, 1.6vw, 1.2rem); max-width: 42rem; margin: 0; color: #e0f0ea; }
 body[data-page="learn"] .explore-section { padding-top: clamp(1.75rem, 4vw, 3rem); }
 .explore-directory { margin-bottom: clamp(3rem, 6vw, 5rem); }
-.explore-directory h2 { font-size: clamp(1.7rem, 3vw, 2.1rem); margin-bottom: .25rem; }
-.explore-topic-intro { margin-bottom: 1.25rem; color: var(--muted); font-size: .95rem; }
+.explore-directory h2 { font-size: clamp(1.7rem, 3vw, 2.1rem); margin-bottom: 1.25rem; }
 .explore-topic-nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .9rem; }
 .explore-topic {
   --topic-bg: #005759;
@@ -60,7 +59,7 @@ body[data-page="learn"] .learning-section:target .learning-section-header { bord
   .explore-topic--place:hover .explore-topic-icon { transform: translateY(-3px); }
   .explore-topic--people:hover .explore-topic-icon,
   .explore-topic--community:hover .explore-topic-icon { transform: scale(1.12); }
-  .explore-topic--heritage:hover .explore-topic-icon { transform: rotate(-12deg); }
+  .explore-topic--heritage:hover .explore-topic-icon { transform: translateY(-2px); }
   .explore-topic--connections:hover .explore-topic-icon { transform: translateX(3px); }
   .explore-topic--nature:hover .explore-topic-icon { transform: rotate(-7deg); }
   .explore-topic--health:hover .explore-topic-icon { animation: explore-heartbeat 650ms ease 1; }
