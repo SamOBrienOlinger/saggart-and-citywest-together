@@ -1,6 +1,6 @@
 # Saggart & Citywest Together
 
-A community information website supporting connection, inclusion and local knowledge across Saggart and Citywest, County Dublin.
+A community information website that supports connection, inclusion and local knowledge across Saggart and Citywest, County Dublin.
 
 **HTML · CSS · JavaScript**
 
@@ -22,7 +22,7 @@ The strongest proposition is not another general directory. It is a **place-spec
 | Citywest support signposting and links to public and community sources | Help people understand where to turn for information and support without replacing the organisations responsible for eligibility, advice or delivery. |
 | Community activity and participation information alongside practical guidance | Connect finding information with taking part in neighbourhood life, rather than treating residents only as service users. |
 
-**Its distinctiveness lies in the combination and the locality.** Saggart and Citywest are not interchangeable with a national migration-information portal. The site's local curation and community perspective provide a basis for connecting information that residents would otherwise need to assemble across separate sources. The potential contribution is both practical and educational: easier orientation, better understanding of local support networks and a common resource for welcome, conversation and participation.
+**Its distinctiveness lies in the combination and the locality.** Saggart and Citywest are not interchangeable with a national migration-information portal. The site's local curation and community perspective provide a basis for connecting information that residents would otherwise need to assemble across separate sources. The potential contribution is both practical and educational: easier orientation, a better understanding of local support networks and a common resource for welcome, conversation and participation.
 
 ### Similar product: Integreat
 
@@ -39,13 +39,13 @@ Local content review and user testing are needed to establish whether visitors f
 ## What you can explore
 
 - Local learning resources and an interactive quiz.
-- A Citywest supports directory and practical signposting.
+- A Citywest support directory and practical signposting.
 - A gallery of local history and community imagery.
 - About, accessibility, contact and privacy pages.
 
 ## Using the project
 
-1. Start with the local learning pages or the Citywest supports directory.
+1. Start with the local learning pages or the Citywest support directory.
 2. Follow source links for information from the relevant organisation.
 3. Explore the gallery and community work, or take the local-knowledge quiz.
 
@@ -98,7 +98,7 @@ Supporting notes: [TESTING.md](TESTING.md) · [design-qa.md](design-qa.md).
 
 Generate fresh results from the revision you are working on; historical test reports describe earlier runs.
 
-The shared responsive stylesheet loads directly on all ten pages. Compact navigation remains available when JavaScript is disabled; when enabled, the menu and translation panel support keyboard dismissal and available-height scrolling. The supports directory reflows into labelled entries on smaller screens. Browser coverage and remaining device checks are recorded in [TESTING.md](TESTING.md).
+The shared responsive stylesheet loads directly on all ten pages. Compact navigation remains available when JavaScript is disabled; when enabled, the menu and translation panel support keyboard dismissal and available-height scrolling. The support directory reflows into labelled entries on smaller screens. Browser coverage and remaining device checks are recorded in [TESTING.md](TESTING.md).
 
 ## Deployment
 
@@ -134,7 +134,7 @@ Repository maintained in [Sam O’Brien-Olinger’s GitHub account](https://gith
 
 ### Photo gallery
 
-The gallery presents six local photographs one at a time. Use the previous/next
+The gallery presents six local photographs one at a time. Use the previous and next
 buttons, swipe the main photograph, or select a thumbnail. The selected photograph
 has a gold thumbnail outline; thumbnails have accessible names without visible
 captions. Arrow keys, Home and End work while a gallery control is focused.
@@ -142,5 +142,5 @@ Descriptions, original source links and image credits stay with each photograph.
 If JavaScript is unavailable, all six photographs remain readable in page order.
 
 Gallery styles and behaviour are isolated in `assets/css/gallery.css` and
-`assets/js/gallery.js`. The small gallery icons are from Bootstrap Icons (MIT;
+`assets/js/gallery.js`. The small gallery icons come from Bootstrap Icons (MIT;
 licence in `assets/icons/LICENSE-bootstrap-icons.txt`).
