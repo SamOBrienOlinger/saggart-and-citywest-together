@@ -4,9 +4,37 @@ A community information website supporting connection, inclusion and local knowl
 
 **HTML · CSS · JavaScript**
 
-[Visit the website](https://samobrienolinger.github.io/saggart-and-citywest-together/) · [Getting started](#getting-started) · [Repository guide](#repository-guide) · [Checks](#checks-and-review) · [Credits](#credits-and-reuse)
+[Visit the website](https://samobrienolinger.github.io/saggart-and-citywest-together/) · [Distinctive proposition](#distinctive-proposition-and-educational-contribution) · [Getting started](#getting-started) · [Repository guide](#repository-guide) · [Checks](#checks-and-review) · [Credits](#credits-and-reuse)
 
 <img src="assets/images/hero-saggart-citywest-v10.webp" alt="Illustrated view of Saggart and Citywest" width="880">
+
+## Distinctive proposition and educational contribution
+
+> **A community-led guide that connects local knowledge, practical support and opportunities to participate in Saggart and Citywest. Know the place, find the support and take part.**
+
+The strongest proposition is not another general directory. It is a **place-specific combination of civic learning, newcomer support navigation and shared community identity**, intended for both newcomers and established residents. Local history, everyday services and community activity belong in the same experience: understanding an area and finding a place within it are connected educational goals.
+
+### A potentially useful educational combination
+
+| What the site brings together | Potential educational contribution |
+| --- | --- |
+| Local history and civic information, imagery and an interactive quiz | Give newcomers and established residents a shared starting point for learning about their area and discussing belonging. |
+| Citywest support signposting and links to public and community sources | Help people understand where to turn for information and support without replacing the organisations responsible for eligibility, advice or delivery. |
+| Community activity and participation information alongside practical guidance | Connect finding information with taking part in neighbourhood life, rather than treating residents only as service users. |
+
+**Its distinctiveness lies in the combination and the locality.** Saggart and Citywest are not interchangeable with a national migration-information portal. The site's local curation and community perspective provide a basis for connecting information that residents would otherwise need to assemble across separate sources. The potential contribution is both practical and educational: easier orientation, better understanding of local support networks and a common resource for welcome, conversation and participation.
+
+### Similar product: Integreat
+
+[**Integreat — Germany's digital integration platform**](https://integreat-app.de/en/) provides locally maintained, multilingual information for newcomers through a website, an offline-capable app and printable information. It is a strong comparator for local integration and service navigation.
+
+Saggart & Citywest Together's distinguishing proposition is its **specific neighbourhood context and the combination of support navigation with local history, civic learning and visible community life**. This is an argument for a useful local contribution, not a claim that multilingual directories or community websites are new. Integreat also offers a useful lesson: clear responsibility for reviewing local information is as important as the interface.
+
+### Contribution within the wider learning portfolio
+
+Alongside [A New Life in Ireland](https://samobrienolinger.github.io/My-New-Life-in-Ireland/), which explores migration and settlement, and [Stopped: Both Sides](https://samobrienolinger.github.io/stopped-both-sides/), which explores public/Garda encounters, this site supplies the **hyperlocal community-learning layer**. Together they offer a potentially useful combination of migration understanding, local belonging and rights literacy. They remain separate resources, not an integrated public service.
+
+Local content review and user testing are needed to establish whether visitors find appropriate information and participation opportunities more easily. These are intended contributions, not measured outcomes. The comparator description was checked against its official website on **14 September 2026**; no affiliation, endorsement or exhaustive claim of uniqueness is implied.
 
 ## What you can explore
 
