@@ -32,7 +32,7 @@ test('primary pages load without script errors or horizontal overflow', async ({
 
 test('approved homepage order, service destinations and visual evidence', async ({ page }, testInfo) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Our area. Our story. Together.');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Our area. Our story. Together.', { useInnerText: true });
   await expect(page.getByRole('link', { name: 'Try the 10-question quiz', exact: true })).toHaveCount(1);
   expect(await page.locator('.quiz-strip').evaluate(el => !!(el.compareDocumentPosition(document.querySelector('#local-services')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
   for (const [name, path, target] of [
@@ -82,9 +82,9 @@ test('all carousel media, wrap-around, keyboard and full-image dialog work', asy
   await expect(opener).toBeFocused();
 });
 
-test('navigation, languages and real contact route work', async ({ page, hasTouch }) => {
+test('navigation, languages and real contact route work', async ({ page, context, hasTouch }) => {
   await page.goto('/');
-  const toggle = await openMenuIfNeeded(page);
+  await openMenuIfNeeded(page);
   await activate(page.getByRole('button', { name: 'Languages', exact: true }), hasTouch);
   await expect(page.locator('.translation-panel')).toBeVisible();
   await expect(page.locator('.translation-link')).toHaveCount(6);
@@ -96,6 +96,20 @@ test('navigation, languages and real contact route work', async ({ page, hasTouc
   await expect(page.locator('form')).toHaveCount(0);
   await expect(page.getByText('This opens your email app. Write and send your message there.')).toBeVisible();
   await fitsViewport(page);
+
+  // Verify the external handoff without relying on Google's live service.
+  await context.route('https://translate.google.com/**', route => route.fulfill({ body: 'Translation handoff' }));
+  await page.goto('/');
+  await openMenuIfNeeded(page);
+  const languages = page.getByRole('button', { name: 'Languages', exact: true });
+  await activate(languages, hasTouch);
+  await languages.focus();
+  const popupPromise = context.waitForEvent('page');
+  await activate(page.locator('.translation-link').first(), hasTouch);
+  const popup = await popupPromise;
+  await expect(popup).toHaveURL(/https:\/\/translate\.google\.com\/translate\?.*tl=ar/);
+  await popup.close();
+  await expect(page.locator('.translation-panel')).not.toBeVisible();
 });
 
 test('complete shuffled quiz scores correctly and restarts', async ({ page, hasTouch }) => {

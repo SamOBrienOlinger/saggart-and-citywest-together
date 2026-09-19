@@ -95,7 +95,8 @@ export const initialiseTranslationControl = menu => {
   list.addEventListener('click', () => closePanel(false));
   menu.addEventListener('navigationclose', () => closePanel(false));
   item.addEventListener('focusout', event => {
-    if (!item.contains(event.relatedTarget)) closePanel(false);
+    // A null target in WebKit can precede clicking a link inside this panel.
+    if (event.relatedTarget && !item.contains(event.relatedTarget)) closePanel(false);
   });
   document.addEventListener('click', event => {
     if (!panel.hidden && !item.contains(event.target)) closePanel(false);
