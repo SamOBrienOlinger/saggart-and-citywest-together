@@ -1,4 +1,4 @@
-import{initialiseTranslationControl}from'./translation.js?v=responsive-20260911-2';
+import{initialiseTranslationControl}from'./translation.js?v=community-homepage-20260920';
 const toggle = document.querySelector('.nav-toggle');
 const menu = document.querySelector('#site-menu');
 const header = document.querySelector('.site-header');
@@ -54,7 +54,6 @@ if (toggle && menu) {
   if ('ResizeObserver' in window) new ResizeObserver(updateMenuHeight).observe(header);
 }
 const page=document.body.dataset.page;
-if(menu&&!menu.querySelector('[data-nav="gallery"]')){const item=document.createElement('li');const link=document.createElement('a');link.href='gallery.html';link.dataset.nav='gallery';link.textContent='Gallery';item.append(link);const quizItem=menu.querySelector('[data-nav="quiz"]')?.closest('li');if(quizItem)quizItem.before(item);else menu.append(item)}
 const current=document.querySelector(`[data-nav="${page}"]`);if(current)current.setAttribute('aria-current','page');
 document.querySelectorAll('a[target="_blank"]').forEach(link=>{link.rel='noopener noreferrer'});
 
@@ -73,7 +72,7 @@ const replaceShamrockTokens=root=>{
 replaceShamrockTokens(document.body);
 new MutationObserver(records=>records.forEach(record=>record.addedNodes.forEach(node=>{if(node.nodeType===Node.TEXT_NODE&&node.nodeValue.includes(shamrockToken))replaceShamrockTokens(node.parentNode);else if(node.nodeType===Node.ELEMENT_NODE)replaceShamrockTokens(node)}))).observe(document.body,{childList:true,subtree:true});
 
-const navigationLabels={home:'Home',learn:'Explore the area',gallery:'Gallery',quiz:'Take the quiz',about:'About us',contact:'Get in touch'};
+const navigationLabels={home:'Home',learn:'Explore the area',services:'Find support',gallery:'Gallery',quiz:'Take the quiz',about:'About',contact:'Get involved'};
 document.querySelectorAll('[data-nav]').forEach(link=>{const label=navigationLabels[link.dataset.nav];if(label)link.textContent=label});
 
 const plainEnglishHeadings={

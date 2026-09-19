@@ -1,108 +1,74 @@
+# Homepage implementation QA
 
-# Design QA â€” Civic Hub Refresh
+final result: passed
 
-**Source visual truth:** `C:\Users\samto\.codex\generated_images\01a00126-6375-7f03-9f81-269f0145bd68\exec-b7ddb108-f346-4086-a200-cd0a3061f3fd.png`
+## Comparison target and evidence
 
-**Implementation:** https://samobrienolinger.github.io/saggart-and-citywest-together/?v=fbae8df
+- Source visual truth: `/workspace/scratch/a469a6709e88/generated_images/exec-9215645e-afda-439e-bc58-87c57de5b956.png` (1036 × 1518 raster mockup).
+- Implementation: existing static site, homepage, Chrome browser, first carousel slide, menus closed.
+- Desktop screenshot: `docs/homepage-preview/desktop.jpg` (1348 × 2123 full-page capture; browser viewport approximately 1363 × 936 CSS px including its scrollbar).
+- Mobile evidence: `docs/homepage-preview/phone-carousel.jpg`, 390 × 760 test frame; 375 CSS px of usable content because Chrome reserves 15px for a scrollbar. Screenshot canvas includes the surrounding test harness (1363 × 936).
+- Tablet evidence: `docs/homepage-preview/tablet-carousel.jpg`, 768 × 760 frame with 753px usable content, inside the same screenshot canvas.
+- Reflow measurements: `docs/homepage-preview/reflow.json`.
+- Full-view comparison: source mockup and browser-rendered full page were opened together in a single comparison input. Compared relative content widths and region proportions; no pixel-perfect claim is made across the different canvas widths. The 1036px source is a raster representation of a desktop design, not a literal navigation breakpoint specification. No raster stretching or image editing was used to manufacture a match.
+- Focused comparison: the community text, main photograph, thumbnails, carousel controls and service icons were inspected in the full-resolution desktop image alongside the source, plus the phone and tablet captures where these controls are readable.
 
-**Comparison state:** Homepage, default state. Desktop at 1024 Ã— 720 CSS px and mobile at 390 Ã— 844 CSS px, device scale factor 1. Source image is 1024 Ã— 1536 px. Implementation evidence was captured in the Codex in-app browser at both viewports.
+## Findings and fixes
 
-## Findings
+No actionable P0/P1/P2 findings remain in the implemented scope.
 
-- No actionable P0, P1 or P2 differences remain.
-- Fonts and typography: The implementation preserves the reference's bold civic headline, strong sans-serif body hierarchy and coral emphasis. Georgia is used selectively for editorial section headings using reliable local fallbacks.
-- Spacing and layout rhythm: The dark-teal hero, asymmetric image treatment, three coloured pathways, generous section spacing and rounded components match the selected direction. Mobile collapses cleanly without horizontal overflow.
-- Colours and visual tokens: Deep teal, medium teal, aqua, coral, cream and gold remain within the supplied SaCT identity. Contrast is strong across the hero, cards, navigation and calls to action.
-- Image quality and asset fidelity: The fictional concept logo and imagery were intentionally replaced by verified supplied assets. Browser checks confirmed the real SaCT logo at 493 Ã— 492 px, the real Saggart photograph at 1810 Ã— 1800 px and the Facebook QR at 1147 Ã— 1147 px, all complete and rendered at native source dimensions.
-- Copy and content: Existing approved community language, INAR-aligned terminology, homepage introduction and prototype attribution are preserved.
-- Interactions: Primary navigation, homepage calls to action and mobile menu were checked. The mobile menu correctly changes to `aria-expanded="true"` and reveals its links.
-- Console: No warnings or errors were reported on the deployed homepage.
+1. [P2, resolved] Initial desktop copy was vertically centred far below the photograph's top edge, and its heading wrapped into three lines. The community grid is now top-aligned with a larger heading and a 12ch text measure. The subsequent capture shows the intended four-line heading alongside the photograph.
+2. [P2, resolved] English classes and Work and training initially lacked matching destination anchors. Explicit row IDs were added to the existing support directory. Every homepage local fragment was checked against source/generated section IDs; the English classes link was opened in the browser and reached its education row.
+3. [P2, resolved] Shared runtime navigation would reinsert the old Gallery item and overwrite revised labels. Removed that insertion, updated shared labels and made the four primary links consistent in existing page markup. Gallery remains available from the footer.
+4. [P2, resolved] The source's light gold/coral did not support readable large text on the light community surface. Shared deeper gold #bd892b and coral #d1765f against teal #004b50 and paper #fffdf8 give approximately 3.05–3.19:1. Both headlines use the same colour variables as requested. High-contrast preference has an additional monochrome text override.
 
-## Comparison history
+## Required fidelity surfaces
 
-- Initial implementation: Local browser bridging was unavailable in this desktop session, so browser-rendered comparison was deferred until deployment. Automated tests and reference integrity checks passed locally.
-- Deployed verification: The public page was compared against the selected civic-hub concept. The deliberate use of the real supplied logo and Saggart photograph resolved the concept's fictional-asset mismatch. Desktop and mobile evidence showed no remaining P0/P1/P2 issues.
+- **Fonts and typography:** Arial/sans-serif UI and hero, Georgia/serif section headlines; font hierarchy and four-line desktop community heading reproduce the source's intent. Fluid sizing and wrapping adapt to phones. No clipping observed.
+- **Spacing and layout rhythm:** approved section order retained: hero, community/carousel, quiz, Local services, footer. One-column phone and tablet layouts become split desktop layouts. Container spacing, rounded image corners and restrained dividers match the source. Keeping the real photograph's full 4:3 proportions makes the gallery taller than the generated mockup's cropped photo; this is intentional.
+- **Colours and tokens:** teal/cream/gold/coral palette preserved; gold/coral deepened together for text contrast. Focus states are visible. Small body text remains dark on light surfaces.
+- **Image quality and asset fidelity:** original repository logo, landscape and quiz artwork; original uploaded community media; genuine Bootstrap Icons. No generated faces, invented photo content or handcrafted replacement artwork. The first image and all ten thumbnail destinations were checked. Some lower thumbnails appear undecoded in initial full-page screenshots; they load when approached and were confirmed loaded during interaction and in the phone capture.
+- **Copy and content:** approved wording retained, including Local services below the quiz. One quiz promotion. Event posters have descriptive historical captions/alt text rather than new event claims. The existing prototype status is retained in the footer.
 
-## Focused region evidence
+## Interactions and checks
 
-Focused checks covered the logo/header, hero image crop, headline hierarchy, mobile header and mobile hero. The three-pathway region was also verified in the DOM as one section containing three cards. Full-page screenshot stitching repeated the sticky hero in the browser capture, so layout assessment used normal-viewport captures plus DOM dimensions (`scrollHeight: 3933`, three cards, one pathways section).
+- All ten thumbnail selections: correct image, count and exactly one active thumbnail.
+- Previous/next controls, first/last wrap-around, Arrow keys and Home/End.
+- Full-image poster dialog opens; Escape closes it and focus returns to its trigger.
+- Mobile navigation and language panel; first Escape closes translation, second closes navigation.
+- All six existing translation choices are available; no third-party translation request was submitted.
+- Homepage English classes link and Find support navigation; static validation of all local section links.
+- Existing quiz opens and starts its first question successfully.
+- Reflow at 320, 360, 390, 430, 576, 768, 896, 1024, 1120, 1280, 1440 and 1920px frame widths: document width equals available content width at every size, including 305px of content at the narrowest frame. No page-level horizontal overflow.
+- Mobile controls and carousel reviewed visually at 390px; tablet community layout reviewed at 768px.
+- Console checked: no application warnings/errors for terminal.local. Browser-extension metadata errors were observed and are unrelated to site code.
+- Existing automated tests: 32/32 passed. JavaScript syntax and git whitespace checks passed.
 
-## Follow-up polish
+## Test limits and follow-up polish
 
-- P3: A future content phase could add additional verified local photographs if SaCT supplies captions and usage permission.
+- Chrome layout frames verify responsive rendering; physical phones, Safari, Firefox, touch gestures, screen readers, RTL translation output and OS text-size settings were not independently exercised.
+- Original uploads include Instagram overlays and screenshot compression. Clean original photographs/posters would improve source quality; no AI replacement was used.
+- The follow-up release replaces the contact demonstration with direct email contact; other interior-page content is retained.
+- Occasional cloud-browser screenshot/scroll timeouts were resolved by using a fresh preview tab. The working homepage remains open for review.
 
-**final result: passed**
+## Implementation checklist
 
+- [x] Approved homepage sections and colours implemented.
+- [x] Original media and functional ten-image carousel integrated.
+- [x] Mobile-first layouts, touch-sized controls, keyboard and reduced-motion support.
+- [x] Shared navigation and section links updated.
+- [x] Desktop/mobile/tablet visual evidence and reflow checks recorded.
+- [x] Existing tests and syntax checks pass.
 
-# Gallery photo viewer — 11 September 2026
+## Release follow-up — 19 September 2026
 
-Source visual truth: `docs/gallery-ui/reference.jpg` (the user's annotated
-1125 × 837 mockup). Implementation: `gallery.html`, first photograph selected.
-
-Evidence:
-- `docs/gallery-ui/desktop.jpg`: browser rendering in a 1200 × 1300 CSS px
-  iframe, scaled to 70% for a complete view in the cloud browser. The saved crop
-  is 840 × 830 px, at device pixel ratio 1 before the CSS scale.
-- `docs/gallery-ui/mobile.jpg`: browser rendering in a 390 × 1100 CSS px iframe,
-  with a 375 px content area after the desktop browser scrollbar. Saved content
-  crop is 375 × 900 px, without CSS scaling.
-- `docs/gallery-ui/desktop-comparison.jpg`: reference and implementation together.
-- `docs/gallery-ui/mobile-comparison.jpg`: reference mobile region normalized to
-  375 px wide beside the final 375 px implementation. The design board does not
-  specify an original CSS viewport; comparison uses equal content widths.
-
-## Findings and fidelity surfaces
-
-- No remaining actionable P0/P1/P2 findings in the gallery implementation.
-- Typography: Georgia display headings, sans-serif captions and controls; the
-  mobile title now breaks before “& Citywest”, matching the reference.
-- Layout: centered single image, previous/next controls and count, caption and
-  source link, then a horizontal three-thumbnail viewport. Mobile adds the swipe
-  instruction. The main photo preserves a stable frame as slides change.
-- Colors: existing cream and deep-teal site tokens, pale circular arrows and a
-  gold selected-thumbnail border match the chosen visual direction.
-- Assets: actual existing photos and logo are reused. Bootstrap Icons supplies
-  the small arrow/source icons. The historic originals are only 400/476 px wide;
-  desktop softness is a source limitation (P3), not a fabricated replacement.
-- Copy: the thumbnail labels marked in red are absent. All six photographs,
-  their original source destinations and existing attribution text remain.
-- Intentional existing-product differences: the shared navigation retains its
-  Translate control, readable Menu button, responsive breakpoint and footer.
-  Photos other than the opening image use contain rather than destructive crops.
-  Touch targets are at least 44 × 44 CSS px, including on the 320 px review.
-
-The combined comparisons were opened and reviewed at full size. Captions,
-controls, image crop and thumbnail selection are legible there; separate zoomed
-comparison files were unnecessary.
-
-## Comparison history
-
-1. Initial browser review found the mobile title wrapping with an ampersand on
-   the first line (P2). Added a mobile-only block span before “& Citywest”.
-2. Browser CSS inspection found an older cached stylesheet. Versioned the new
-   stylesheet URL, reloaded and verified computed display:block on the span.
-3. Final capture (`mobile.jpg` and `mobile-comparison.jpg`) shows the corrected
-   line break, clean image-only thumbnails and the intended gallery hierarchy.
-
-## Interaction checks
-
-- Next/previous and wrapping 1 → 6 → 1 passed.
-- Thumbnail Home/End selection and focus navigation passed.
-- Horizontal pointer swipe changed photograph 1 to photograph 2.
-- Only one photograph is visible after enhancement; all thumbnail buttons have
-  accessible names and no visible caption text.
-- 390 px and 320 px iframe reviews had equal document client/scroll widths:
-  375/375 and 305/305, respectively; no horizontal page overflow.
-- Existing menu Enter activation and Escape dismissal passed. Pointer activation
-  of the shared menu was inconclusive in the iframe automation and is not
-  claimed as verified. No shared menu logic was changed.
-- No application console warnings/errors in the checked desktop tab. The mobile
-  harness logged browser-extension metadata errors, outside the site code.
-- All 32 existing node tests passed; JavaScript syntax and git diff checks passed.
-
-Limits: cloud Chromium with responsive iframes, not physical iOS/Android hardware
-or independent Safari/Firefox sessions. Swipe was exercised using a browser
-pointer drag; physical touch and full screen-reader sessions remain untested.
-The six-photo non-JavaScript fallback is present in the static HTML.
+- Replaced the non-sending contact form with an explicit email-app link and a copyable organisation address; privacy text and README now describe the real behaviour. No message was sent during testing. This is an email contact route, not a hosted form-delivery service.
+- Shuffled quiz answer options per attempt and remapped each correct index. Exhaustive tests cover all 24 option orders for every possible correct source index; source data is not mutated.
+- 34/34 tests pass. A complete browser attempt with three deliberate wrong answers produced 7/10, saved that best score and restarted at question 1 with shuffled answers.
+- Follow-up reflow checks cover all nine primary pages at 320 and 1440px. Home, contact and quiz additionally cover 390, 768 and 1920px. Home/contact/quiz were checked with 200% root text at 320 and 768px.
+- [P2, resolved] At 200% text on the narrowest homepage, the participation button's minimum width and the quiz strip's fixed artwork column caused overflow. Constrained the button to its container and allowed quiz artwork/copy to wrap. Recheck: 305px available / 305px document width.
+- A 768×390 landscape frame has no horizontal overflow. The menu opens, and the carousel responds correctly to Home, End and reversed arrow-key direction when the document is RTL. This verifies layout/control direction, not translated Arabic content.
+- Evidence: `docs/homepage-preview/followup-reflow.json` and `docs/homepage-preview/contact-phone.jpg`.
+- Only Chrome is exposed by the browser runtime. Physical devices, Safari, Firefox, touch gestures and screen readers remain untested; these checks cannot be claimed complete in this environment. No external email delivery was claimed or tested.
 
 final result: passed
