@@ -1,20 +1,51 @@
-/* Link feedback is shared by every page, including translated copies. */
-:root { --link-visited: #925137; }
-.site-header, .site-footer, .page-hero, .facts-hero, .home-hero, .callout { --link-visited: #ffb8a8; }
-.translation-panel { --link-visited: #925137; }
-:root body a[href]:visited { color: var(--link-visited); }
-:root body a[href]:is(:hover, :focus-visible) {
+/* Shared link and button feedback, including translated pages.
+   Keep the component's normal colour after a visit: no :visited override.
+   Apply hover only to pointers that support it so a tap cannot leave it stuck. */
+:root body a[href][aria-current] { color: #173f40; background-color: #f5ce77; }
+:root body a[href] :is(span, small, h2, h3) { color: inherit; }
+
+:root body :is(a[href], button):focus-visible {
   color: #74351d;
   background-color: #fff0d5;
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px #073b45;
+}
+:root body a[href]:focus-visible {
   text-decoration: underline;
   text-decoration-thickness: .12em;
   text-underline-offset: .2em;
 }
-:root body a[href]:active { color: #fff; background-color: #07585b; }
-:root body a[href][aria-current] { color: #173f40; background-color: #f5ce77; }
-:root body a[href]:focus-visible { outline: 3px solid #b54825; outline-offset: 3px; }
-:root body a[href] :is(span, small, h2, h3) { color: inherit; }
-:root body a[href]:is(:hover, :focus-visible) img { opacity: .85; }
+:root body .translate-toggle:focus-visible::before { filter: none; }
+
+@media (hover: hover) {
+  :root body :is(a[href], button:not(:disabled)):hover {
+    color: #74351d;
+    background-color: #fff0d5;
+  }
+  :root body a[href]:hover {
+    text-decoration: underline;
+    text-decoration-thickness: .12em;
+    text-underline-offset: .2em;
+  }
+  :root body .translate-toggle:hover::before { filter: none; }
+}
+
+/* A distinct, immediate pressed state lasts only while the control is held. */
+:root body :is(a[href], button:not(:disabled)):active {
+  color: #fff;
+  background-color: #74351d;
+}
+:root body .translate-toggle:active::before,
+:root body :is(.carousel-arrow, .gallery-arrow):active img { filter: brightness(0) invert(1); }
+
 @media (forced-colors: active) {
-  :root body a[href]:is(:hover, :focus-visible, :active) { color: HighlightText; background-color: Highlight; }
+  :root body :is(a[href], button):is(:focus-visible, :active) {
+    color: HighlightText;
+    background-color: Highlight;
+    outline-color: Highlight;
+  }
+}
+@media (forced-colors: active) and (hover: hover) {
+  :root body :is(a[href], button):hover { color: HighlightText; background-color: Highlight; }
 }

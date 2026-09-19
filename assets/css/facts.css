@@ -7,8 +7,8 @@ body[data-page="facts"] { background: #fffdfa; }
 .facts-hero-line span { color: #ffad9f; }
 .facts-hero .lede { max-width: 44rem; margin-top: 1.4rem; }
 .facts-jumps { display: grid; gap: .65rem; padding-block: 1.5rem; }
-.facts-jumps a { display: grid; grid-template-columns: minmax(0, 1fr); gap: .1rem .5rem; padding: 1rem; border: 1px solid #bdd8d6; border-radius: .7rem; color: #173f40; background: white; text-decoration: none; font-weight: 750; line-height: 1.4; min-height: 5rem; }
-.facts-jumps a:hover { background: #e6f2ef; border-color: #17676a; }
+.facts-jumps a { display: grid; grid-template-columns: minmax(0, 1fr); gap: .1rem .5rem; padding: 1rem; border: 1px solid #bdd8d6; border-radius: .7rem; color: #173f40; background: white; text-decoration: none; font-weight: 750; line-height: 1.4; min-height: 5rem; }@media (hover: hover) {
+.facts-jumps a:hover { background: #e6f2ef; border-color: #17676a; }}
 .facts-jumps small { grid-column: 1; font-weight: 450; font-size: .85rem; color: #526f70; }
 .facts-section { padding-block: clamp(2.75rem, 6vw, 5rem); scroll-margin-top: 6.5rem; }
 .facts-section-heading { max-width: 48rem; margin-bottom: 1.75rem; }
@@ -25,8 +25,8 @@ body[data-page="facts"] { background: #fffdfa; }
 .resource-purpose { font-weight: 800; margin-bottom: .35rem; }
 .resource-context { border-top: 1px solid #e0eae8; padding-top: .9rem; margin: 1rem 0 0; color: #526364; font-size: .9rem; }
 .facts-details { margin-block: 1rem; border: 1px solid #b5d1cd; border-radius: .65rem; background: white; overflow: visible; }
-.facts-details summary { padding: 1rem 1.15rem; cursor: pointer; font-weight: 800; min-height: 48px; }
-.facts-details summary:hover { background: #edf5f2; border-radius: .65rem; }
+.facts-details summary { padding: 1rem 1.15rem; cursor: pointer; font-weight: 800; min-height: 48px; }@media (hover: hover) {
+.facts-details summary:hover { background: #edf5f2; border-radius: .65rem; }}
 .facts-details summary:focus-visible { outline: 3px solid #b54825; outline-offset: 3px; border-radius: .5rem; }
 .facts-details > div { padding: .25rem 1.25rem 1.25rem; }
 .facts-details > div > :last-child { margin-bottom: 0; }

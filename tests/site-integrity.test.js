@@ -7,3 +7,13 @@ test('referenced raster images are complete',async()=>{const refs=new Set;for(co
 test('homepage heading levels do not skip',async()=>{const html=await readFile(resolve(root,'index.html'),'utf8');const levels=[...html.matchAll(/<h([1-6])\b/gi)].map(match=>Number(match[1]));for(let index=1;index<levels.length;index++)assert.ok(levels[index]<=levels[index-1]+1,`heading level skips from h${levels[index-1]} to h${levels[index]}`)});
 test('homepage illustration is visible before the copy on compact screens',async()=>{const styles=await readFile(resolve(root,'assets/css/styles.css'),'utf8');assert.match(styles,/grid-template-areas:"visual" "copy"/);assert.match(styles,/hero-photo\.hero-illustration img\{position:static;[^}]*height:auto/)});
 test('hidden quiz controls stay hidden despite component display styles',async()=>{const styles=await readFile(resolve(root,'assets/css/styles.css'),'utf8');const html=await readFile(resolve(root,'quiz.html'),'utf8');assert.match(html,/id="next-question"[^>]*hidden/);assert.match(styles,/\[hidden\]\{display:none!important\}/)});
+
+
+test('every footer carries copyright without the removed disclaimer', async () => {
+  for (const page of pages) {
+    const html = await readFile(resolve(root, page), 'utf8');
+    const footer = html.match(/<footer\b[\s\S]*?<\/footer>/)[0];
+    assert.match(footer, /© 2026 Sam Tim Solutions\./, page);
+    assert.doesNotMatch(footer, /Information comes from public sources|endorse/, page);
+  }
+});

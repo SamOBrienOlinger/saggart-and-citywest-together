@@ -20,15 +20,15 @@
 .photo-gallery.is-ready .gallery-caption { grid-area: 3 / 1; }
 .gallery-navigation { grid-area: 2 / 1; display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; margin: .75rem .35rem 0; }
 .gallery-arrow { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; color: var(--ink); background: #eaeedf; border: 1px solid transparent; border-radius: 50%; }
-.gallery-arrow img { width: 20px; height: 20px; }
-.gallery-arrow:hover { background: #dce5d2; }
+.gallery-arrow img { width: 20px; height: 20px; }@media (hover: hover) {
+.gallery-arrow:hover { background: #dce5d2; }}
 .gallery-counter { text-align: center; font-size: .9rem; margin: 0; }
 .gallery-swipe-hint { display: none; grid-column: 1 / -1; text-align: center; font-size: .8rem; margin: .5rem 0 .85rem; }
 .gallery-thumbnails { display: flex; gap: .75rem; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity; scrollbar-width: thin; scrollbar-color: var(--border) transparent; padding: .4rem .3rem .75rem; margin: .4rem -.3rem 0; }
 .gallery-thumbnail { flex: 0 0 calc((100% - 1.5rem) / 3); min-width: 44px; padding: 3px; border: 2px solid transparent; border-radius: .75rem; background: transparent; scroll-snap-align: start; }
 .gallery-thumbnail img { display: block; width: 100%; aspect-ratio: 1.7; object-fit: cover; border-radius: .45rem; border: 1px solid #c6cec7; }
-.gallery-thumbnail[aria-pressed="true"] { border-color: var(--yellow); }
-.gallery-thumbnail:hover { background: #eaeedf; }
+.gallery-thumbnail[aria-pressed="true"] { border-color: var(--yellow); }@media (hover: hover) {
+.gallery-thumbnail:hover { background: #eaeedf; }}
 .photo-gallery button:focus-visible, .photo-gallery a:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; box-shadow: none; }
 body[data-page="gallery"] .brand span { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; font-size: 1.15rem; line-height: 1.1; max-width: 12rem; }
 body[data-page="gallery"] .nav-list a[aria-current="page"] { border-bottom-color: var(--yellow); }
