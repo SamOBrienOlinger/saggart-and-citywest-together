@@ -92,24 +92,30 @@ test('links visibly respond while hovered or held, then return to normal', async
     await link.scrollIntoViewIfNeeded();
     await page.mouse.move(0, 0);
     const normal = await link.evaluate(el => ({color:getComputedStyle(el).color, background:getComputedStyle(el).backgroundColor}));
+    // Locator hover chooses a painted text rectangle, including links that wrap.
+    await link.hover();
     if (!hasTouch) {
-      await link.hover();
       await expect(link).not.toHaveCSS('color', normal.color);
       expect(await buttonContrast(link)).toBeGreaterThanOrEqual(4.5);
     }
-    const box = await link.boundingBox();
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    // Keep this state check on the page; actual navigation is covered by the journeys above.
+    await link.evaluate(el => el.addEventListener('click', event => event.preventDefault(), {once:true}));
     await page.mouse.down();
     await expect(link).toHaveCSS('background-color', 'rgb(116, 53, 29)');
     expect(await buttonContrast(link)).toBeGreaterThanOrEqual(4.5);
-    // Cancel navigation by releasing away from the link; only the pressed state is tested here.
-    await page.mouse.move(0, 0);
     await page.mouse.up();
+    await page.mouse.move(0, 0);
     await expect(link).toHaveCSS('color', normal.color);
     await expect(link).toHaveCSS('background-color', normal.background);
+    if (hasTouch && selector !== '[data-nav="facts"]') {
+      await link.evaluate(el => el.addEventListener('click', event => event.preventDefault(), {once:true}));
+      await link.tap();
+      await expect(link).toHaveCSS('color', normal.color);
+      await expect(link).toHaveCSS('background-color', normal.background);
+    }
     if (selector === '[data-nav="facts"]') {
       const toggle = page.getByRole('button', {name:'Toggle navigation', exact:true});
-      if (await toggle.isVisible()) await activate(toggle, hasTouch);
+      if (await toggle.isVisible() && await toggle.getAttribute('aria-expanded') === 'true') await activate(toggle, hasTouch);
     }
   }
 });
