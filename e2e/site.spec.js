@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { questions } from '../assets/data/questions.js';
 
-const pages = ['index.html', 'learn.html', 'facts.html', 'citywest-supports.html', 'gallery.html', 'quiz.html', 'contact.html', 'about.html', 'privacy.html', 'accessibility.html'];
+const pages = ['index.html', 'learn.html', 'facts.html', 'citywest-supports.html', 'quiz.html', 'contact.html', 'about.html', 'privacy.html', 'accessibility.html'];
 const answers = new Map(questions.map(q => [q.question, q.options[q.correctIndex]]));
 
 async function fitsViewport(page) {
@@ -172,6 +172,71 @@ test('all carousel media, wrap-around, keyboard and full-image dialog work', asy
   await expect(opener).toBeFocused();
 });
 
+test('history combines photographs, full images and related local stories', async ({page, hasTouch}, testInfo) => {
+  await page.goto('/learn.html');
+  await activate(page.locator('.explore-topic--heritage'), hasTouch);
+  await expect(page.locator('#heritage > .learning-section-header')).toBeInViewport();
+  const gallery = page.locator('#heritage .photo-gallery');
+  const thumbnails = gallery.locator('.gallery-thumbnail');
+  const slides = gallery.locator('.gallery-slide');
+  await expect(thumbnails).toHaveCount(6);
+  await expect(page.locator('#heritage .learning-card')).toHaveCount(3);
+  for (let index = 0; index < 6; index++) {
+    await activate(thumbnails.nth(index), hasTouch);
+    await expect(gallery.locator('[data-gallery-count]')).toHaveText(`${index + 1} / 6`);
+    await expect(slides.nth(index)).toBeVisible();
+    await expect(slides.nth(index).locator('.gallery-main-photo')).toHaveJSProperty('complete', true);
+    await expect.poll(() => slides.nth(index).locator('.gallery-main-photo').evaluate(img => img.naturalWidth)).toBeGreaterThan(0);
+    await expect(gallery.locator('.gallery-thumbnail[aria-pressed="true"]')).toHaveCount(1);
+    await fitsViewport(page);
+  }
+  const next = gallery.getByRole('button', {name:'Next photograph', exact:true});
+  await activate(next, hasTouch);
+  await expect(gallery.locator('[data-gallery-count]')).toHaveText('1 / 6');
+  await next.press('End');
+  await expect(gallery.locator('[data-gallery-count]')).toHaveText('6 / 6');
+  await next.press('Home');
+  await expect(gallery.locator('[data-gallery-count]')).toHaveText('1 / 6');
+  const open = gallery.locator('.gallery-slide:not([hidden]) [data-gallery-open]');
+  await activate(open, hasTouch);
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator('h2')).toHaveText('A historic view of Saggart');
+  await expect(dialog.locator('img')).toHaveAttribute('src', /historic-saggart-400.webp$/);
+  await page.keyboard.press('Escape');
+  await expect(dialog).not.toBeVisible();
+  await expect(open).toBeFocused();
+  await page.getByRole('link', {name:'Read the local stories', exact:true}).click();
+  await expect(page.locator('#history-stories')).toBeInViewport();
+  await page.getByRole('link', {name:'See the mill photograph', exact:true}).click();
+  await expect(page.locator('#photo-mill')).toBeVisible();
+  await expect(gallery.locator('[data-gallery-count]')).toHaveText('3 / 6');
+  await gallery.screenshot({path:testInfo.outputPath('history-gallery.png')});
+  await testInfo.attach('Integrated history gallery', {path:testInfo.outputPath('history-gallery.png'),contentType:'image/png'});
+});
+
+test('saved gallery links, right-to-left browsing and translated captions work', async ({page, hasTouch}) => {
+  await page.goto('/gallery.html');
+  await expect(page).toHaveURL(/learn\.html#heritage$/);
+  await expect(page.locator('#heritage .photo-gallery')).toBeVisible();
+  await page.goto('/gallery.html?view=saved#photo-luas');
+  await expect(page).toHaveURL(/learn\.html\?view=saved#photo-luas$/);
+  await expect(page.locator('#photo-luas')).toBeVisible();
+  await expect(page.locator('[data-gallery-count]')).toHaveText('5 / 6');
+  await page.evaluate(() => { document.documentElement.dir = 'rtl'; });
+  const next = page.getByRole('button',{name:'Next photograph',exact:true});
+  await next.press('ArrowLeft');
+  await expect(page.locator('[data-gallery-count]')).toHaveText('6 / 6');
+  await next.press('ArrowRight');
+  await expect(page.locator('[data-gallery-count]')).toHaveText('5 / 6');
+  // Simulate translated DOM text; opening the dialog must not restore English.
+  await page.locator('#photo-luas [data-gallery-title]').evaluate(el => { el.textContent = 'وصول الترام'; });
+  await activate(page.locator('#photo-luas [data-gallery-open]'), hasTouch);
+  await expect(page.locator('#history-dialog-title')).toHaveText('وصول الترام');
+  await activate(page.getByRole('button',{name:'Close',exact:true}), hasTouch);
+  await fitsViewport(page);
+});
+
 test('navigation, languages and real contact route work', async ({ page, context, hasTouch }) => {
   await page.goto('/');
   await openMenuIfNeeded(page);
@@ -236,7 +301,7 @@ test('complete shuffled quiz scores correctly and restarts', async ({ page, hasT
 
 test('enlarged text, reduced motion and RTL carousel remain usable', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  for (const path of ['index.html', 'contact.html', 'quiz.html', 'facts.html']) {
+  for (const path of ['index.html', 'learn.html#heritage', 'contact.html', 'quiz.html', 'facts.html']) {
     await page.goto('/' + path);
     await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
     await fitsViewport(page);
@@ -271,6 +336,12 @@ test.describe('without JavaScript', () => {
     await expect(page.locator('#migration .facts-resource')).toHaveCount(10);
     await page.locator('summary', { hasText: 'Earlier census data' }).click();
     await expect(page.getByRole('link', { name: /^Census 2016 Small Area Population Statistics/ })).toBeVisible();
+    await fitsViewport(page);
+    await page.goto('/gallery.html');
+    await page.getByRole('link', {name:'Explore history and photographs', exact:true}).click();
+    await expect(page).toHaveURL(/learn\.html#heritage$/);
+    await expect(page.locator('.gallery-slide:visible')).toHaveCount(6);
+    await expect(page.locator('.gallery-navigation')).toBeHidden();
     await fitsViewport(page);
   });
 });
