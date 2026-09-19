@@ -128,7 +128,8 @@ test('complete shuffled quiz scores correctly and restarts', async ({ page, hasT
     const chosen = i < 3 ? options.find(option => option !== correct) : correct;
     await activate(page.getByRole('button', { name: chosen, exact: true }), hasTouch);
     await expect(page.locator('#feedback')).toContainText(i < 3 ? 'Not quite.' : 'Correct!');
-    await expect(page.locator('#answer-options button.correct')).toHaveText(correct);
+    await expect(page.locator('#answer-options button.correct')).toContainText(correct);
+    await expect(page.locator('#answer-options button.correct .answer-state')).toHaveText('Correct');
     await expect(page.locator('#current-score')).toHaveText(String(Math.max(0, i - 2)));
     await expect(page.locator('#next-question')).toBeFocused();
     await activate(page.locator('#next-question'), hasTouch);
@@ -194,7 +195,10 @@ test('Facts is discoverable and its local-data directory works', async ({ page, 
   await expect(page.locator('#migration .facts-resource')).toHaveCount(10);
   await expect(page.locator('#information .facts-resource')).toHaveCount(3);
   await expect(page.locator('#digital-literacy .facts-resource')).toHaveCount(3);
-  await page.locator('.facts-jumps a[href="#local-cso"]').click();
+  const localJump = page.locator('.facts-jumps a[href="#local-cso"]');
+  await localJump.focus();
+  await expect(localJump).toHaveCSS('background-color', 'rgb(255, 240, 213)');
+  await localJump.click();
   await expect(page.locator('#cso-title')).toBeInViewport();
   await expect(page.locator('.facts-publications:not(.facts-additional-publications) li')).toHaveCount(10);
   const earlier = page.locator('summary', { hasText: 'Earlier census data' });

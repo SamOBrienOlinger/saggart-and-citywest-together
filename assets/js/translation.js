@@ -47,6 +47,7 @@ export const initialiseTranslationControl = menu => {
   toggle.setAttribute('aria-expanded', 'false');
   toggle.setAttribute('aria-controls', 'translation-panel');
   toggle.setAttribute('aria-haspopup', 'true');
+  toggle.setAttribute('aria-label', 'Languages');
   toggle.textContent = 'Languages';
 
   const panel = document.createElement('div');

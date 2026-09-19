@@ -169,3 +169,7 @@ html.quiz-page { scroll-behavior: auto; }
 [dir="rtl"] .source-line, [dir="rtl"] .learning-card, [dir="rtl"] .prose { text-align: start; }
 .translation-fallback { padding-block: 1rem; }
 .translation-fallback ul { display: flex; flex-wrap: wrap; gap: 1rem; list-style: none; padding: 0; }
+
+/* Real text can be translated and read by screen readers; CSS-generated words cannot. */
+.answer-button.correct::after, .answer-button.incorrect::after { content: none; }
+.answer-state { font-weight: 900; }
