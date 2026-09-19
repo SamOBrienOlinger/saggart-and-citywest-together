@@ -1,4 +1,4 @@
-import{initialiseTranslationControl}from'./translation.js?v=community-homepage-20260920';
+import{initialiseTranslationControl}from'./translation.js?v=webkit-focus-20260919';
 const toggle = document.querySelector('.nav-toggle');
 const menu = document.querySelector('#site-menu');
 const header = document.querySelector('.site-header');
@@ -30,7 +30,9 @@ if (toggle && menu) {
     if (!header.contains(event.target)) setMenuState(false);
   });
   header.addEventListener('focusout', event => {
-    if (!header.contains(event.relatedTarget)) setMenuState(false);
+    // WebKit may blur a focused control without focusing the tapped link.
+    // Keep the link visible until its click fires; outside clicks close it above.
+    if (event.relatedTarget && !header.contains(event.relatedTarget)) setMenuState(false);
   });
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape' && !event.defaultPrevented && toggle.getAttribute('aria-expanded') === 'true') {
