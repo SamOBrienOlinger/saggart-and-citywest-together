@@ -74,7 +74,7 @@ const replaceShamrockTokens=root=>{
 replaceShamrockTokens(document.body);
 new MutationObserver(records=>records.forEach(record=>record.addedNodes.forEach(node=>{if(node.nodeType===Node.TEXT_NODE&&node.nodeValue.includes(shamrockToken))replaceShamrockTokens(node.parentNode);else if(node.nodeType===Node.ELEMENT_NODE)replaceShamrockTokens(node)}))).observe(document.body,{childList:true,subtree:true});
 
-const navigationLabels={home:'Home',learn:'Explore the area',services:'Find support',gallery:'Gallery',quiz:'Take the quiz',about:'About',contact:'Get involved'};
+const navigationLabels={facts:'Facts',home:'Home',learn:'Explore the area',services:'Find support',gallery:'Gallery',quiz:'Take the quiz',about:'About',contact:'Get involved'};
 document.querySelectorAll('[data-nav]').forEach(link=>{const label=navigationLabels[link.dataset.nav];if(label)link.textContent=label});
 
 const plainEnglishHeadings={

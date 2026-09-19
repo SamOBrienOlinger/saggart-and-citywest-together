@@ -25,7 +25,7 @@ try {
   const caps = await driver.getCapabilities();
   findings.push({ browser: caps.get('browserName'), version: caps.get('browserVersion'), platform: caps.get('platformName') });
   await driver.manage().window().setRect({ width: 1440, height: 1000 });
-  for (const path of ['index.html', 'learn.html', 'citywest-supports.html', 'gallery.html', 'quiz.html', 'contact.html', 'about.html', 'privacy.html', 'accessibility.html']) {
+  for (const path of ['index.html', 'learn.html', 'facts.html', 'citywest-supports.html', 'gallery.html', 'quiz.html', 'contact.html', 'about.html', 'privacy.html', 'accessibility.html']) {
     await open(path);
     const dimensions = await driver.executeScript('return {viewport: document.documentElement.clientWidth, document: document.documentElement.scrollWidth}');
     assert.ok(dimensions.document <= dimensions.viewport + 1, `Overflow on ${path}`);

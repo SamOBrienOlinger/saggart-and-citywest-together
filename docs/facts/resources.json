@@ -1,0 +1,139 @@
+{
+  "reviewed": "2026-09-19",
+  "migration": [
+    {
+      "id": "development-education",
+      "publisher": "developmenteducation.ie",
+      "date_scope_type": "2021 · Ireland & international · PDF",
+      "title": "10 Myths About Migration & Refugees",
+      "url": "https://developmenteducation.ie/wp-content/uploads/2021/02/Mythbuster-Migration-and-Refugees-web.pdf",
+      "purpose": "Start with common claims",
+      "summary": "An accessible, referenced teaching booklet by Tony Daly and Ciara Regan. Use its questions to examine migration claims and discuss the people behind the statistics.",
+      "limitation": "Background reading: its statistics and asylum rules are historical. Use current sources below to check today’s figures and procedures."
+    },
+    {
+      "id": "refugee-council",
+      "publisher": "Irish Refugee Council",
+      "date_scope_type": "Living resource · Ireland · Information hub",
+      "title": "Information Hub",
+      "url": "https://www.irishrefugeecouncil.ie/get-help/information-hub/",
+      "purpose": "Check the asylum process",
+      "summary": "Refugee-rights guidance that helps separate the international protection process from rumours. The hub provides different information for applications made before, or on or after, 12 June 2026.",
+      "limitation": "Choose the route that matches the application date. Follow the publisher’s updates; general information does not resolve an individual legal case."
+    },
+    {
+      "id": "esri",
+      "publisher": "Economic and Social Research Institute",
+      "date_scope_type": "Published March 2025 · Ireland · Research",
+      "title": "Monitoring Report on Integration 2024",
+      "url": "https://www.esri.ie/publications/monitoring-report-on-integration-2024",
+      "purpose": "Check claims about integration",
+      "summary": "National survey and administrative evidence on employment, education, social inclusion and citizenship. A strong starting point for checking broad claims about migrants’ lives in Ireland.",
+      "limitation": "Read each indicator’s reference year. “Foreign-born”, “non-Irish citizen” and “person seeking asylum” describe different groups."
+    },
+    {
+      "id": "inar",
+      "publisher": "Irish Network Against Racism",
+      "date_scope_type": "Resource collection · Ireland · Anti-racism learning",
+      "title": "Learn About Racism in Ireland",
+      "url": "https://inar.ie/racism-in-ireland/learn-about-racism/",
+      "purpose": "Understand how racism works",
+      "summary": "Definitions, learning materials and research from Ireland’s anti-racism network. Helps identify stereotyping and understand how discrimination can operate through institutions as well as individual behaviour.",
+      "limitation": "Anti-racist education and a route to evidence; this is not a population count or a migration statistics release."
+    },
+    {
+      "id": "emn",
+      "publisher": "European Migration Network / European Commission",
+      "date_scope_type": "Living reference · European Union · Glossary",
+      "title": "EMN Asylum and Migration Glossary",
+      "url": "https://home-affairs.ec.europa.eu/networks/european-migration-network-emn/emn-asylum-and-migration-glossary_en",
+      "purpose": "Use precise words",
+      "summary": "A multilingual reference for migration and asylum terminology. Check what a term means before comparing figures or repeating a claim that mixes different migration categories.",
+      "limitation": "Definitions have a stated EU or international context. They do not determine a particular person’s immigration status."
+    },
+    {
+      "id": "oecd",
+      "publisher": "Organisation for Economic Co-operation and Development",
+      "date_scope_type": "November 2025 · OECD countries · Research",
+      "title": "International Migration Outlook 2025",
+      "url": "https://www.oecd.org/en/publications/international-migration-outlook-2025_ae26c893-en.html",
+      "purpose": "Put migration figures in context",
+      "summary": "Comparative evidence on migration, work and integration, with country notes and a statistical annex. Useful for testing sweeping international comparisons and claims about migrant workers.",
+      "limitation": "Use the country, migration category and data year attached to each table. An OECD average is not an Irish or local figure."
+    },
+    {
+      "id": "oxford",
+      "publisher": "University of Oxford · Migration Observatory",
+      "date_scope_type": "Updated February 2026 · United Kingdom · Evidence briefing",
+      "title": "The Labour Market Effects of Immigration",
+      "url": "https://migrationobservatory.ox.ac.uk/resources/briefings/the-labour-market-effects-of-immigration/",
+      "purpose": "Look closely at jobs and wages",
+      "summary": "Explains research on employment and wages, including why effects differ between groups and why measuring cause and effect is difficult. Links to the studies behind the analysis.",
+      "limitation": "UK evidence: useful for understanding the question, but it cannot establish the size of an effect in Saggart, Citywest or Ireland."
+    },
+    {
+      "id": "fra",
+      "publisher": "EU Agency for Fundamental Rights",
+      "date_scope_type": "2023 report · 2021–2022 fieldwork · 13 EU countries",
+      "title": "Being Black in the EU",
+      "url": "https://fra.europa.eu/en/publication/2023/being-black-eu",
+      "purpose": "Listen to evidence about discrimination",
+      "summary": "Survey evidence on racism experienced by people of African descent, including respondents in Ireland. The report provides its questionnaire and technical information for readers to examine.",
+      "limitation": "The surveyed population is specific. These findings do not describe every migrant, every minority ethnic group or this local community."
+    },
+    {
+      "id": "anti-rumours",
+      "publisher": "Council of Europe · Intercultural Cities",
+      "date_scope_type": "2018 · International practice · PDF",
+      "title": "Antirumours Handbook",
+      "url": "https://rm.coe.int/anti-rumours-handbook-a-standardised-methodology-for-cities-2018-/168077351c",
+      "purpose": "Build a community response",
+      "summary": "A structured method for identifying rumours, gathering evidence and involving residents in challenging prejudice. Particularly useful for community groups planning sustained anti-racism work.",
+      "limitation": "A practical methodology with historical examples, rather than a source of current migration totals."
+    },
+    {
+      "id": "dialogue",
+      "publisher": "Council of Europe · Intercultural Cities",
+      "date_scope_type": "2021 · International practice · PDF",
+      "title": "Claiming the Power of Dialogue",
+      "url": "https://rm.coe.int/policy-brief-toolkit-for-antirumours-dialogue-icc-academy-narratives-d/1680a23540",
+      "purpose": "Have a constructive conversation",
+      "summary": "A shorter toolkit for responding to stereotypes and misinformation in conversation. Covers listening, building a connection, correcting a claim and reflecting on what helped.",
+      "limitation": "Use alongside sound evidence and respect for people’s dignity. A conversation toolkit cannot verify a factual claim on its own."
+    }
+  ],
+  "information": [
+    {
+      "title": "Information Disorder",
+      "publisher": "Council of Europe",
+      "url": "https://www.coe.int/en/web/freedom-expression/information-disorder"
+    },
+    {
+      "title": "Journalism, “Fake News” & Disinformation",
+      "publisher": "UNESCO",
+      "url": "https://www.unesco.org/en/articles/journalism-fake-news-disinformation"
+    },
+    {
+      "title": "Tackling Online Disinformation",
+      "publisher": "European Commission",
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/online-disinformation"
+    }
+  ],
+  "digital_literacy": [
+    {
+      "title": "Be Media Smart: tips",
+      "publisher": "Media Literacy Ireland",
+      "url": "https://www.bemediasmart.ie/tips/"
+    },
+    {
+      "title": "Civic Online Reasoning",
+      "publisher": "Digital Inquiry Group",
+      "url": "https://cor.inquirygroup.org/"
+    },
+    {
+      "title": "Connected",
+      "publisher": "Webwise · Irish Internet Safety Awareness Centre",
+      "url": "https://www.webwise.ie/connected/"
+    }
+  ]
+}

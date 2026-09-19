@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { questions } from '../assets/data/questions.js';
 
-const pages = ['index.html', 'learn.html', 'citywest-supports.html', 'gallery.html', 'quiz.html', 'contact.html', 'about.html', 'privacy.html', 'accessibility.html'];
+const pages = ['index.html', 'learn.html', 'facts.html', 'citywest-supports.html', 'gallery.html', 'quiz.html', 'contact.html', 'about.html', 'privacy.html', 'accessibility.html'];
 const answers = new Map(questions.map(q => [q.question, q.options[q.correctIndex]]));
 
 async function fitsViewport(page) {
@@ -142,7 +142,7 @@ test('complete shuffled quiz scores correctly and restarts', async ({ page, hasT
 
 test('enlarged text, reduced motion and RTL carousel remain usable', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  for (const path of ['index.html', 'contact.html', 'quiz.html']) {
+  for (const path of ['index.html', 'contact.html', 'quiz.html', 'facts.html']) {
     await page.goto('/' + path);
     await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
     await fitsViewport(page);
@@ -169,5 +169,32 @@ test.describe('without JavaScript', () => {
     await page.locator('#site-menu').getByRole('link', { name: 'Get involved', exact: true }).click();
     await expect(page.getByRole('link', { name: 'Email the community', exact: true })).toHaveAttribute('href', 'mailto:saggartcitywesttogether@gmail.com');
     await fitsViewport(page);
+    await page.locator('#site-menu').getByRole('link', { name: 'Facts', exact: true }).click();
+    await expect(page.locator('#migration .facts-resource')).toHaveCount(10);
+    await page.locator('summary', { hasText: 'Earlier census data' }).click();
+    await expect(page.getByRole('link', { name: 'Census 2016 Small Area Population Statistics', exact: true })).toBeVisible();
+    await fitsViewport(page);
   });
+});
+
+
+test('Facts is discoverable and its local-data directory works', async ({ page, hasTouch }, testInfo) => {
+  await page.goto('/');
+  await openMenuIfNeeded(page);
+  await activate(page.locator('#site-menu').getByRole('link', { name: 'Facts', exact: true }), hasTouch);
+  await expect(page).toHaveURL(/facts\.html$/);
+  await expect(page.locator('[data-nav="facts"]')).toHaveAttribute('aria-current', 'page');
+  await expect(page.locator('#migration .facts-resource')).toHaveCount(10);
+  await expect(page.locator('#information .facts-resource')).toHaveCount(3);
+  await expect(page.locator('#digital-literacy .facts-resource')).toHaveCount(3);
+  await page.locator('.facts-jumps a[href="#local-cso"]').click();
+  await expect(page.locator('#cso-title')).toBeInViewport();
+  await expect(page.locator('.facts-publications:not(.facts-additional-publications) li')).toHaveCount(10);
+  const earlier = page.locator('summary', { hasText: 'Earlier census data' });
+  await activate(earlier, hasTouch);
+  await expect(page.getByRole('link', { name: 'Census 2016 Small Area Population Statistics', exact: true })).toBeVisible();
+  await fitsViewport(page);
+  await page.goto('/facts.html');
+  await page.screenshot({ path: testInfo.outputPath('facts.png'), fullPage: true });
+  await testInfo.attach('Facts page', { path: testInfo.outputPath('facts.png'), contentType: 'image/png' });
 });
