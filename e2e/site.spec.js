@@ -25,9 +25,93 @@ test('primary pages load without script errors or horizontal overflow', async ({
     expect(response.status(), path).toBe(200);
     await expect(page.locator('h1')).toBeVisible();
     await expect(page.locator('.site-header')).toHaveClass(/nav-ready/);
+    await expect(page.locator('footer')).toContainText('© 2026 Sam Tim Solutions.');
+    await expect(page.locator('footer')).not.toContainText('Information comes from public sources.');
+    await expect(page.locator('footer')).not.toContainText('endorse');
     await fitsViewport(page);
   }
   expect(errors).toEqual([]);
+});
+
+// Read the rendered foreground/background, including transparent parent layers.
+async function buttonContrast(locator) {
+  return locator.evaluate(element => {
+    const rgb = color => color.match(/[\d.]+/g).map(Number);
+    const luminance = channels => channels.slice(0, 3).map(value => {
+      value /= 255;
+      return value <= .04045 ? value / 12.92 : ((value + .055) / 1.055) ** 2.4;
+    }).reduce((sum, value, i) => sum + value * [.2126, .7152, .0722][i], 0);
+    const foreground = rgb(getComputedStyle(element).color);
+    let current = element, background;
+    while (current) {
+      background = rgb(getComputedStyle(current).backgroundColor);
+      if (background.length === 3 || background[3] === 1) break;
+      current = current.parentElement;
+    }
+    const values = [luminance(foreground), luminance(background)].sort((a, b) => a - b);
+    return (values[1] + .05) / (values[0] + .05);
+  });
+}
+
+test('button text stays legible and visits do not leave links tinted', async ({page, hasTouch}, testInfo) => {
+  await page.goto('/');
+  const pill = page.locator('.pill-button');
+  await pill.scrollIntoViewIfNeeded();
+  await page.mouse.move(0, 0);
+  const before = await pill.screenshot();
+  expect(await buttonContrast(pill)).toBeGreaterThanOrEqual(4.5);
+  await activate(pill, hasTouch);
+  await expect(page).toHaveURL(/contact\.html#contact-details$/);
+  await page.goBack();
+  await page.mouse.move(0, 0);
+  // Computed styles deliberately conceal :visited colours; compare rendered pixels.
+  const after = await pill.screenshot();
+  await testInfo.attach('Button after returning', {body: after, contentType:'image/png'});
+  expect(after.equals(before)).toBe(true);
+
+  for (const path of ['citywest-supports.html', 'quiz.html']) {
+    await page.goto('/' + path);
+    const controls = page.locator('.service-button, button.button:visible');
+    for (const control of await controls.all()) {
+      expect(await buttonContrast(control), await control.textContent()).toBeGreaterThanOrEqual(4.5);
+      if (!hasTouch) {
+        await control.hover();
+        expect(await buttonContrast(control), 'hover: ' + await control.textContent()).toBeGreaterThanOrEqual(4.5);
+        await page.mouse.move(0, 0);
+      }
+    }
+  }
+});
+
+test('links visibly respond while hovered or held, then return to normal', async ({page, hasTouch}) => {
+  await page.goto('/facts.html');
+  // Include selected navigation, section cards, external resources and footer links.
+  await openMenuIfNeeded(page);
+  for (const selector of ['[data-nav="facts"]', '.facts-jumps a', '.facts-resource a', 'footer a']) {
+    const link = page.locator(selector).first();
+    await link.scrollIntoViewIfNeeded();
+    await page.mouse.move(0, 0);
+    const normal = await link.evaluate(el => ({color:getComputedStyle(el).color, background:getComputedStyle(el).backgroundColor}));
+    if (!hasTouch) {
+      await link.hover();
+      await expect(link).not.toHaveCSS('color', normal.color);
+      expect(await buttonContrast(link)).toBeGreaterThanOrEqual(4.5);
+    }
+    const box = await link.boundingBox();
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await expect(link).toHaveCSS('background-color', 'rgb(116, 53, 29)');
+    expect(await buttonContrast(link)).toBeGreaterThanOrEqual(4.5);
+    // Cancel navigation by releasing away from the link; only the pressed state is tested here.
+    await page.mouse.move(0, 0);
+    await page.mouse.up();
+    await expect(link).toHaveCSS('color', normal.color);
+    await expect(link).toHaveCSS('background-color', normal.background);
+    if (selector === '[data-nav="facts"]') {
+      const toggle = page.getByRole('button', {name:'Toggle navigation', exact:true});
+      if (await toggle.isVisible()) await activate(toggle, hasTouch);
+    }
+  }
 });
 
 test('approved homepage order, service destinations and visual evidence', async ({ page }, testInfo) => {
