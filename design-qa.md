@@ -69,6 +69,12 @@ No actionable P0/P1/P2 findings remain in the implemented scope.
 - [P2, resolved] At 200% text on the narrowest homepage, the participation button's minimum width and the quiz strip's fixed artwork column caused overflow. Constrained the button to its container and allowed quiz artwork/copy to wrap. Recheck: 305px available / 305px document width.
 - A 768×390 landscape frame has no horizontal overflow. The menu opens, and the carousel responds correctly to Home, End and reversed arrow-key direction when the document is RTL. This verifies layout/control direction, not translated Arabic content.
 - Evidence: `docs/homepage-preview/followup-reflow.json` and `docs/homepage-preview/contact-phone.jpg`.
-- Only Chrome is exposed by the browser runtime. Physical devices, Safari, Firefox, touch gestures and screen readers remain untested; these checks cannot be claimed complete in this environment. No external email delivery was claimed or tested.
+- At this stage only Chrome was exposed by the interactive browser runtime. The subsequent GitHub Actions testing below extends that coverage. No external email delivery was claimed or tested.
+
+## Cross-browser follow-up — 19 September 2026
+
+- [Run 35462661155](https://github.com/SamOBrienOlinger/saggart-and-citywest-together/actions/runs/35462661155) passed all 56 Playwright cases, all actual desktop Safari smoke checks and the 34 existing Node tests. Detailed environments and limits are recorded in [browser-testing/README.md](docs/browser-testing/README.md).
+- [P1, resolved] Mobile WebKit could close compact navigation before a link activated after Languages held focus. Guarding null focus destinations fixes the main menu and translation panel; all desktop, tablet, narrow-phone and landscape profiles passed the regression.
+- Actual Safari 26.6.1 was exercised on macOS. iPhone/iPad/Android profiles are emulations, not physical devices or actual iOS Safari. Screen readers, native swipe gestures and OS accessibility settings remain untested.
 
 final result: passed

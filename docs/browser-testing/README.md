@@ -2,6 +2,24 @@
 
 The interactive cloud browser available during implementation exposes Chrome only. GitHub Actions supplies separate, disposable browser environments for repeatable project tests.
 
+## Verified result — 19 September 2026
+
+[Run 35462661155](https://github.com/SamOBrienOlinger/saggart-and-citywest-together/actions/runs/35462661155) passed on implementation commit `1e1547fbcc56fb076918a030217d4010aa5fa795`, with zero retries:
+
+| Environment | Result |
+| --- | --- |
+| Chromium 153.0.8010.12, desktop and Android emulation | 14 / 14 passed |
+| Firefox 155.0, desktop | 7 / 7 passed |
+| WebKit 26.6 on macOS, desktop and four mobile profiles | 35 / 35 passed |
+| Actual desktop Safari 26.6.1 on macOS | All separate smoke checks passed |
+| Existing Node suite | 34 / 34 passed |
+
+The initial run exposed a mobile WebKit navigation defect: a null focus destination could hide the menu before a link's click completed. The fix keeps links available until activation and preserves dismissal when focus moves to another element or the user clicks outside. The same correction protects translation links. Regression coverage includes navigating after dismissing Languages and opening the requested translation destination. The external translation response is intercepted during this test; translation quality and Google's live service are not verified.
+
+The first run also exposed a test-only whitespace mismatch in the hero heading. The assertion now checks rendered text, including line breaks. No headline copy changed.
+
+This extends the earlier Chrome-only QA. Physical handsets, actual iOS Safari, screen readers, native swipe gestures, OS accessibility settings and external email delivery remain outside the verified coverage. Touch taps, reduced-motion settings, RTL carousel controls and 200% root text were exercised in the browser profiles.
+
 ## Environments
 
 - Chromium desktop and Pixel 7 Android emulation on Linux.
