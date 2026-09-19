@@ -118,6 +118,7 @@ test('complete shuffled quiz scores correctly and restarts', async ({ page, hasT
   const seen = new Set();
   for (let i = 0; i < 10; i++) {
     await expect(page.locator('#question-progress')).toHaveText(`Question ${i + 1} of 10`);
+    await expect(page.locator('#question-text')).toBeFocused();
     const question = await page.locator('#question-text').innerText();
     expect(seen.has(question)).toBe(false);
     seen.add(question);
@@ -129,8 +130,10 @@ test('complete shuffled quiz scores correctly and restarts', async ({ page, hasT
     await expect(page.locator('#feedback')).toContainText(i < 3 ? 'Not quite.' : 'Correct!');
     await expect(page.locator('#answer-options button.correct')).toHaveText(correct);
     await expect(page.locator('#current-score')).toHaveText(String(Math.max(0, i - 2)));
-    await page.locator('#next-question').click();
+    await expect(page.locator('#next-question')).toBeFocused();
+    await activate(page.locator('#next-question'), hasTouch);
   }
+  await expect(page.locator('#result-heading')).toBeFocused();
   await expect(page.locator('#result-score')).toHaveText('7/10');
   await expect(page.locator('#best-score-result')).toHaveText('Your best score: 7/10');
   await page.reload();
