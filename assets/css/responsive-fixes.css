@@ -150,3 +150,7 @@ iframe { max-width: 100%; }
 @media (forced-colors: active) {
   .card-link, .translate-toggle, .translation-panel { border: 1px solid ButtonText; }
 }
+
+/* Quiz steps move focus as content changes. Keep that scroll immediate so
+   the Next button cannot move underneath a tap on a narrow screen. */
+html.quiz-page { scroll-behavior: auto; }
