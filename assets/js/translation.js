@@ -7,24 +7,33 @@ export const translationLanguages = Object.freeze([
   { code: 'es', label: 'Spanish', nativeLabel: 'Español', direction: 'ltr' }
 ]);
 
+// Translate the original page, never a translated copy of a translated copy.
+export const originalPageUrl = pageUrl => {
+  const page = new URL(pageUrl);
+  if (page.hostname.endsWith('.translate.goog')) {
+    page.protocol = 'https:';
+    page.host = 'samobrienolinger.github.io';
+    for (const key of [...page.searchParams.keys()]) if (key.startsWith('_x_tr_')) page.searchParams.delete(key);
+  }
+  if (!['https:', 'http:'].includes(page.protocol)) throw new Error('Unsupported page address');
+  return page.href;
+};
+
 export const buildTranslationUrl = (language, pageUrl) => {
   if (!translationLanguages.some(item => item.code === language)) throw new Error('Unsupported translation language');
   const url = new URL('https://translate.google.com/translate');
   url.searchParams.set('sl', 'en');
   url.searchParams.set('tl', language);
-  url.searchParams.set('u', pageUrl);
+  url.searchParams.set('u', originalPageUrl(pageUrl));
   return url.href;
 };
 
 export const initialiseTranslationControl = menu => {
-  if (location.hostname.endsWith('.translate.goog')) {
-    const target = new URLSearchParams(location.search).get('_x_tr_tl');
-    const language = translationLanguages.find(item => item.code === target);
-    if (language) {
+  const target = location.hostname.endsWith('.translate.goog') ? new URLSearchParams(location.search).get('_x_tr_tl') : null;
+  const language = translationLanguages.find(item => item.code === target);
+  if (language) {
       document.documentElement.lang = language.code;
       document.documentElement.dir = language.direction;
-    }
-    return;
   }
   if (!menu || menu.querySelector('.translate-menu')) return;
 
@@ -60,6 +69,8 @@ export const initialiseTranslationControl = menu => {
     const link = document.createElement('a');
     link.className = 'translation-link';
     link.href = buildTranslationUrl(language.code, location.href);
+    link.dataset.language = language.code;
+    if (language.code === target) link.setAttribute('aria-current', 'true');
     link.target = '_blank';
     link.rel = 'noopener noreferrer';
     link.hreflang = language.code;
@@ -72,6 +83,18 @@ export const initialiseTranslationControl = menu => {
     listItem.append(link);
     list.append(listItem);
   });
+
+  if (language) {
+    const englishItem = document.createElement('li');
+    const english = document.createElement('a');
+    english.className = 'translation-link translation-original';
+    english.href = originalPageUrl(location.href);
+    english.lang = 'en';
+    english.hreflang = 'en';
+    english.textContent = 'English — original';
+    englishItem.append(english);
+    list.prepend(englishItem);
+  }
 
   const note = document.createElement('p');
   note.className = 'translation-note';
@@ -88,11 +111,15 @@ export const initialiseTranslationControl = menu => {
   };
 
   toggle.addEventListener('click', () => {
+    // The reader may have moved to another section since opening the page.
+    list.querySelectorAll('[data-language]').forEach(link => { link.href = buildTranslationUrl(link.dataset.language, location.href); });
+    const original = list.querySelector('.translation-original');
+    if (original) original.href = originalPageUrl(location.href);
     const open = toggle.getAttribute('aria-expanded') !== 'true';
     panel.hidden = !open;
     toggle.setAttribute('aria-expanded', String(open));
   });
-  list.addEventListener('click', () => closePanel(false));
+  list.addEventListener('click', event => { if (event.target.closest('a')) closePanel(false); });
   menu.addEventListener('navigationclose', () => closePanel(false));
   item.addEventListener('focusout', event => {
     // A null target in WebKit can precede clicking a link inside this panel.

@@ -154,3 +154,18 @@ iframe { max-width: 100%; }
 /* Quiz steps move focus as content changes. Keep that scroll immediate so
    the Next button cannot move underneath a tap on a narrow screen. */
 html.quiz-page { scroll-behavior: auto; }
+
+/* Keep long translated labels and right-to-left pages within the same layout. */
+.nav-list { gap: .2rem; }
+.translation-link { overflow-wrap: anywhere; text-align: start; }
+.translation-panel { inset-inline-end: 0; }
+[dir="rtl"] .translation-panel { left: 0; right: auto; }
+[dir="rtl"] .answer-button { text-align: right; }
+[dir="rtl"] .facts-boundary { border-radius: .75rem 0 0 .75rem; }
+[dir="rtl"] .check-list li { padding-right: 1.9rem; padding-left: 0; }
+[dir="rtl"] .check-list li::before { right: 0; left: auto; }
+[dir="rtl"] .feedback.correct, [dir="rtl"] .feedback.incorrect { border-left: 0; border-right: 5px solid var(--green); }
+[dir="rtl"] .feedback.incorrect { border-right-color: var(--red); }
+[dir="rtl"] .source-line, [dir="rtl"] .learning-card, [dir="rtl"] .prose { text-align: start; }
+.translation-fallback { padding-block: 1rem; }
+.translation-fallback ul { display: flex; flex-wrap: wrap; gap: 1rem; list-style: none; padding: 0; }

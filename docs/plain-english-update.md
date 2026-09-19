@@ -1,0 +1,9 @@
+# Clearer pages and language support
+
+This update removes decorative heading/resource numbers, link arrows and public source-check dates. Publication dates and dates defining census data remain because readers need them to interpret sources accurately. Official publication and organisation names remain identifiable; explanations around them use plain English.
+
+External web links open a new tab with `noopener noreferrer` and a screen-reader notice. Site navigation and section links stay in the current tab, preserving browser history and quiz context; email and telephone links use the appropriate app. Shared hover, keyboard-focus, active, visited and current-page colours replace the removed visual arrows. Photo viewers keep previous/next controls because these are controls, not links.
+
+The local guide is now rendered into committed HTML by `node scripts/build-learning-page.mjs` from `assets/data/content.js`. Run that command after changing its source data. It can be read with scripts disabled and translated without waiting for an English-only script to create the content. Main navigation, page headings and footer wording are also static, avoiding English text being written over translated text.
+
+Google Translate remains optional and externally provided. The language menu is available on translated copies, supports returning to the original English page, and changes language using the original URL rather than nesting translated copies. Links refresh when the menu opens so section anchors are retained. Every page has a no-script language fallback. Arabic uses right-to-left layout; flexible navigation, cards and wrapping accommodate longer translations. Automated checks validate all six language destinations on all main pages and the translated-host/RTL integration, not the accuracy or availability of Google's service. Human review is still needed for translation accuracy.
