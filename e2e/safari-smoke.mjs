@@ -25,12 +25,19 @@ try {
   const caps = await driver.getCapabilities();
   findings.push({ browser: caps.get('browserName'), version: caps.get('browserVersion'), platform: caps.get('platformName') });
   await driver.manage().window().setRect({ width: 1440, height: 1000 });
-  for (const path of ['index.html', 'learn.html', 'facts.html', 'citywest-supports.html', 'gallery.html', 'quiz.html', 'contact.html', 'about.html', 'privacy.html', 'accessibility.html']) {
+  for (const path of ['index.html', 'learn.html', 'facts.html', 'citywest-supports.html', 'quiz.html', 'contact.html', 'about.html', 'privacy.html', 'accessibility.html']) {
     await open(path);
     const dimensions = await driver.executeScript('return {viewport: document.documentElement.clientWidth, document: document.documentElement.scrollWidth}');
     assert.ok(dimensions.document <= dimensions.viewport + 1, `Overflow on ${path}`);
     findings.push({ page: path, ...dimensions, result: 'passed' });
   }
+  await open('gallery.html#photo-mill');
+  await driver.wait(until.urlContains('learn.html#photo-mill'), 10000);
+  await driver.wait(until.elementIsVisible(await driver.findElement(By.css('#photo-mill'))), 10000);
+  await click('#photo-mill [data-gallery-open]');
+  await driver.wait(until.elementIsVisible(await driver.findElement(By.css('.history-dialog'))), 10000);
+  await click('.history-dialog-close');
+  findings.push({ check: 'History gallery, saved photo links and full-image view', result: 'passed' });
   await open();
   for (let index = 0; index < 10; index++) {
     await click(`[data-slide="${index}"]`);

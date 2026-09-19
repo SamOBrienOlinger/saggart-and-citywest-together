@@ -134,13 +134,15 @@ Repository maintained in [Sam O’Brien-Olinger’s GitHub account](https://gith
 
 ### Photo gallery
 
-The gallery presents six local photographs one at a time. Use the previous and next
-buttons, swipe the main photograph, or select a thumbnail. The selected photograph
-has a gold thumbnail outline; thumbnails have accessible names without visible
-captions. Arrow keys, Home and End work while a gallery control is focused.
-Descriptions, original source links and image credits stay with each photograph.
-If JavaScript is unavailable, all six photographs remain readable in page order.
+The six photographs are part of [History and heritage](learn.html#heritage), with
+their captions, source credits and related local stories. Previous and Next buttons,
+swipes and labelled thumbnails select a photograph; a full-image dialog preserves
+keyboard focus when closed. Arrow keys follow the reading direction, and Home and
+End jump to the first and last photographs. All photographs remain readable without
+JavaScript. Old `gallery.html` links, including individual photograph links, lead to
+the combined section and retain translation settings.
 
-Gallery styles and behaviour are isolated in `assets/css/gallery.css` and
-`assets/js/gallery.js`. The small gallery icons come from Bootstrap Icons (MIT;
-licence in `assets/icons/LICENSE-bootstrap-icons.txt`).
+Edit photograph details in `assets/data/history-photos.js` and local stories in
+`assets/data/content.js`, then run `node scripts/build-learning-page.mjs`. The
+generated HTML is committed so the whole section is available to page translators.
+Gallery styles and behaviour are in `assets/css/gallery.css` and `assets/js/gallery.js`.
