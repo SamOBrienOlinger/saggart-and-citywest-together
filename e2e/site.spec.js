@@ -169,6 +169,10 @@ test.describe('without JavaScript', () => {
     await page.locator('#site-menu').getByRole('link', { name: 'Get involved', exact: true }).click();
     await expect(page.getByRole('link', { name: 'Email the community', exact: true })).toHaveAttribute('href', 'mailto:saggartcitywesttogether@gmail.com');
     await fitsViewport(page);
+    // Start a separate Facts journey after the native Contact hash-scroll.
+    // With scripts disabled, mobile automation can stall in its stability retry
+    // if a click races that browser-driven smooth scroll.
+    await page.goto('/');
     await page.locator('#site-menu').getByRole('link', { name: 'Facts', exact: true }).click();
     await expect(page.locator('#migration .facts-resource')).toHaveCount(10);
     await page.locator('summary', { hasText: 'Earlier census data' }).click();
