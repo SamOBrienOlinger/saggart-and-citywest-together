@@ -67,7 +67,7 @@ h2 { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; letter-sp
 .community-actions { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 1rem 1.4rem; margin-top: 1.3rem; }
 .story-link, .quiz-link { display: inline-flex; align-items: center; gap: .8rem; min-height: 44px; font-weight: 700; text-decoration-thickness: 2px; }
 .story-link img, .quiz-link img { flex: none; }
-.pill-button { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; min-width: 11rem; max-width: 100%; border-radius: 999px; padding: .7rem 1.5rem; background: var(--teal); color: white; font-weight: 700; text-decoration: none; }
+.pill-button { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; min-width: min(11rem, 100%); max-width: 100%; border-radius: 999px; padding: .7rem 1.5rem; background: var(--teal); color: white; font-weight: 700; text-decoration: none; }
 .pill-button:hover { background: var(--ink); }
 .community-carousel { min-width: 0; }
 .carousel-viewport { display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; border-radius: 1rem; background: #e9eeeb; }
@@ -88,8 +88,9 @@ h2 { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; letter-sp
 .carousel-thumb:focus-visible { outline-offset: -3px; }
 .carousel-caption { font-size: .82rem; margin-top: .4rem; color: #39585d; }
 .quiz-strip { background: white; border-block: 1px solid #eeeee6; padding-block: 1.5rem; }
-.quiz-strip-inner { display: grid; grid-template-columns: 4.5rem minmax(0,1fr); align-items: center; gap: 1rem; }
-.quiz-art { width: 100%; }
+.quiz-strip-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; }
+.quiz-art { width: 4.5rem; flex: 0 0 4.5rem; }
+.quiz-copy { min-width: 0; flex: 1 1 12rem; }
 .quiz-copy h2 { font-size: clamp(1.3rem, 4vw, 2rem); font-weight: 500; line-height: 1.25; letter-spacing: -.02em; margin-bottom: .5rem; }
 .quiz-link { font-size: 1rem; text-decoration-color: var(--gold); text-decoration-thickness: 3px; }
 .local-services { background: var(--cream); padding-block: 2.5rem; }
@@ -126,7 +127,8 @@ h2 { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; letter-sp
   .service-links li:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
   .service-links li:nth-child(odd) { border-inline-end: 1px solid var(--line); }
   .service-links a { padding: 1.1rem; }
-  .quiz-strip-inner { grid-template-columns: 8rem minmax(0,1fr); gap: 2rem; max-width: 64rem; }
+  .quiz-strip-inner { display: grid; grid-template-columns: 8rem minmax(0,1fr); gap: 2rem; max-width: 64rem; }
+  .quiz-art { width: 100%; }
   .quiz-copy { border-inline-start: 1px solid var(--line); padding-inline-start: 2rem; }
   .quiz-link { font-size: 1.15rem; }
 }

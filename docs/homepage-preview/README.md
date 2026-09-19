@@ -17,3 +17,7 @@ Gold and coral are shared across the hero and community heading. They are slight
 ## Verification
 
 See project-root `design-qa.md`, `reflow.json` and the browser screenshots in this folder. Reflow checks use Chrome frames, not a physical device farm. Safari, Firefox, native touch gestures and assistive technology have not been independently tested in this environment.
+
+## Release follow-up
+
+The contact page now offers a direct email-app link and copyable address, and no longer displays a demonstration form. The quiz shuffles answer choices while preserving the correct-answer mapping. Follow-up verification includes all primary pages, 200% root text, a landscape frame, RTL carousel controls and a complete 7/10 quiz attempt. Two enlarged-text homepage overflow issues were corrected. See `followup-reflow.json` and the final section of `design-qa.md` for evidence and test limits.

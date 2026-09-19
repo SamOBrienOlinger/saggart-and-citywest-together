@@ -49,7 +49,7 @@ Local content review and user testing are needed to establish whether visitors f
 2. Follow source links for information from the relevant organisation.
 3. Explore the gallery and community work, or take the local-knowledge quiz.
 
-> **Project notes:** Information is independently compiled from linked public sources. Check the relevant service provider for current eligibility and availability. The contact form’s local validation does not itself deliver a message.
+> **Project notes:** Information is independently compiled from linked public sources. Check the relevant service provider for current eligibility and availability. The contact page provides a direct email link and a copyable address. Visitors send messages from their own email service.
 
 ## Getting started
 

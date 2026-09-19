@@ -48,7 +48,7 @@ No actionable P0/P1/P2 findings remain in the implemented scope.
 
 - Chrome layout frames verify responsive rendering; physical phones, Safari, Firefox, touch gestures, screen readers, RTL translation output and OS text-size settings were not independently exercised.
 - Original uploads include Instagram overlays and screenshot compression. Clean original photographs/posters would improve source quality; no AI replacement was used.
-- Existing interior-page content and the contact demonstration form are outside this approved homepage implementation.
+- The follow-up release replaces the contact demonstration with direct email contact; other interior-page content is retained.
 - Occasional cloud-browser screenshot/scroll timeouts were resolved by using a fresh preview tab. The working homepage remains open for review.
 
 ## Implementation checklist
@@ -59,5 +59,16 @@ No actionable P0/P1/P2 findings remain in the implemented scope.
 - [x] Shared navigation and section links updated.
 - [x] Desktop/mobile/tablet visual evidence and reflow checks recorded.
 - [x] Existing tests and syntax checks pass.
+
+## Release follow-up — 19 September 2026
+
+- Replaced the non-sending contact form with an explicit email-app link and a copyable organisation address; privacy text and README now describe the real behaviour. No message was sent during testing. This is an email contact route, not a hosted form-delivery service.
+- Shuffled quiz answer options per attempt and remapped each correct index. Exhaustive tests cover all 24 option orders for every possible correct source index; source data is not mutated.
+- 34/34 tests pass. A complete browser attempt with three deliberate wrong answers produced 7/10, saved that best score and restarted at question 1 with shuffled answers.
+- Follow-up reflow checks cover all nine primary pages at 320 and 1440px. Home, contact and quiz additionally cover 390, 768 and 1920px. Home/contact/quiz were checked with 200% root text at 320 and 768px.
+- [P2, resolved] At 200% text on the narrowest homepage, the participation button's minimum width and the quiz strip's fixed artwork column caused overflow. Constrained the button to its container and allowed quiz artwork/copy to wrap. Recheck: 305px available / 305px document width.
+- A 768×390 landscape frame has no horizontal overflow. The menu opens, and the carousel responds correctly to Home, End and reversed arrow-key direction when the document is RTL. This verifies layout/control direction, not translated Arabic content.
+- Evidence: `docs/homepage-preview/followup-reflow.json` and `docs/homepage-preview/contact-phone.jpg`.
+- Only Chrome is exposed by the browser runtime. Physical devices, Safari, Firefox, touch gestures and screen readers remain untested; these checks cannot be claimed complete in this environment. No external email delivery was claimed or tested.
 
 final result: passed

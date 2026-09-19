@@ -1,0 +1,256 @@
+{
+  "browser": "Chrome",
+  "method": "Layout frames; enlarged text uses root font-size: 200%",
+  "checks": [
+    {
+      "page": "contact.html",
+      "width": 320,
+      "textSize": 100,
+      "metrics": "Width: 305px · Document: 305px"
+    },
+    {
+      "page": "contact.html",
+      "width": 390,
+      "textSize": 100,
+      "metrics": "Width: 375px · Document: 375px"
+    },
+    {
+      "page": "contact.html",
+      "width": 768,
+      "textSize": 100,
+      "metrics": "Width: 753px · Document: 753px"
+    },
+    {
+      "page": "contact.html",
+      "width": 1440,
+      "textSize": 100,
+      "metrics": "Width: 1425px · Document: 1425px"
+    },
+    {
+      "page": "contact.html",
+      "width": 1920,
+      "textSize": 100,
+      "metrics": "Width: 1905px · Document: 1905px"
+    },
+    {
+      "page": "quiz.html",
+      "width": 320,
+      "textSize": 100,
+      "metrics": "Width: 305px · Document: 305px"
+    },
+    {
+      "page": "quiz.html",
+      "width": 390,
+      "textSize": 100,
+      "metrics": "Width: 375px · Document: 375px"
+    },
+    {
+      "page": "quiz.html",
+      "width": 768,
+      "textSize": 100,
+      "metrics": "Width: 753px · Document: 753px"
+    },
+    {
+      "page": "quiz.html",
+      "width": 1440,
+      "textSize": 100,
+      "metrics": "Width: 1425px · Document: 1425px"
+    },
+    {
+      "page": "quiz.html",
+      "width": 1920,
+      "textSize": 100,
+      "metrics": "Width: 1905px · Document: 1905px"
+    },
+    {
+      "page": "index.html",
+      "width": 320,
+      "textSize": 100,
+      "metrics": "Width: 305px · Document: 305px"
+    },
+    {
+      "page": "index.html",
+      "width": 390,
+      "textSize": 100,
+      "metrics": "Width: 375px · Document: 375px"
+    },
+    {
+      "page": "index.html",
+      "width": 768,
+      "textSize": 100,
+      "metrics": "Width: 753px · Document: 753px"
+    },
+    {
+      "page": "index.html",
+      "width": 1440,
+      "textSize": 100,
+      "metrics": "Width: 1425px · Document: 1425px"
+    },
+    {
+      "page": "index.html",
+      "width": 1920,
+      "textSize": 100,
+      "metrics": "Width: 1905px · Document: 1905px"
+    },
+    {
+      "page": "learn.html",
+      "width": 320,
+      "textSize": 100,
+      "heading": "Explore Saggart and Citywest",
+      "metrics": "Width: 305px · Document: 305px"
+    },
+    {
+      "page": "learn.html",
+      "width": 1440,
+      "textSize": 100,
+      "heading": "Explore Saggart and Citywest",
+      "metrics": "Width: 1425px · Document: 1425px"
+    },
+    {
+      "page": "citywest-supports.html",
+      "width": 320,
+      "textSize": 100,
+      "heading": "Local support ecosystem for Citywest IPAS residents",
+      "metrics": "Width: 305px · Document: 305px"
+    },
+    {
+      "page": "citywest-supports.html",
+      "width": 1440,
+      "textSize": 100,
+      "heading": "Local support ecosystem for Citywest IPAS residents",
+      "metrics": "Width: 1425px · Document: 1425px"
+    },
+    {
+      "page": "gallery.html",
+      "width": 320,
+      "textSize": 100,
+      "heading": "Welcome to Saggart\n& Citywest",
+      "metrics": "Width: 305px · Document: 305px"
+    },
+    {
+      "page": "gallery.html",
+      "width": 1440,
+      "textSize": 100,
+      "heading": "Welcome to Saggart & Citywest",
+      "metrics": "Width: 1425px · Document: 1425px"
+    },
+    {
+      "page": "about.html",
+      "width": 320,
+      "textSize": 100,
+      "heading": "About Saggart & Citywest Together",
+      "metrics": "Width: 305px · Document: 305px"
+    },
+    {
+      "page": "about.html",
+      "width": 1440,
+      "textSize": 100,
+      "heading": "About Saggart & Citywest Together",
+      "metrics": "Width: 1425px · Document: 1425px"
+    },
+    {
+      "page": "privacy.html",
+      "width": 320,
+      "textSize": 100,
+      "heading": "How this website uses your data",
+      "metrics": "Width: 305px · Document: 305px"
+    },
+    {
+      "page": "privacy.html",
+      "width": 1440,
+      "textSize": 100,
+      "heading": "How this website uses your data",
+      "metrics": "Width: 1425px · Document: 1425px"
+    },
+    {
+      "page": "accessibility.html",
+      "width": 320,
+      "textSize": 100,
+      "heading": "Using this website",
+      "metrics": "Width: 305px · Document: 305px"
+    },
+    {
+      "page": "accessibility.html",
+      "width": 1440,
+      "textSize": 100,
+      "heading": "Using this website",
+      "metrics": "Width: 1425px · Document: 1425px"
+    },
+    {
+      "page": "index.html",
+      "width": 320,
+      "textSize": 200,
+      "heading": "Our area.\nOur story.\nTogether.",
+      "metrics": "Width: 305px · Document: 305px"
+    },
+    {
+      "page": "index.html",
+      "width": 768,
+      "textSize": 200,
+      "heading": "Our area.\nOur story.\nTogether.",
+      "metrics": "Width: 753px · Document: 753px"
+    },
+    {
+      "page": "contact.html",
+      "width": 320,
+      "textSize": 200,
+      "heading": "Let’s connect.",
+      "metrics": "Width: 305px · Document: 305px"
+    },
+    {
+      "page": "contact.html",
+      "width": 768,
+      "textSize": 200,
+      "heading": "Let’s connect.",
+      "metrics": "Width: 753px · Document: 753px"
+    },
+    {
+      "page": "quiz.html",
+      "width": 320,
+      "textSize": 200,
+      "heading": "How well do you know the area?",
+      "metrics": "Width: 305px · Document: 305px"
+    },
+    {
+      "page": "quiz.html",
+      "width": 768,
+      "textSize": 200,
+      "heading": "How well do you know the area?",
+      "metrics": "Width: 753px · Document: 753px"
+    }
+  ],
+  "fixes": [
+    "Constrain participation button minimum width",
+    "Allow quiz artwork and copy to wrap at narrow widths"
+  ],
+  "quiz": {
+    "result": "7/10",
+    "deliberateWrongAnswers": 3,
+    "correctAnswers": 7,
+    "retry": "passed",
+    "answerPositions": [
+      1,
+      1,
+      0,
+      2,
+      2,
+      1,
+      1,
+      0,
+      2,
+      3
+    ]
+  },
+  "rtl": {
+    "Home": 1,
+    "End": 10,
+    "ArrowLeft": 2,
+    "ArrowRight": 1,
+    "landscapeWidth": 768,
+    "landscapeHeight": 390
+  },
+  "limits": [
+    "No physical-device or Safari/Firefox runtime available",
+    "No email was sent"
+  ]
+}
