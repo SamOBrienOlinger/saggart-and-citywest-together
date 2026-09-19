@@ -1,0 +1,84 @@
+name: Cross-browser regression tests
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: browser-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  playwright:
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Chromium and Android emulation
+            os: ubuntu-latest
+            browser: chromium
+            projects: --project=chromium-desktop --project=chromium-android-emulation
+          - name: Firefox
+            os: ubuntu-latest
+            browser: firefox
+            projects: --project=firefox-desktop
+          - name: WebKit on macOS and mobile emulation
+            os: macos-15
+            browser: webkit
+            projects: --project=webkit-desktop --project=webkit-iphone-emulation --project=webkit-ipad-emulation --project=webkit-narrow --project=webkit-landscape
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Install test browser
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Run browser regression suite
+        run: npm run test:browser -- ${{ matrix.projects }}
+      - name: Preserve reports and screenshots
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-evidence-${{ matrix.browser }}
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
+  safari:
+    name: Actual desktop Safari on macOS
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Enable Safari automation on the disposable runner
+        run: sudo safaridriver --enable
+      - name: Run desktop Safari checks
+        run: |
+          python3 -m http.server 4180 --bind 127.0.0.1 > /tmp/sact-test-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          node e2e/safari-smoke.mjs
+      - name: Preserve Safari evidence
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-evidence-safari
+          path: safari-results/
+          retention-days: 14

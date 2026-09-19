@@ -1,3 +1,8 @@
 node_modules/
 dist/
 .sites-runtime/
+
+# Browser-test output
+playwright-report/
+test-results/
+safari-results/
