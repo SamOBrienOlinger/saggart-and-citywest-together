@@ -99,7 +99,7 @@ h2 { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; letter-sp
 .service-links { display: grid; list-style: none; padding: 0; margin: 0; }
 .service-links li { min-width: 0; border-bottom: 1px solid var(--line); }
 .service-links li:last-child { border-bottom: 0; }
-.service-links a { display: grid; grid-template-columns: 2.5rem minmax(0,1fr) 1rem; align-items: center; gap: 1rem; min-height: 82px; padding: 1rem .25rem; text-decoration: none; }
+.service-links a { display: grid; grid-template-columns: 2.5rem minmax(0,1fr); align-items: center; gap: 1rem; min-height: 82px; padding: 1rem .25rem; text-decoration: none; }
 .service-links a:hover { background: #efe9da; }
 .service-links span { font: 1.12rem/1.25 Georgia, 'Times New Roman', serif; }
 .service-icon { width: 2.5rem; height: 2.5rem; object-fit: contain; }
@@ -146,7 +146,7 @@ h2 { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; letter-sp
   .community-actions { flex-direction: column; }
   .services-layout { grid-template-columns: .65fr 1fr; align-items: center; gap: 2rem; }
   .service-icon { width: 3.3rem; height: 3.3rem; }
-  .service-links a { grid-template-columns: 3.3rem minmax(0,1fr) 1rem; min-height: 104px; }
+  .service-links a { grid-template-columns: 3.3rem minmax(0,1fr); min-height: 104px; }
   .quiz-strip { padding-block: 1.8rem; }
   .home-footer-top { flex-direction: row; align-items: center; justify-content: space-between; }
 }

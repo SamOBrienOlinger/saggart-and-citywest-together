@@ -43,3 +43,13 @@ test('translation buttons retain visible focus and mobile layout safeguards', as
   assert.match(styles, /\.translation-link:focus-visible/);
   assert.match(styles, /@media\(max-width:760px\)\{\.translate-menu/);
 });
+
+test('language switching uses the original page and retains its section', () => {
+  const translated = 'https://samobrienolinger-github-io.translate.goog/saggart-and-citywest-together/facts.html?view=full&_x_tr_sl=en&_x_tr_tl=fr&_x_tr_hl=en#local-cso';
+  for (const {code} of translationLanguages) {
+    const url = new URL(buildTranslationUrl(code, translated));
+    assert.equal(url.searchParams.get('u'), 'https://samobrienolinger.github.io/saggart-and-citywest-together/facts.html?view=full#local-cso');
+    assert.equal(url.searchParams.get('tl'), code);
+  }
+  assert.throws(() => buildTranslationUrl('fr', 'javascript:alert(1)'));
+});

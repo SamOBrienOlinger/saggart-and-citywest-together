@@ -11,7 +11,7 @@ test('Census snapshot is scoped and sourced to official CSO publications', () =>
   assert.match(copy, /30\.4 years/);
   assert.match(copy, /1,529 were aged under 15 \(33\.4%\)/);
   assert.match(copy, /278 were 65 or older \(6\.1%\)/);
-  assert.match(copy, /does not exactly match the full Saggart and Citywest community catchment/);
+  assert.match(copy, /does not exactly match the full Saggart and Citywest community/);
   for (const key of ['csoPopulation', 'csoAge', 'csoHouseholds', 'csoMap']) {
     assert.match(sources[key].url, /^https:\/\/(?:www\.|data\.|visual\.)?cso\.ie\//, key);
   }

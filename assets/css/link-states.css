@@ -1,0 +1,20 @@
+/* Link feedback is shared by every page, including translated copies. */
+:root { --link-visited: #925137; }
+.site-header, .site-footer, .page-hero, .facts-hero, .home-hero, .callout { --link-visited: #ffb8a8; }
+.translation-panel { --link-visited: #925137; }
+:root body a[href]:visited { color: var(--link-visited); }
+:root body a[href]:is(:hover, :focus-visible) {
+  color: #74351d;
+  background-color: #fff0d5;
+  text-decoration: underline;
+  text-decoration-thickness: .12em;
+  text-underline-offset: .2em;
+}
+:root body a[href]:active { color: #fff; background-color: #07585b; }
+:root body a[href][aria-current] { color: #173f40; background-color: #f5ce77; }
+:root body a[href]:focus-visible { outline: 3px solid #b54825; outline-offset: 3px; }
+:root body a[href] :is(span, small, h2, h3) { color: inherit; }
+:root body a[href]:is(:hover, :focus-visible) img { opacity: .85; }
+@media (forced-colors: active) {
+  :root body a[href]:is(:hover, :focus-visible, :active) { color: HighlightText; background-color: Highlight; }
+}

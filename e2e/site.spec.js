@@ -128,7 +128,8 @@ test('complete shuffled quiz scores correctly and restarts', async ({ page, hasT
     const chosen = i < 3 ? options.find(option => option !== correct) : correct;
     await activate(page.getByRole('button', { name: chosen, exact: true }), hasTouch);
     await expect(page.locator('#feedback')).toContainText(i < 3 ? 'Not quite.' : 'Correct!');
-    await expect(page.locator('#answer-options button.correct')).toHaveText(correct);
+    await expect(page.locator('#answer-options button.correct')).toContainText(correct);
+    await expect(page.locator('#answer-options button.correct .answer-state')).toHaveText('Correct');
     await expect(page.locator('#current-score')).toHaveText(String(Math.max(0, i - 2)));
     await expect(page.locator('#next-question')).toBeFocused();
     await activate(page.locator('#next-question'), hasTouch);
@@ -179,7 +180,7 @@ test.describe('without JavaScript', () => {
     await page.locator('#site-menu').getByRole('link', { name: 'Facts', exact: true }).click();
     await expect(page.locator('#migration .facts-resource')).toHaveCount(10);
     await page.locator('summary', { hasText: 'Earlier census data' }).click();
-    await expect(page.getByRole('link', { name: 'Census 2016 Small Area Population Statistics', exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: /^Census 2016 Small Area Population Statistics/ })).toBeVisible();
     await fitsViewport(page);
   });
 });
@@ -194,14 +195,59 @@ test('Facts is discoverable and its local-data directory works', async ({ page, 
   await expect(page.locator('#migration .facts-resource')).toHaveCount(10);
   await expect(page.locator('#information .facts-resource')).toHaveCount(3);
   await expect(page.locator('#digital-literacy .facts-resource')).toHaveCount(3);
-  await page.locator('.facts-jumps a[href="#local-cso"]').click();
+  const localJump = page.locator('.facts-jumps a[href="#local-cso"]');
+  await localJump.focus();
+  await expect(localJump).toHaveCSS('background-color', 'rgb(255, 240, 213)');
+  await localJump.click();
   await expect(page.locator('#cso-title')).toBeInViewport();
   await expect(page.locator('.facts-publications:not(.facts-additional-publications) li')).toHaveCount(10);
   const earlier = page.locator('summary', { hasText: 'Earlier census data' });
   await activate(earlier, hasTouch);
-  await expect(page.getByRole('link', { name: 'Census 2016 Small Area Population Statistics', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: /^Census 2016 Small Area Population Statistics/ })).toBeVisible();
   await fitsViewport(page);
   await page.goto('/facts.html');
   await page.screenshot({ path: testInfo.outputPath('facts.png'), fullPage: true });
   await testInfo.attach('Facts page', { path: testInfo.outputPath('facts.png'), contentType: 'image/png' });
+});
+
+test('language choices cover every page and follow the current section', async ({page, hasTouch}) => {
+  for (const path of pages) {
+    await page.goto('/' + path);
+    await openMenuIfNeeded(page);
+    await activate(page.getByRole('button', {name:'Languages', exact:true}), hasTouch);
+    const links = page.locator('.translation-link');
+    await expect(links).toHaveCount(6);
+    for (const link of await links.all()) {
+      const url = new URL(await link.getAttribute('href'));
+      expect(url.searchParams.get('u')).toBe(page.url());
+      expect(['ar','fr','nl','de','it','es']).toContain(url.searchParams.get('tl'));
+      await expect(link).toHaveAttribute('target', '_blank');
+    }
+    await fitsViewport(page);
+  }
+  await page.goto('/facts.html');
+  await page.locator('.facts-jumps a[href="#local-cso"]').click();
+  await openMenuIfNeeded(page);
+  await activate(page.getByRole('button', {name:'Languages', exact:true}), hasTouch);
+  expect(new URL(await page.locator('.translation-link').first().getAttribute('href')).searchParams.get('u')).toMatch(/facts\.html#local-cso$/);
+});
+
+test('right-to-left translated layout retains the language switch and English return', async ({page,context,hasTouch}) => {
+  // Serve the site's actual files under the translation host. This checks our
+  // integration and RTL layout, not the quality of Google's translations.
+  const {readFile} = await import('node:fs/promises');
+  await context.route('https://samobrienolinger-github-io.translate.goog/**', async route => {
+    const pathname = new URL(route.request().url()).pathname.replace('/saggart-and-citywest-together/', '');
+    const contentType = pathname.endsWith('.css') ? 'text/css' : pathname.endsWith('.js') ? 'text/javascript' : pathname.endsWith('.png') ? 'image/png' : 'text/html';
+    await route.fulfill({body:await readFile(pathname || 'index.html'),contentType});
+  });
+  await page.goto('https://samobrienolinger-github-io.translate.goog/saggart-and-citywest-together/facts.html?_x_tr_sl=en&_x_tr_tl=ar#digital-literacy');
+  await expect(page.locator('html')).toHaveAttribute('dir','rtl');
+  await expect(page.locator('html')).toHaveAttribute('lang','ar');
+  await page.evaluate(() => { document.querySelector('h1').textContent='حقائق'; });
+  await openMenuIfNeeded(page);
+  await activate(page.getByRole('button',{name:'Languages',exact:true}),hasTouch);
+  await expect(page.locator('.translation-original')).toHaveAttribute('href','https://samobrienolinger.github.io/saggart-and-citywest-together/facts.html#digital-literacy');
+  expect(new URL(await page.locator('[data-language="fr"]').getAttribute('href')).searchParams.get('u')).toBe('https://samobrienolinger.github.io/saggart-and-citywest-together/facts.html#digital-literacy');
+  await fitsViewport(page);
 });
