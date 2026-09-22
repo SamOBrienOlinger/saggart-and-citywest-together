@@ -1,0 +1,30 @@
+/* The document list stays in the page flow on every screen size. */
+.group-documents { max-width: 32rem; margin-block: 1rem 1.5rem; }
+.group-documents-toggle { gap: 1rem; max-width: 100%; cursor: pointer; list-style: none; text-align: start; touch-action: manipulation; }
+.group-documents-toggle::-webkit-details-marker { display: none; }
+.group-documents-toggle::marker { content: ""; }
+.group-documents-indicator { position: relative; flex: 0 0 1rem; width: 1rem; height: 1rem; }
+.group-documents-indicator::before, .group-documents-indicator::after { content: ""; position: absolute; inset-inline-start: 0; top: calc(50% - 1px); width: 1rem; height: 2px; background: currentColor; }
+.group-documents-indicator::after { transform: rotate(90deg); }
+.group-documents[open] .group-documents-indicator::after { display: none; }
+.group-documents[open] > summary { background: var(--blue-dark); border-color: var(--blue-dark); color: var(--white); }
+.group-documents-panel { margin-top: .75rem; padding: 1rem; border: 1px solid var(--border); border-radius: 1rem; background: #fffdf7; box-shadow: var(--shadow); }
+.group-documents-note { margin: 0 0 .75rem; color: var(--muted); font-size: .9375rem; line-height: 1.5; }
+.group-documents-list { display: grid; gap: .5rem; list-style: none; margin: 0; padding: 0; }
+.group-documents-list li { min-width: 0; margin: 0; }
+.group-documents-list a { display: flex; flex-direction: column; align-items: flex-start; gap: .2rem; min-height: 3.5rem; padding: .75rem 1rem; border: 1px solid var(--border); border-radius: .65rem; background: var(--cream); color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
+.group-documents-list a > span { font-weight: 800; line-height: 1.4; }
+.group-documents-list small { font-size: .875rem; line-height: 1.4; }
+:root body .group-documents-toggle:focus-visible { color: #74351d; background: #fff0d5; outline: 3px solid #fff; outline-offset: 3px; box-shadow: 0 0 0 6px #073b45; }
+@media (hover: hover) {
+  :root body .group-documents-toggle:hover { color: #74351d; background: #fff0d5; border-color: #74351d; }
+}
+:root body .group-documents-toggle:active { color: #fff; background: #74351d; }
+@media (max-width: 480px) {
+  .group-documents-toggle { display: flex; justify-content: space-between; width: 100%; }
+  .group-documents-panel { padding: .75rem; }
+}
+@media (forced-colors: active) {
+  .group-documents-toggle, .group-documents-list a { border: 2px solid ButtonText; }
+  :root body .group-documents-toggle:focus-visible { color: HighlightText; background: Highlight; outline-color: Highlight; }
+}
