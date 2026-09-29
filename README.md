@@ -26,7 +26,7 @@ The strongest proposition is not another general directory. It is a **place-spec
 
 ### Similar product: Integreat
 
-[**Integreat, Germany's digital integration platform**](https://integreat-app.de/en/) provides locally maintained, multilingual information for newcomers through a website, an offline-capable app and printable information. It is a strong comparator for local integration and service navigation.
+[**Integreat (Germany's digital integration platform)**](https://integreat-app.de/en/) provides locally maintained, multilingual information for newcomers through a website, an offline-capable app and printable information. It is a strong comparator for local integration and service navigation.
 
 Saggart & Citywest Together's distinguishing proposition is its **specific neighbourhood context and the combination of support navigation with local history, civic learning and visible community life**. This is an argument for a useful local contribution, not a claim that multilingual directories or community websites are new. Integreat also offers a useful lesson: clear responsibility for reviewing local information is as important as the interface.
 
