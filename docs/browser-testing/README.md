@@ -2,7 +2,7 @@
 
 The interactive cloud browser available during implementation exposes Chrome only. GitHub Actions supplies separate, disposable browser environments for repeatable project tests.
 
-## Verified result — 19 September 2026
+## Verified result (19 September 2026)
 
 [Run 35462661155](https://github.com/SamOBrienOlinger/saggart-and-citywest-together/actions/runs/35462661155) passed on implementation commit `1e1547fbcc56fb076918a030217d4010aa5fa795`, with zero retries:
 
