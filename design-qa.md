@@ -60,7 +60,7 @@ No actionable P0/P1/P2 findings remain in the implemented scope.
 - [x] Desktop/mobile/tablet visual evidence and reflow checks recorded.
 - [x] Existing tests and syntax checks pass.
 
-## Release follow-up — 19 September 2026
+## Release follow-up (19 September 2026)
 
 - Replaced the non-sending contact form with an explicit email-app link and a copyable organisation address; privacy text and README now describe the real behaviour. No message was sent during testing. This is an email contact route, not a hosted form-delivery service.
 - Shuffled quiz answer options per attempt and remapped each correct index. Exhaustive tests cover all 24 option orders for every possible correct source index; source data is not mutated.
@@ -71,7 +71,7 @@ No actionable P0/P1/P2 findings remain in the implemented scope.
 - Evidence: `docs/homepage-preview/followup-reflow.json` and `docs/homepage-preview/contact-phone.jpg`.
 - At this stage only Chrome was exposed by the interactive browser runtime. The subsequent GitHub Actions testing below extends that coverage. No external email delivery was claimed or tested.
 
-## Cross-browser follow-up — 19 September 2026
+## Cross-browser follow-up (19 September 2026)
 
 - [Run 35462661155](https://github.com/SamOBrienOlinger/saggart-and-citywest-together/actions/runs/35462661155) passed all 56 Playwright cases, all actual desktop Safari smoke checks and the 34 existing Node tests. Detailed environments and limits are recorded in [browser-testing/README.md](docs/browser-testing/README.md).
 - [P1, resolved] Mobile WebKit could close compact navigation before a link activated after Languages held focus. Guarding null focus destinations fixes the main menu and translation panel; all desktop, tablet, narrow-phone and landscape profiles passed the regression.

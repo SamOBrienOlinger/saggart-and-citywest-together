@@ -76,7 +76,7 @@ export const initialiseTranslationControl = menu => {
     link.rel = 'noopener noreferrer';
     link.hreflang = language.code;
     link.lang = language.code;
-    link.textContent = `${language.nativeLabel} — ${language.label}`;
+    link.textContent = `${language.nativeLabel} (${language.label})`;
     const newTab = document.createElement('span');
     newTab.className = 'sr-only';
     newTab.textContent = ' (opens in a new tab)';
@@ -92,7 +92,7 @@ export const initialiseTranslationControl = menu => {
     english.href = originalPageUrl(location.href);
     english.lang = 'en';
     english.hreflang = 'en';
-    english.textContent = 'English — original';
+    english.textContent = 'English (original)';
     englishItem.append(english);
     list.prepend(englishItem);
   }

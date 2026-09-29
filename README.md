@@ -26,7 +26,7 @@ The strongest proposition is not another general directory. It is a **place-spec
 
 ### Similar product: Integreat
 
-[**Integreat — Germany's digital integration platform**](https://integreat-app.de/en/) provides locally maintained, multilingual information for newcomers through a website, an offline-capable app and printable information. It is a strong comparator for local integration and service navigation.
+[**Integreat, Germany's digital integration platform**](https://integreat-app.de/en/) provides locally maintained, multilingual information for newcomers through a website, an offline-capable app and printable information. It is a strong comparator for local integration and service navigation.
 
 Saggart & Citywest Together's distinguishing proposition is its **specific neighbourhood context and the combination of support navigation with local history, civic learning and visible community life**. This is an argument for a useful local contribution, not a claim that multilingual directories or community websites are new. Integreat also offers a useful lesson: clear responsibility for reviewing local information is as important as the interface.
 
@@ -114,9 +114,9 @@ Local and civic content draws on South Dublin County Council, the Placenames Dat
 
 Media acknowledgements already recorded on the site include:
 
-- **The Echo** — the community-potluck article screenshot and coverage linked from [Community in action](about.html#our-work).
-- **Citywest Business Campus** — the campus history imagery, linked to its source in the [Gallery](gallery.html).
-- **P L Chadwick / Geograph Ireland** — the Luas-at-Saggart photograph, credited on the Gallery page under CC BY-SA 2.0.
+- **The Echo**: the community-potluck article screenshot and coverage linked from [Community in action](about.html#our-work).
+- **Citywest Business Campus**: the campus history imagery, linked to its source in the [Gallery](gallery.html).
+- **P L Chadwick / Geograph Ireland**: the Luas-at-Saggart photograph, credited on the Gallery page under CC BY-SA 2.0.
 
 Other gallery items retain their individual source links. These acknowledgements do not grant additional rights to the photographs, article screenshot, illustrations or third-party content.
 
