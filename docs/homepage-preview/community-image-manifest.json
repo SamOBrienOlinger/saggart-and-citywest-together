@@ -78,5 +78,45 @@
     "width": 1125,
     "height": 1411,
     "source": "IMG_1369.jpeg"
+  },
+  {
+    "src": "assets/images/community/community-book-browsing.jpg",
+    "caption": "Discovering books together",
+    "alt": "Two children looking through books on a table at a community gathering.",
+    "width": 1125,
+    "height": 1607,
+    "source": "IMG_1570.jpeg"
+  },
+  {
+    "src": "assets/images/community/community-young-reader.jpg",
+    "caption": "Enjoying a good book",
+    "alt": "A child reading a picture book beside a table of books and a Saggart & Citywest Together banner.",
+    "width": 898,
+    "height": 1398,
+    "source": "IMG_1571.jpeg"
+  },
+  {
+    "src": "assets/images/community/community-storytelling.jpg",
+    "caption": "Sharing stories",
+    "alt": "An adult reading a book with two children beside a community book table.",
+    "width": 1020,
+    "height": 817,
+    "source": "IMG_1572(1).jpeg"
+  },
+  {
+    "src": "assets/images/community/community-donations.jpg",
+    "caption": "Neighbours bringing donations together",
+    "alt": "People gathered in a community hall with bags and boxes of donated items.",
+    "width": 1125,
+    "height": 1522,
+    "source": "IMG_1569(2).jpeg"
+  },
+  {
+    "src": "assets/images/community/community-book-table.jpg",
+    "caption": "Books for the community",
+    "alt": "A selection of books displayed on a table beneath a Saggart & Citywest Together banner.",
+    "width": 1125,
+    "height": 1494,
+    "source": "IMG_1568(1).jpeg"
   }
 ]
