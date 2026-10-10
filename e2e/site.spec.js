@@ -147,8 +147,8 @@ test('all carousel media, wrap-around, keyboard and full-image dialog work', asy
   await page.goto('/');
   const thumbs = page.locator('.carousel-thumb');
   const slides = page.locator('.community-slide');
-  await expect(thumbs).toHaveCount(14);
-  for (let index = 0; index < 14; index++) {
+  await expect(thumbs).toHaveCount(21);
+  for (let index = 0; index < 21; index++) {
     await activate(thumbs.nth(index), hasTouch);
     await expect(page.locator('[data-current]')).toHaveText(String(index + 1));
     await expect(page.locator('.carousel-thumb[aria-current="true"]')).toHaveCount(1);
@@ -158,7 +158,7 @@ test('all carousel media, wrap-around, keyboard and full-image dialog work', asy
   await activate(page.getByRole('button', { name: 'Next image', exact: true }), hasTouch);
   await expect(page.locator('[data-current]')).toHaveText('1');
   await activate(page.getByRole('button', { name: 'Previous image', exact: true }), hasTouch);
-  await expect(page.locator('[data-current]')).toHaveText('14');
+  await expect(page.locator('[data-current]')).toHaveText('21');
   await page.getByRole('button', { name: 'Next image', exact: true }).press('Home');
   await expect(page.locator('[data-current]')).toHaveText('1');
   await page.getByRole('button', { name: 'Next image', exact: true }).press('ArrowRight');
@@ -314,7 +314,7 @@ test('enlarged text, reduced motion and RTL carousel remain usable', async ({ pa
   await next.press('ArrowRight');
   await expect(page.locator('[data-current]')).toHaveText('1');
   await next.press('End');
-  await expect(page.locator('[data-current]')).toHaveText('14');
+  await expect(page.locator('[data-current]')).toHaveText('21');
   await fitsViewport(page);
 });
 

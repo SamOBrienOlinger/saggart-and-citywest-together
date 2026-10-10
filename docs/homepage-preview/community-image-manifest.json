@@ -110,5 +110,61 @@
     "width": 1125,
     "height": 1494,
     "source": "IMG_1568(1).jpeg"
+  },
+  {
+    "src": "assets/images/community/potluck-sharing-dishes.jpg",
+    "caption": "Sharing dishes at the potluck",
+    "alt": "People filling their plates from a table of food at the community potluck.",
+    "width": 1125,
+    "height": 1217,
+    "source": "IMG_1586.jpeg"
+  },
+  {
+    "src": "assets/images/community/community-smoothie-bike.jpg",
+    "caption": "Pedalling a smoothie bike",
+    "alt": "A child pedalling a green bicycle connected to a blender while two adults help.",
+    "width": 1125,
+    "height": 1663,
+    "source": "IMG_1585.jpeg"
+  },
+  {
+    "src": "assets/images/community/community-sharing-smoothies.jpg",
+    "caption": "Sharing freshly made smoothies",
+    "alt": "A woman handing a cup to another woman beside a smoothie bike and a food table.",
+    "width": 1125,
+    "height": 1352,
+    "source": "IMG_1581.jpeg"
+  },
+  {
+    "src": "assets/images/community/community-table-conversation.jpg",
+    "caption": "Time for a chat",
+    "alt": "Two people chatting at a table while children enjoy activities nearby.",
+    "width": 1125,
+    "height": 1025,
+    "source": "IMG_1580.jpeg"
+  },
+  {
+    "src": "assets/images/community/potluck-dishes-and-ingredients.jpg",
+    "caption": "Dishes brought to share",
+    "alt": "Trays of food with serving spoons and handwritten ingredient labels at the community potluck.",
+    "width": 1125,
+    "height": 1611,
+    "source": "IMG_1579.jpeg"
+  },
+  {
+    "src": "assets/images/community/potluck-sweet-treats.jpg",
+    "caption": "Sweet treats to share",
+    "alt": "A tray of colourful decorated sandwich biscuits on the community food table.",
+    "width": 1125,
+    "height": 1597,
+    "source": "IMG_1578.jpeg"
+  },
+  {
+    "src": "assets/images/community/community-group-gathering.jpg",
+    "caption": "Together at the community gathering",
+    "alt": "A group of people standing beside a Saggart & Citywest Together banner in a community hall.",
+    "width": 1125,
+    "height": 1006,
+    "source": "IMG_1576.jpeg"
   }
 ]
