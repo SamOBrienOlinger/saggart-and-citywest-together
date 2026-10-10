@@ -39,7 +39,8 @@ try {
   await click('.history-dialog-close');
   findings.push({ check: 'History gallery, saved photo links and full-image view', result: 'passed' });
   await open();
-  for (let index = 0; index < 10; index++) {
+  const imageCount = (await driver.findElements(By.css(".community-slide"))).length;
+  for (let index = 0; index < imageCount; index++) {
     await click(`[data-slide="${index}"]`);
     await countIs(index + 1);
     await driver.wait(() => driver.executeScript('const i = document.querySelectorAll(".community-slide img")[arguments[0]]; return i.complete && i.naturalWidth > 0', index), 10000);
@@ -47,12 +48,12 @@ try {
   await click('[data-next]');
   await countIs(1);
   await click('[data-previous]');
-  await countIs(10);
-  await click('[data-image-index="9"]');
+  await countIs(imageCount);
+  await click(`[data-image-index="${imageCount - 1}"]`);
   await driver.wait(until.elementIsVisible(await driver.findElement(By.css('.image-dialog'))), 10000);
   await click('.dialog-close');
   await driver.wait(() => driver.executeScript('return !document.querySelector(".image-dialog").open'), 10000);
-  findings.push({ check: 'Ten images, wrap-around and full-image dialog', result: 'passed' });
+  findings.push({ check: 'All community images, wrap-around and full-image dialog', result: 'passed' });
   await open('contact.html');
   assert.equal(await driver.findElement(By.linkText('Email the community')).getAttribute('href'), 'mailto:saggartcitywesttogether@gmail.com');
   assert.equal((await driver.findElements(By.css('form'))).length, 0);
