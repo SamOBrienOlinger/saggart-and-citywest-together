@@ -242,7 +242,7 @@ test('navigation, languages and real contact route work', async ({ page, context
   await openMenuIfNeeded(page);
   await activate(page.getByRole('button', { name: 'Languages', exact: true }), hasTouch);
   await expect(page.locator('.translation-panel')).toBeVisible();
-  await expect(page.locator('.translation-link')).toHaveCount(6);
+  await expect(page.locator('.translation-link')).toHaveCount(7);
   await page.keyboard.press('Escape');
   await expect(page.locator('.translation-panel')).not.toBeVisible();
   await page.locator('#site-menu').getByRole('link', { name: 'Get involved', exact: true }).click();
@@ -377,11 +377,11 @@ test('language choices cover every page and follow the current section', async (
     await openMenuIfNeeded(page);
     await activate(page.getByRole('button', {name:'Languages', exact:true}), hasTouch);
     const links = page.locator('.translation-link');
-    await expect(links).toHaveCount(6);
+    await expect(links).toHaveCount(7);
     for (const link of await links.all()) {
       const url = new URL(await link.getAttribute('href'));
       expect(url.searchParams.get('u')).toBe(page.url());
-      expect(['ar','fr','nl','de','it','es']).toContain(url.searchParams.get('tl'));
+      expect(['ar','fr','nl','de','it','es','pt']).toContain(url.searchParams.get('tl'));
       await expect(link).toHaveAttribute('target', '_blank');
     }
     await fitsViewport(page);

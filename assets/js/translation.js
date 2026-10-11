@@ -4,7 +4,8 @@ export const translationLanguages = Object.freeze([
   { code: 'nl', label: 'Dutch', nativeLabel: 'Nederlands', direction: 'ltr' },
   { code: 'de', label: 'German', nativeLabel: 'Deutsch', direction: 'ltr' },
   { code: 'it', label: 'Italian', nativeLabel: 'Italiano', direction: 'ltr' },
-  { code: 'es', label: 'Spanish', nativeLabel: 'Español', direction: 'ltr' }
+  { code: 'es', label: 'Spanish', nativeLabel: 'Español', direction: 'ltr' },
+  { code: 'pt', label: 'Portuguese', nativeLabel: 'Português', direction: 'ltr' }
 ]);
 
 // Translate the original page, never a translated copy of a translated copy.
