@@ -1,57 +1,54 @@
-# Saggart & Citywest Together MVP testing
+# Browser and responsive testing
 
-## Automated checks
+## Repeatable checks
 
-Run `npm test`. The suite validates:
+Run `npm ci` and `npm test` for the 37 Node checks. They cover the quiz data and scoring, page/asset integrity, source links, footers and translation URLs.
 
-- a minimum of 20 approved quiz questions;
-- unique IDs, valid answers, unique choices and source URLs;
-- ten-question selection without repetition or source mutation;
-- high-score rules;
-- every required page;
-- every internal page, stylesheet and script reference;
-- removal of legacy subject text from production pages.
+The GitHub Actions [browser workflow](.github/workflows/browser-tests.yml) runs with zero retries:
 
-## Manual acceptance checklist
+- Google Chrome stable on Linux and Microsoft Edge stable on Windows.
+- Playwright Chromium and Firefox on Linux.
+- Playwright WebKit on macOS, including iPhone, iPad, 320px and landscape emulation.
+- Actual desktop Safari on macOS through Apple's safaridriver.
 
-- [ ] Use keyboard only to reach the skip link, all navigation, every quiz answer, feedback source and next/retry actions.
-- [ ] Confirm visible focus is never hidden by the sticky header.
-- [ ] Verify the mobile menu at 320 px and 375 px.
-- [ ] Verify page reflow at 200% and 400% browser zoom.
-- [ ] Run a complete quiz: exactly ten questions, no repeats, score only increases for correct answers.
-- [ ] Refresh and confirm the best score persists; block local storage and confirm the quiz still completes.
-- [ ] Confirm feedback is announced by NVDA or VoiceOver.
-- [ ] Confirm reduced-motion mode removes non-essential transitions.
-- [ ] Submit the empty contact form and confirm native validation; complete it and confirm the page explicitly says nothing was sent.
-- [ ] Check external source links and the source register.
-- [ ] Run Lighthouse and axe against every page and the quiz intro/question/feedback/results states.
-- [ ] Test current Chrome, Firefox, Edge and Safari plus representative iOS/Android viewports.
+The browser jobs record their versions and preserve reports, screenshots and failure traces for 14 days. A configured check is not evidence of a pass: use the workflow result for the relevant commit.
 
-No Lighthouse score or accessibility claim from AllyIndex is carried forward; this MVP must be tested independently before public release.
+All jobs serve the unchanged site files with the same local Node server (`scripts/test-server.mjs`), including on Windows.
 
-## Responsive changes verified on 11 September 2026
+## Responsive coverage
 
-The implementation was checked in the available Chrome browser using the actual site rendered in same-origin frames with controlled viewport dimensions. These are layout checks, not physical-device or other-browser certification.
+`e2e/responsive.spec.js` runs in the five desktop browser projects. It checks all nine primary pages at 17 viewport sizes, from 320×640 to 1920×1080, including both sides of the 760px, 900px and 1120px layout boundaries. It checks document overflow and content bounds, allowing intentional carousel scrolling and hidden accessibility text.
 
-| Check | Result |
-| --- | --- |
-| Existing `npm test` suite | 32 tests passed |
-| All ten HTML pages at 320×640, 390×844, 768×1024, 844×390, 1024×768, 1120×800, 1280×900 and 1920×1080 | 80 checks passed without horizontal page overflow or unintended content extending outside the viewport |
-| All ten pages with root text enlarged to 200%, at 320×640 and 1280×900 | 20 checks passed after fixing the hero illustration's intrinsic sizing |
-| All ten pages with scripts disabled, at 320×640 | 10 layout checks passed; the compact navigation uses visible HTML links rather than an inactive menu button |
-| Mobile navigation and translation | Open/close verified; first Escape closes translation while leaving navigation open, second Escape closes navigation |
-| Mobile quiz | Start, answer layout, answer feedback and next-question control verified at 390×844 |
-| Visual inspection | Desktop homepage and 320px homepage checked in Chrome |
+Additional checks cover:
 
-The layout measurements allow deliberate gallery scrolling and visually hidden accessibility content. They also inspect child element bounds, so a clipped hero image cannot pass merely because its parent hides overflow. The desktop hero was checked again with enlarged text after the sizing correction. Root text enlargement is distinct from browser zoom.
+- 200% root text size on all primary pages at 320px and 1280px;
+- all nine language choices, scrolling, Escape dismissal and menu state after resizing;
+- phone landscape navigation;
+- narrow quiz questions and feedback with enlarged text;
+- primary-page layout and navigation without JavaScript.
 
-### Remaining manual checks
+`e2e/site.spec.js` runs in all ten Playwright profiles. It covers primary-page loading and script errors, all 21 community images, carousel controls and full-image view, all six history images, saved gallery redirects, Facts sections, translated-page handoff, contact email links, keyboard focus, complete quiz scoring/restart, RTL and reduced motion. Carousel captions remain absent; accessible image descriptions remain present.
 
-- Run the checklist above in actual Safari/iOS, Chrome/Android, Firefox and Edge. These browsers and physical devices were not available in this session.
-- Check true 200%/400% browser zoom, OS text scaling, mobile browser chrome and the on-screen keyboard.
-- Verify the stacked support table's row/column associations with VoiceOver and NVDA; explicit table roles and headings are retained for this purpose.
-- Complete the full quiz and contact-form journeys in each target browser. The shared layout changes do not alter their quiz engine or form-delivery behaviour.
+The separate Safari smoke test checks the primary pages, history viewer, all community images, carousel wraparound, email route, a complete quiz and enlarged desktop text.
 
-### Reproducing the responsive review
+## Run locally
 
-Start the local development server from the README. Visit every HTML page at the dimensions above, including immediately before and after the 760px, 900px and 70rem navigation breakpoints. Check the header, open menu, translation choices, long email addresses, directory entries, footer and quiz feedback. Repeat narrow layouts with enlarged text and scripts disabled. Resize with the menu open and use Tab, Shift+Tab and Escape to confirm focus remains usable.
+```sh
+npm ci
+npm test
+npx playwright install --with-deps chromium firefox webkit
+npm run test:browser -- --project=chromium-desktop --project=firefox-desktop --project=webkit-desktop
+```
+
+For branded-browser tests, install Chrome/Edge on a disposable test machine with `npx playwright install chrome msedge`, then select `--project=chrome-desktop --project=edge-desktop`. Safari needs macOS with Safari automation enabled. The CI job enables this only on its disposable runner.
+
+## Checks that still need real users or devices
+
+- Physical iOS Safari and Android browsers, native touch gestures, browser toolbars and on-screen keyboards.
+- True 200%/400% browser zoom, OS text scaling, VoiceOver and NVDA. Root text enlargement and small viewports are useful checks, but are not identical to these settings.
+- Translation accuracy with fluent speakers. Automated tests check language links and site behaviour, not Google's translation output.
+- Service-provider links and email delivery outside this site's control.
+
+Current mainstream browsers are the supported target. This does not certify every historical browser version or embedded webview.
+
+Earlier evidence and browser-engine distinctions are retained in [docs/browser-testing/README.md](docs/browser-testing/README.md).

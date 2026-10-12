@@ -17,6 +17,10 @@ async function click(selector) {
   await driver.executeScript("arguments[0].scrollIntoView({block:'center'})", element);
   await element.click();
 }
+async function visible(selector) {
+  const element = await driver.wait(until.elementLocated(By.css(selector)), 10000);
+  return driver.wait(until.elementIsVisible(element), 10000);
+}
 async function text(selector) { return driver.findElement(By.css(selector)).getText(); }
 async function countIs(value) {
   await driver.wait(async () => (await text('[data-current]')) === String(value), 10000);
@@ -33,9 +37,10 @@ try {
   }
   await open('gallery.html#photo-mill');
   await driver.wait(until.urlContains('learn.html#photo-mill'), 10000);
-  await driver.wait(until.elementIsVisible(await driver.findElement(By.css('#photo-mill'))), 10000);
+  // Safari can report the destination URL before replacing the redirect page's DOM.
+  await visible('#photo-mill');
   await click('#photo-mill [data-gallery-open]');
-  await driver.wait(until.elementIsVisible(await driver.findElement(By.css('.history-dialog'))), 10000);
+  await visible('.history-dialog');
   await click('.history-dialog-close');
   findings.push({ check: 'History gallery, saved photo links and full-image view', result: 'passed' });
   await open();
@@ -50,7 +55,7 @@ try {
   await click('[data-previous]');
   await countIs(imageCount);
   await click(`[data-image-index="${imageCount - 1}"]`);
-  await driver.wait(until.elementIsVisible(await driver.findElement(By.css('.image-dialog'))), 10000);
+  await visible('.image-dialog');
   await click('.dialog-close');
   await driver.wait(() => driver.executeScript('return !document.querySelector(".image-dialog").open'), 10000);
   findings.push({ check: 'All community images, wrap-around and full-image dialog', result: 'passed' });

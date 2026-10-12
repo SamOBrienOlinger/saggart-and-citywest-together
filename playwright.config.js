@@ -16,11 +16,13 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   webServer: {
-    command: 'python3 -m http.server 4180 --bind 127.0.0.1',
+    command: 'node scripts/test-server.mjs',
     url: 'http://127.0.0.1:4180',
     reuseExistingServer: !process.env.CI,
   },
   projects: [
+    { name: 'chrome-desktop', use: { ...devices['Desktop Chrome'], channel: 'chrome', viewport: { width: 1440, height: 900 } } },
+    { name: 'edge-desktop', use: { ...devices['Desktop Edge'], channel: 'msedge', viewport: { width: 1440, height: 900 } } },
     { name: 'chromium-desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } } },
     { name: 'firefox-desktop', use: { ...devices['Desktop Firefox'], viewport: { width: 1440, height: 900 } } },
     { name: 'webkit-desktop', use: { ...devices['Desktop Safari'], viewport: { width: 1440, height: 900 } } },
@@ -29,5 +31,8 @@ export default defineConfig({
     { name: 'webkit-ipad-emulation', use: { ...devices['iPad (gen 7)'] } },
     { name: 'webkit-narrow', use: { browserName: 'webkit', viewport: { width: 320, height: 740 }, isMobile: true, hasTouch: true } },
     { name: 'webkit-landscape', use: { ...devices['iPhone 13 landscape'] } },
-  ],
+  ].map(project => ({
+    ...project,
+    testIgnore: project.name.endsWith('-desktop') ? [] : ['**/responsive.spec.js'],
+  })),
 });

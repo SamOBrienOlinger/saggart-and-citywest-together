@@ -21,6 +21,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - name: Google Chrome stable
+            os: ubuntu-latest
+            browser: chrome
+            projects: --project=chrome-desktop
+          - name: Microsoft Edge stable on Windows
+            os: windows-latest
+            browser: msedge
+            projects: --project=edge-desktop
           - name: Chromium and Android emulation
             os: ubuntu-latest
             browser: chromium
@@ -71,7 +79,7 @@ jobs:
         run: sudo safaridriver --enable
       - name: Run desktop Safari checks
         run: |
-          python3 -m http.server 4180 --bind 127.0.0.1 > /tmp/sact-test-server.log 2>&1 &
+          node scripts/test-server.mjs > /tmp/sact-test-server.log 2>&1 &
           SERVER_PID=$!
           trap 'kill "$SERVER_PID"' EXIT
           node e2e/safari-smoke.mjs
