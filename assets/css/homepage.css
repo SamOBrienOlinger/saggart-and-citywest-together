@@ -63,7 +63,9 @@ h2 { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; letter-sp
 .community-grid > * { min-width: 0; }
 .eyebrow { font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .075em; margin-bottom: 1rem; color: var(--teal); }
 .community-copy h2 { font-size: clamp(2.5rem, 8.8vw, 3.6rem); max-width: 22ch; margin-bottom: 1.2rem; }
-.community-copy > p:not(.eyebrow) { font-size: 1.065rem; max-width: 48ch; }
+.community-feature { display: grid; gap: 1.25rem; }
+.community-story > p { font-size: 1.065rem; max-width: 48ch; }
+.community-story .story-link { margin-top: .6rem; }
 .community-actions { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 1rem 1.4rem; margin-top: 1.3rem; }
 .story-link, .quiz-link { display: inline-flex; align-items: center; gap: .8rem; min-height: 44px; font-weight: 700; text-decoration-thickness: 2px; }
 .story-link img, .quiz-link img { flex: none; }
@@ -140,7 +142,7 @@ h2 { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; letter-sp
   .community-grid { grid-template-columns: .57fr 1fr; gap: 2.4rem; align-items: start; }
   .community-copy { padding-top: 1rem; }
   .community-copy h2 { font-size: clamp(3rem,5.2vw,4.5rem); max-width: 12ch; }
-  .community-copy > p:not(.eyebrow) { font-size: 1.25rem; }
+  .community-story > p { font-size: 1.25rem; }
   .community-actions { flex-direction: column; }
   .services-layout { grid-template-columns: .65fr 1fr; align-items: center; gap: 2rem; }
   .service-icon { width: 3.3rem; height: 3.3rem; }
