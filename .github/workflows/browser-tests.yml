@@ -21,6 +21,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - name: Google Chrome stable
+            os: ubuntu-latest
+            browser: chrome
+            projects: --project=chrome-desktop
+          - name: Microsoft Edge stable on Windows
+            os: windows-latest
+            browser: msedge
+            projects: --project=edge-desktop
           - name: Chromium and Android emulation
             os: ubuntu-latest
             browser: chromium

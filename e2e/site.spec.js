@@ -4,6 +4,10 @@ import { questions } from '../assets/data/questions.js';
 const pages = ['index.html', 'learn.html', 'facts.html', 'citywest-supports.html', 'quiz.html', 'contact.html', 'about.html', 'privacy.html', 'accessibility.html'];
 const answers = new Map(questions.map(q => [q.question, q.options[q.correctIndex]]));
 
+test.beforeAll(async ({ browser }, testInfo) => {
+  console.log(`Browser: ${testInfo.project.name} ${browser.version()}`);
+});
+
 async function fitsViewport(page) {
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
 }
@@ -147,6 +151,7 @@ test('all carousel media, wrap-around, keyboard and full-image dialog work', asy
   await page.goto('/');
   const thumbs = page.locator('.carousel-thumb');
   const slides = page.locator('.community-slide');
+  await expect(page.locator('.carousel-caption, .dialog-caption')).toHaveCount(0);
   await expect(thumbs).toHaveCount(21);
   for (let index = 0; index < 21; index++) {
     await activate(thumbs.nth(index), hasTouch);
