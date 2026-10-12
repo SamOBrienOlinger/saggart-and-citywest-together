@@ -4,9 +4,9 @@ import { readFile } from 'node:fs/promises';
 import { buildTranslationUrl, translationLanguages } from '../assets/js/translation.js';
 
 test('translation control offers only the requested languages', () => {
-  assert.deepEqual(translationLanguages.map(language => language.code), ['ar', 'fr', 'nl', 'de', 'it', 'es', 'pt']);
+  assert.deepEqual(translationLanguages.map(language => language.code), ['ar', 'fr', 'nl', 'de', 'it', 'es', 'pt', 'zh-CN', 'uk']);
   assert.equal(translationLanguages.find(language => language.code === 'ar').direction, 'rtl');
-  assert.ok(translationLanguages.filter(language => language.direction === 'ltr').length === 6);
+  assert.ok(translationLanguages.filter(language => language.direction === 'ltr').length === 8);
 });
 
 test('translation links preserve the source page and requested target language', () => {
