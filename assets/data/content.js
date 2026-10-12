@@ -74,7 +74,7 @@ export const learningSections = [
     { title: 'Rathcoole Medical Centre', scope: 'General practice (GP)', body: 'Main Street, Rathcoole, Co. Dublin, D24 Y53K. Phone: <a href="tel:+35314589655">01 458 9655</a>.', source: 'rathcooleMedical' },
     { title: 'Find a Doctor', scope: 'HSE directory', body: 'Use the HSE’s national GP finder for current practice locations, contact details and opening hours.', source: 'hseFindGP' }
   ] },
-  { id: 'resources', title: 'Local contacts and resources', intro: '<strong>In an emergency, call 999 or 112.</strong> Use the station and organisation numbers below for non-emergency contact and local information.', items: [
+  { id: 'resources', title: 'Local contacts and resources', intro: '<strong>In an emergency, call 999 or 112 for Garda (police), ambulance and fire brigade.</strong>', introNote: 'Non-emergency Garda (police) contact details below', items: [
     { title: 'Rathcoole Garda Station', scope: 'An Garda Síochána', body: 'Main Street, Rathcoole, Co. Dublin, D24 YF22. Phone: <a href="tel:+35316667900">01 666 7900</a>.', source: 'rathcooleGarda' },
     { title: 'Tallaght Garda Station', scope: 'An Garda Síochána', body: 'Belgard Road East, Tallaght, Dublin 24, D24 K796. Phone: <a href="tel:+35316666000">01 666 6000</a>.', source: 'tallaghtGarda' },
     { title: 'Clondalkin Garda Station', scope: 'An Garda Síochána', body: 'Orchard Road, Clondalkin, Dublin 22, D22 W268. Phone: <a href="tel:+35316667600">01 666 7600</a>.', source: 'clondalkinGarda' }
