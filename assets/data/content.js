@@ -70,7 +70,7 @@ export const learningSections = [
     { title: 'Saggart Medical Centre', scope: 'General practice (GP)', body: 'Main Street, Garter Lane, Saggart Village, Co. Dublin, D24 AK65. Phone: <a href="tel:+35314586805">01 458 6805</a>.', source: 'saggartMedical' },
     { title: 'Citywest Medical', scope: 'General practice (GP)', body: 'Unit 5, Citywest Shopping Centre, Citywest, Dublin 24, D24 K0YT. Phone: <a href="tel:+35314693630">01 469 3630</a>.', source: 'citywestMedical' },
     { title: 'Rathcoole Medical Centre', scope: 'General practice (GP)', body: 'Main Street, Rathcoole, Co. Dublin, D24 Y53K. Phone: <a href="tel:+35314589655">01 458 9655</a>.', source: 'rathcooleMedical' },
-    { title: 'Find another GP', scope: 'HSE directory', body: 'Use the HSE’s national GP finder for current practice locations, contact details and opening hours.', source: 'hseFindGP' }
+    { title: 'Find a Doctor', scope: 'HSE directory', body: 'Use the HSE’s national GP finder for current practice locations, contact details and opening hours.', source: 'hseFindGP' }
   ] },
   { id: 'resources', title: 'Local contacts and resources', intro: '<strong>In an emergency, call 999 or 112.</strong> Use the station and organisation numbers below for non-emergency contact and local information.', items: [
     { title: 'Rathcoole Garda Station', scope: 'An Garda Síochána', body: 'Main Street, Rathcoole, Co. Dublin, D24 YF22. Phone: <a href="tel:+35316667900">01 666 7900</a>.', source: 'rathcooleGarda' },
