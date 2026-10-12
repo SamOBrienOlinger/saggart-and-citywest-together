@@ -13,6 +13,8 @@ The GitHub Actions [browser workflow](.github/workflows/browser-tests.yml) runs 
 
 The browser jobs record their versions and preserve reports, screenshots and failure traces for 14 days. A configured check is not evidence of a pass: use the workflow result for the relevant commit.
 
+All jobs serve the unchanged site files with the same local Node server (`scripts/test-server.mjs`), including on Windows.
+
 ## Responsive coverage
 
 `e2e/responsive.spec.js` runs in the five desktop browser projects. It checks all nine primary pages at 17 viewport sizes, from 320×640 to 1920×1080, including both sides of the 760px, 900px and 1120px layout boundaries. It checks document overflow and content bounds, allowing intentional carousel scrolling and hidden accessibility text.
