@@ -17,19 +17,21 @@ test('Census snapshot is scoped and sourced to official CSO publications', () =>
   }
 });
 
-test('requested local resources include official links and callable phone numbers', () => {
+test('local services stay in their relevant sections with sources and callable phone numbers', () => {
   const resources = learningSections.find(section => section.id === 'resources');
   assert.ok(resources, 'local contacts section is missing');
   const expected = new Map([
-    ['Rathcoole Garda Station', 'tel:+35316667900'],
-    ['Tallaght Garda Station', 'tel:+35316666000'],
-    ['Clondalkin Garda Station', 'tel:+35316667600'],
-    ['Saggart Schoolhouse Community Centre', 'tel:+35315782377'],
-    ['St Mary’s GAA Club', 'tel:+353868371963']
+    ['Rathcoole Garda Station', ['resources', 'tel:+35316667900']],
+    ['Tallaght Garda Station', ['resources', 'tel:+35316666000']],
+    ['Clondalkin Garda Station', ['resources', 'tel:+35316667600']],
+    ['Saggart Schoolhouse Community Centre', ['community', 'tel:+35315782377']],
+    ['St Mary’s GAA Club', ['community', 'tel:+353868371963']]
   ]);
-  for (const [title, phone] of expected) {
-    const item = resources.items.find(resource => resource.title === title);
-    assert.ok(item, `${title} is missing`);
+  for (const [title, [sectionId, phone]] of expected) {
+    const section = learningSections.find(section => section.id === sectionId);
+    assert.ok(section, `${sectionId} section is missing`);
+    const item = section.items.find(resource => resource.title === title);
+    assert.ok(item, `${title} is missing from ${sectionId}`);
     assert.match(item.body, new RegExp(phone.replace('+', '\\+')));
     assert.ok(sources[item.source]?.url.startsWith('https://'), `${title} source is missing`);
   }
