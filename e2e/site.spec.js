@@ -129,13 +129,15 @@ test('approved homepage order, service destinations and visual evidence', async 
     ['Health services', 'learn.html#health', '#health'],
     ['English classes', 'citywest-supports.html#english-classes', '#english-classes'],
     ['Work and training', 'citywest-supports.html#work-and-training', '#work-and-training'],
-    ['Citywest IPAS supports', 'citywest-supports.html#support-table', '#support-table'],
   ]) {
     await expect(page.getByRole('link', { name, exact: true })).toHaveAttribute('href', path);
     await page.goto('/' + path);
     await expect(page.locator(target)).toBeAttached();
     await page.goto('/');
   }
+  const ipasLink = page.locator('#local-services').getByRole('link', { name: /^Citywest IPAS supports/ });
+  await expect(ipasLink).toHaveAttribute('href', 'https://ipas.irishimmigration.ie/');
+  await expect(ipasLink).toHaveAttribute('target', '_blank');
   await page.locator('.community-carousel').scrollIntoViewIfNeeded();
   // Decode every thumbnail that appears in the captured rail.
   await page.locator('.carousel-thumb img').evaluateAll(images => Promise.all(images.slice(0, 5).map(img => img.decode())));
