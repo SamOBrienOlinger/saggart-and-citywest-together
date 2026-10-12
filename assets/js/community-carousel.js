@@ -6,7 +6,6 @@ if (carousel) {
   const thumbs = [...carousel.querySelectorAll('[data-slide]')];
   const thumbnailRail = carousel.querySelector('.carousel-thumbnails');
   const count = carousel.querySelector('[data-current]');
-  const caption = carousel.querySelector('.carousel-caption');
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const dialog = document.querySelector('.image-dialog');
   let current = 0;
@@ -16,7 +15,6 @@ if (carousel) {
   const update = index => {
     current = Math.max(0, Math.min(slides.length - 1, index));
     count.textContent = String(current + 1);
-    caption.textContent = slides[current].dataset.caption;
     slides.forEach((slide, i) => {
       slide.setAttribute('aria-hidden', String(i !== current));
       slide.inert = i !== current;
@@ -75,7 +73,6 @@ if (carousel) {
       fullImage.src = photo.currentSrc || photo.src;
       fullImage.alt = photo.alt;
       dialog.querySelector('#image-dialog-title').textContent = slide.dataset.caption;
-      dialog.querySelector('.dialog-caption').textContent = photo.alt;
       opener = button;
       dialog.showModal();
     }));

@@ -11,7 +11,7 @@ export const historyPhotos = [
     "width": 400,
     "height": 276,
     "alt": "Historic photograph of Saggart village with the church tower and thatched cottages",
-    "source": "https://share.google/AKAMMJHSxQUowCzHg"
+    "source": "https://arambleabouttallaght.blogspot.com/2020/03/the-last-and-lonely-days-of-minnie-hunt.html"
   },
   {
     "id": "photo-village",
@@ -24,7 +24,7 @@ export const historyPhotos = [
     "width": 476,
     "height": 280,
     "alt": "Historic photograph of Saggart village, with the church tower and thatched cottages",
-    "source": "https://pin.it/siaKwa5Kr"
+    "source": "https://it.pinterest.com/pin/798051996441301937/"
   },
   {
     "id": "photo-mill",
@@ -37,7 +37,7 @@ export const historyPhotos = [
     "width": 1024,
     "height": 779,
     "alt": "Historic black-and-white photograph of a local mill building and its tall chimney",
-    "source": "https://share.google/yJcMK5u8KytAJz8Jy"
+    "source": "https://www.flickr.com/photos/nlireland/33759071911"
   },
   {
     "id": "photo-citywest",
