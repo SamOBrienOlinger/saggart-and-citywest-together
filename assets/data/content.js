@@ -6,6 +6,7 @@ export const sources = {
   fortunestown: { title: 'Fortunestown Local Area Plan', url: 'https://www.sdcc.ie/en/services/planning-building-control/local-area-plans/existing/fortunestown/fortunestown-lap-2012.pdf', publisher: 'South Dublin County Council' },
   growth: { title: 'Saggart: Self-Sustaining Town', url: 'https://www.sdcc.ie/en/devplan2022/adopted-plan/county-development-plan-written-statement/county-development-plan-written-statement1.pdf', publisher: 'South Dublin County Council' },
   walking: { title: 'Walking and Hiking', url: 'https://www.sdcc.ie/en/services/tourism/activities/the-dublin-mountains/walking-and-hiking/', publisher: 'South Dublin County Council' },
+  huntingBrook: { title: 'Visit the gardens', url: 'https://www.huntingbrookgardens.com/visit-the-gardens', publisher: 'Hunting Brook Gardens' },
   community: { title: 'Community Development', url: 'https://www.sdcc.ie/en/services/community/community-development/', publisher: 'South Dublin County Council' },
   logainm: { title: 'Teach Sagard / Saggart', url: 'https://www.logainm.ie/en/57080', publisher: 'Placenames Database of Ireland' },
   inar: { title: 'Learn About Racism in Ireland', url: 'https://inar.ie/racism-in-ireland/learn-about-racism/', publisher: 'Irish Network Against Racism' },
@@ -54,7 +55,8 @@ export const learningSections = [
   { id: 'nature', title: 'Nature and landscape', intro: 'The hills, valleys, hedgerows and parks provide homes for wildlife and places for people to enjoy.', items: [
     { title: 'Dublin Mountains foothills', scope: 'Landscape', body: 'Saggart sits at the foothills of the Dublin Mountains. Nearby routes provide outdoor access and broad views across the city and county.', source: 'village' },
     { title: 'Saggart Hill loop', scope: 'Walking', body: 'The waymarked Saggart Hill loop is approximately 3.8 kilometres and graded easy by South Dublin County Council’s walking guidance.', source: 'walking' },
-    { title: 'Slade Valley and green links', scope: 'Plants and wildlife', body: 'Council planning identifies Slade of Saggart and Crooksling Glen for their natural heritage value and explains how hedgerows connect wildlife habitats and form part of local history.', source: 'neighbourhood' }
+    { title: 'Slade Valley and green links', scope: 'Plants and wildlife', body: 'Council planning identifies Slade of Saggart and Crooksling Glen for their natural heritage value and explains how hedgerows connect wildlife habitats and form part of local history.', source: 'neighbourhood' },
+    { title: 'Hunting Brook Gardens', scope: 'Gardens and woodland', body: 'Jimi Blake and Hunting Brook Gardens is made up of five acres of contemporary exotic gardens and fifteen acres of woodland gardens', source: 'huntingBrook' }
   ] },
   { id: 'community', title: 'Community and belonging', intro: 'People feel more at home when they share local spaces, can use services and have a say in the area’s future.', items: [
     { title: 'Saggart Schoolhouse Community Centre', scope: 'Community facilities', body: 'School Road, Saggart, Co. Dublin, D24 V04D. The centre offers a café, classes, youth and older-person activities, community meetings and rentable spaces. Phone: <a href="tel:+35315782377">01 578 2377</a>. Email: <a href="mailto:info@schoolhouse.onmicrosoft.com">info@schoolhouse.onmicrosoft.com</a>.', source: 'schoolhouse' },
