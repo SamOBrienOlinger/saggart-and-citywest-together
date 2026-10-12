@@ -13,7 +13,7 @@ test('every footer carries copyright without the removed disclaimer', async () =
   for (const page of pages) {
     const html = await readFile(resolve(root, page), 'utf8');
     const footer = html.match(/<footer\b[\s\S]*?<\/footer>/)[0];
-    assert.match(footer, /© 2026 Sam Tim Solutions\./, page);
+    assert.match(footer, /Sam Tim Solutions ©2026/, page);
     assert.doesNotMatch(footer, /Information comes from public sources|endorse/, page);
   }
 });

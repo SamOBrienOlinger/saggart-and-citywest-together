@@ -25,7 +25,7 @@ test('primary pages load without script errors or horizontal overflow', async ({
     expect(response.status(), path).toBe(200);
     await expect(page.locator('h1')).toBeVisible();
     await expect(page.locator('.site-header')).toHaveClass(/nav-ready/);
-    await expect(page.locator('footer')).toContainText('© 2026 Sam Tim Solutions.');
+    await expect(page.locator('footer')).toContainText('Sam Tim Solutions ©2026');
     await expect(page.locator('footer')).not.toContainText('Information comes from public sources.');
     await expect(page.locator('footer')).not.toContainText('endorse');
     await fitsViewport(page);
