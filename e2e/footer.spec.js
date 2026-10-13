@@ -37,6 +37,10 @@ test('homepage footer matches the other pages at normal and enlarged text', asyn
       await page.goto('/' + path);
       await page.evaluate(scale => { document.documentElement.style.fontSize = `${scale * 100}%`; }, scale);
       await expect(page.locator('footer')).toBeVisible();
+      // WebKit can update inherited link fonts one frame after their parent.
+      await expect.poll(() => page.locator('footer a, footer img').evaluateAll(elements =>
+        elements.every(element => getComputedStyle(element).fontSize === getComputedStyle(element.parentElement).fontSize)))
+        .toBe(true);
       await expect.poll(() => page.locator('footer img').evaluateAll(images =>
         images.every(image => image.complete && image.naturalWidth > 0))).toBe(true);
       await expectTextReflow(page, expect, `${path} footer at ${scale * 100}% text`);

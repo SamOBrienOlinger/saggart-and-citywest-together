@@ -155,6 +155,10 @@
   }
   :root body .carousel-count { grid-column: 1 / -1; grid-row: 1; text-align: center; }
 }
+/* A tall phone header must scroll away so enlarged text cannot cover controls. */
+@media (max-width: 430px) {
+  :root body .site-header { position: relative; }
+}
 
 /* Override older page-wide reduced-motion durations with the reference's zero delay. */
 @media (prefers-reduced-motion: reduce) {
