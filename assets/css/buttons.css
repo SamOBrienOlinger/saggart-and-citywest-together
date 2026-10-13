@@ -156,6 +156,17 @@
   :root body .carousel-count { grid-column: 1 / -1; grid-row: 1; text-align: center; }
 }
 
+/* Override older page-wide reduced-motion durations with the reference's zero delay. */
+@media (prefers-reduced-motion: reduce) {
+  :root body :is(button, summary, .button, .pill-button, .service-button,
+    .explore-topic, .back-top, .text-link, .quiz-link, .story-link,
+    .translation-link, .facts-jumps a, .facts-back, .service-links a,
+    .group-documents-list a, .explore-topic-icon, .service-icon) {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 @media (forced-colors: active) {
   :root body :is(button, summary, .button, .pill-button, .service-button,
     .explore-topic, .back-top, .text-link, .quiz-link, .story-link,
