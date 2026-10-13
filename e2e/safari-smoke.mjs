@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { Builder, By, Key, until } from 'selenium-webdriver';
 import { questions } from '../assets/data/questions.js';
+import { inspectTextReflow } from './text-reflow.mjs';
 
 const output = 'safari-results';
 await mkdir(output, { recursive: true });
@@ -25,11 +26,15 @@ try {
   const caps = await driver.getCapabilities();
   findings.push({ browser: caps.get('browserName'), version: caps.get('browserVersion'), platform: caps.get('platformName') });
   await driver.manage().window().setRect({ width: 1440, height: 1000 });
-  for (const path of ['index.html', 'learn.html', 'facts.html', 'citywest-supports.html', 'quiz.html', 'contact.html', 'about.html', 'privacy.html', 'accessibility.html']) {
-    await open(path);
-    const dimensions = await driver.executeScript('return {viewport: document.documentElement.clientWidth, document: document.documentElement.scrollWidth}');
-    assert.ok(dimensions.document <= dimensions.viewport + 1, `Overflow on ${path}`);
-    findings.push({ page: path, ...dimensions, result: 'passed' });
+  for (const path of ['index.html', 'learn.html', 'facts.html', 'citywest-supports.html', 'quiz.html', 'contact.html', 'about.html', 'privacy.html', 'accessibility.html', '404.html', 'gallery.html']) {
+    for (const scale of [100, 200]) {
+      await open(path);
+      await driver.executeScript('document.documentElement.style.fontSize = arguments[0]', `${scale}%`);
+      const dimensions = await driver.executeScript(inspectTextReflow);
+      assert.ok(dimensions.document <= dimensions.viewport + 1, `Overflow on ${path} at ${scale}% text`);
+      assert.deepEqual(dimensions.issues, [], `Clipped text on ${path} at ${scale}% text`);
+      findings.push({ page: path, textScale: scale, ...dimensions, result: 'passed' });
+    }
   }
   await open('gallery.html#photo-mill');
   await driver.wait(until.urlContains('learn.html#photo-mill'), 10000);
