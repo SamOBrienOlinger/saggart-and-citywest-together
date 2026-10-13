@@ -12,6 +12,7 @@ const findings = [];
 const base = 'http://127.0.0.1:4180/';
 async function open(path = '') {
   await driver.get(base + path);
+  if (path.startsWith('gallery.html')) await driver.wait(until.urlContains('learn.html'), 10000);
   await driver.wait(() => driver.executeScript('return document.readyState === "complete"'), 10000);
   await driver.wait(until.elementLocated(By.css('.nav-ready')), 10000);
 }
@@ -29,7 +30,6 @@ async function setTextScale(scale, expectedFont) {
         && (!arguments[1] || rootFont === arguments[1]);
     `, percentage, expectedFont || null);
   }, 10000);
-  await driver.executeAsyncScript('const done = arguments[arguments.length - 1]; requestAnimationFrame(() => requestAnimationFrame(done));');
 }
 async function click(selector) {
   const element = await driver.findElement(By.css(selector));
@@ -118,8 +118,8 @@ try {
   console.log(JSON.stringify(findings, null, 2));
 } catch (error) {
   await writeFile(`${output}/failure.png`, await driver.takeScreenshot(), 'base64').catch(() => {});
-  await writeFile(`${output}/results.json`, JSON.stringify({ findings, error: error.message }, null, 2));
+  await writeFile(`${output}/results.json`, JSON.stringify({ findings, error: String(error), stack: error.stack }, null, 2));
   throw error;
 } finally {
-  await driver.quit();
+  await driver.quit().catch(() => {});
 }
