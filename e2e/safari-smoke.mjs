@@ -3,6 +3,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { Builder, By, Key, until } from 'selenium-webdriver';
 import { questions } from '../assets/data/questions.js';
 import { inspectTextReflow } from './text-reflow.mjs';
+import { inspectButtonAppearance } from './button-appearance.mjs';
 
 const output = 'safari-results';
 await mkdir(output, { recursive: true });
@@ -26,6 +27,7 @@ try {
   const caps = await driver.getCapabilities();
   findings.push({ browser: caps.get('browserName'), version: caps.get('browserVersion'), platform: caps.get('platformName') });
   await driver.manage().window().setRect({ width: 1440, height: 1000 });
+  const buttonReferences = new Map();
   for (const path of ['index.html', 'learn.html', 'facts.html', 'citywest-supports.html', 'quiz.html', 'contact.html', 'about.html', 'privacy.html', 'accessibility.html', '404.html', 'gallery.html']) {
     for (const scale of [100, 200]) {
       await open(path);
@@ -33,6 +35,9 @@ try {
       const dimensions = await driver.executeScript(inspectTextReflow);
       assert.ok(dimensions.document <= dimensions.viewport + 1, `Overflow on ${path} at ${scale}% text`);
       assert.deepEqual(dimensions.issues, [], `Clipped text on ${path} at ${scale}% text`);
+      const buttons = await driver.executeScript(inspectButtonAppearance, buttonReferences.get(scale));
+      if (path === 'index.html') buttonReferences.set(scale, buttons.standard);
+      assert.deepEqual(buttons.issues, [], `Button appearance differs on ${path} at ${scale}% text`);
       findings.push({ page: path, textScale: scale, ...dimensions, result: 'passed' });
     }
   }
