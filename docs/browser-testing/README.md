@@ -47,6 +47,9 @@ quiz answers. They compare hover, keyboard focus and pressed states, confirm
 disabled quiz answers retain their readable feedback, and capture topic,
 service and quiz screenshots. Photo previews and thumbnails retain their shapes.
 The native Safari checks also compare default button styling at both text sizes.
+Both suites use `scripts/serve-test-site.py` to resolve the error page's base URL
+to the checkout during tests, and also exercise a missing nested URL. This keeps
+the error page's styles and scripts under test rather than loading the live site.
 
 ### Text reflow checks
 

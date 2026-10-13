@@ -16,7 +16,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   webServer: {
-    command: 'python3 -m http.server 4180 --bind 127.0.0.1',
+    command: 'python3 scripts/serve-test-site.py',
     url: 'http://127.0.0.1:4180',
     reuseExistingServer: !process.env.CI,
   },

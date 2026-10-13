@@ -4,7 +4,7 @@ import { expectTextReflow } from './text-reflow.mjs';
 
 const pages = ['index.html', 'learn.html', 'facts.html', 'citywest-supports.html',
   'quiz.html', 'contact.html', 'about.html', 'privacy.html', 'accessibility.html',
-  '404.html', 'gallery.html'];
+  '404.html', 'gallery.html', 'missing/does-not-exist.html'];
 
 async function open(page, path) {
   await page.goto('/' + path);
