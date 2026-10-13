@@ -39,6 +39,18 @@ Test reports, screenshots and failure traces are attached to each GitHub Actions
 
 ## Running
 
+### Shared button checks
+
+The button checks compare rendered text and icon controls on all eleven pages
+with the homepage Get involved button, including generated language choices and
+quiz answers. They compare hover, keyboard focus and pressed states, confirm
+disabled quiz answers retain their readable feedback, and capture topic,
+service and quiz screenshots. Photo previews and thumbnails retain their shapes.
+The native Safari checks also compare default button styling at both text sizes.
+Both suites use `scripts/serve-test-site.py` to resolve the error page's base URL
+to the checkout during tests, and also exercise a missing nested URL. This keeps
+the error page's styles and scripts under test rather than loading the live site.
+
 ### Text reflow checks
 
 `e2e/text-reflow.spec.js` visits all eleven HTML entry points, including the

@@ -3,6 +3,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { Builder, By, Key, until } from 'selenium-webdriver';
 import { questions } from '../assets/data/questions.js';
 import { inspectTextReflow } from './text-reflow.mjs';
+import { inspectButtonAppearance } from './button-appearance.mjs';
 
 const output = 'safari-results';
 await mkdir(output, { recursive: true });
@@ -11,7 +12,24 @@ const findings = [];
 const base = 'http://127.0.0.1:4180/';
 async function open(path = '') {
   await driver.get(base + path);
+  if (path.startsWith('gallery.html')) await driver.wait(until.urlContains('learn.html'), 10000);
+  await driver.wait(() => driver.executeScript('return document.readyState === "complete"'), 10000);
   await driver.wait(until.elementLocated(By.css('.nav-ready')), 10000);
+}
+async function setTextScale(scale, expectedFont) {
+  const percentage = `${scale}%`;
+  // Confirm the requested scale has rendered before comparing controls.
+  await driver.wait(async () => {
+    await driver.executeScript('document.documentElement.style.fontSize = arguments[0]', percentage);
+    return driver.executeScript(`
+      const root = document.documentElement;
+      const control = document.querySelector('.translate-toggle');
+      const rootFont = getComputedStyle(root).fontSize;
+      return document.readyState === 'complete' && root.style.fontSize === arguments[0]
+        && control && getComputedStyle(control).fontSize === rootFont
+        && (!arguments[1] || rootFont === arguments[1]);
+    `, percentage, expectedFont || null);
+  }, 10000);
 }
 async function click(selector) {
   const element = await driver.findElement(By.css(selector));
@@ -26,13 +44,19 @@ try {
   const caps = await driver.getCapabilities();
   findings.push({ browser: caps.get('browserName'), version: caps.get('browserVersion'), platform: caps.get('platformName') });
   await driver.manage().window().setRect({ width: 1440, height: 1000 });
-  for (const path of ['index.html', 'learn.html', 'facts.html', 'citywest-supports.html', 'quiz.html', 'contact.html', 'about.html', 'privacy.html', 'accessibility.html', '404.html', 'gallery.html']) {
+  const buttonReferences = new Map();
+  for (const path of ['index.html', 'learn.html', 'facts.html', 'citywest-supports.html', 'quiz.html', 'contact.html', 'about.html', 'privacy.html', 'accessibility.html', '404.html', 'gallery.html', 'missing/does-not-exist.html']) {
     for (const scale of [100, 200]) {
       await open(path);
-      await driver.executeScript('document.documentElement.style.fontSize = arguments[0]', `${scale}%`);
+      const expectedFont = buttonReferences.get(scale)?.fontSize
+        || (buttonReferences.has(100) ? `${parseFloat(buttonReferences.get(100).fontSize) * scale / 100}px` : null);
+      await setTextScale(scale, expectedFont);
       const dimensions = await driver.executeScript(inspectTextReflow);
       assert.ok(dimensions.document <= dimensions.viewport + 1, `Overflow on ${path} at ${scale}% text`);
       assert.deepEqual(dimensions.issues, [], `Clipped text on ${path} at ${scale}% text`);
+      const buttons = await driver.executeScript(inspectButtonAppearance, buttonReferences.get(scale));
+      if (path === 'index.html') buttonReferences.set(scale, buttons.standard);
+      assert.deepEqual(buttons.issues, [], `Button appearance differs on ${path} at ${scale}% text`);
       findings.push({ page: path, textScale: scale, ...dimensions, result: 'passed' });
     }
   }
@@ -84,18 +108,18 @@ try {
   assert.equal(await text('#result-score'), '10/10');
   findings.push({ check: 'Complete quiz with shuffled answers', result: 'passed', score: '10/10' });
   await open();
-  await driver.executeScript('document.documentElement.style.fontSize = "200%"');
+  await setTextScale(200, buttonReferences.get(200).fontSize);
   const enlarged = await driver.executeScript('return {viewport: document.documentElement.clientWidth, document: document.documentElement.scrollWidth}');
   assert.ok(enlarged.document <= enlarged.viewport + 1);
   findings.push({ check: '200% text on desktop Safari', result: 'passed', ...enlarged });
-  await driver.executeScript('document.documentElement.style.fontSize = "100%"');
+  await setTextScale(100, buttonReferences.get(100).fontSize);
   await writeFile(`${output}/homepage.png`, await driver.takeScreenshot(), 'base64');
   await writeFile(`${output}/results.json`, JSON.stringify(findings, null, 2));
   console.log(JSON.stringify(findings, null, 2));
 } catch (error) {
   await writeFile(`${output}/failure.png`, await driver.takeScreenshot(), 'base64').catch(() => {});
-  await writeFile(`${output}/results.json`, JSON.stringify({ findings, error: error.message }, null, 2));
+  await writeFile(`${output}/results.json`, JSON.stringify({ findings, error: String(error), stack: error.stack }, null, 2));
   throw error;
 } finally {
-  await driver.quit();
+  await driver.quit().catch(() => {});
 }
