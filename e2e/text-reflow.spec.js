@@ -13,7 +13,9 @@ async function checkPages(page, scale, testInfo, scriptsEnabled = true) {
       if (scriptsEnabled && path === 'gallery.html') await expect(page).toHaveURL(/learn\.html#heritage$/);
       await expect(page.locator('main')).toBeVisible();
       await page.evaluate(scale => { document.documentElement.style.fontSize = `${scale * 100}%`; }, scale);
-      await page.evaluate(() => document.fonts.ready);
+      // Firefox cannot resolve page promises when scripting is disabled.
+      // This site uses system fonts, so synchronous layout measurement suffices.
+      if (scriptsEnabled) await page.evaluate(() => document.fonts.ready);
       await expectTextReflow(page, expect, `${path} at ${scale * 100}% text`);
       const menu = page.getByRole('button', { name: 'Toggle navigation', exact: true });
       if (await menu.isVisible()) {
