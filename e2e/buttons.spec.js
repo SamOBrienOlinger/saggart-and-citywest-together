@@ -98,7 +98,7 @@ async function interactionStates(page, control, touch) {
 test('buttons share hover, keyboard focus and pressed feedback without movement', async ({ page, hasTouch }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await open(page, 'index.html');
-  const reference = await interactionStates(page, page.locator('.pill-button'), hasTouch);
+  const reference = await interactionStates(page, page.locator('.community-actions .pill-button'), hasTouch);
   for (const [path, selector] of [
     ['index.html', '.quiz-link'], ['index.html', '.carousel-arrow'],
     ['learn.html', '.explore-topic'], ['learn.html', '.gallery-control'],
