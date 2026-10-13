@@ -55,7 +55,7 @@ async function buttonContrast(locator) {
 
 test('button text stays legible and visits do not leave links tinted', async ({page, hasTouch}, testInfo) => {
   await page.goto('/');
-  const pill = page.locator('.pill-button');
+  const pill = page.locator('.community-actions .pill-button');
   await pill.scrollIntoViewIfNeeded();
   await page.mouse.move(0, 0);
   const before = await pill.screenshot();

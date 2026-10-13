@@ -58,6 +58,21 @@ h2 { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; letter-sp
 .home-hero h1 { font-size: clamp(2.9rem, 12.3vw, 5.1rem); line-height: .98; font-weight: 800; letter-spacing: -.045em; }
 .home-hero-copy p { max-width: 36ch; font-size: 1.1rem; line-height: 1.5; margin-top: 1.3rem; }
 .home-hero-art { width: 100%; order: -1; border-radius: 1rem; }
+/* Direct routes keep common tasks easy to find without changing the shared pills. */
+.home-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  padding-block: 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+.home-shortcuts .pill-button { flex: 1 1 13rem; }
+.service-links .service-description {
+  margin: .65rem 0 .35rem;
+  max-width: 38ch;
+  color: var(--ink);
+  font: 1rem/1.6 Arial, Helvetica, sans-serif;
+}
 .community-section { padding-block: 2.8rem; }
 .community-grid { display: grid; gap: 1.75rem; }
 .community-grid > * { min-width: 0; }
