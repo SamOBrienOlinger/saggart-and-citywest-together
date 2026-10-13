@@ -39,6 +39,26 @@ Test reports, screenshots and failure traces are attached to each GitHub Actions
 
 ## Running
 
+### Text reflow checks
+
+`e2e/text-reflow.spec.js` visits all eleven HTML entry points, including the
+404 page and gallery fallback. Chromium, Firefox and WebKit desktop projects
+sweep 320px, 390px, 430px, 768px, 1024px and 1440px widths at 100% and 200% root text size.
+Mobile profiles retain their native emulated dimensions and repeat both text
+sizes. The same page coverage runs with JavaScript disabled, and an enlarged
+quiz journey checks question text, answer choices, feedback and results.
+
+The checks measure individual text-line rectangles as well as document width,
+so clipping inside a card or another component cannot be hidden by an
+`overflow: hidden` rule. Screen-reader-only content and the outer cropping of
+deliberately scrollable photo rails are treated separately. The actual desktop
+Safari smoke check uses the same measurement for all eleven entry points at
+both text sizes. Citywest hero screenshots are attached at 390px.
+
+Root text enlargement is distinct from browser zoom. A 320px viewport exercises
+the effective layout width of a 1280px window at 400% zoom, but does not certify
+physical handset, OS text scaling or native browser zoom behaviour.
+
 ```sh
 npm ci
 npm test

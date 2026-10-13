@@ -1,0 +1,38 @@
+/* Shared text reflow, including the separately styled homepage. */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+body {
+  min-inline-size: 0;
+  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+:where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, blockquote, figcaption, summary, label) {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+.home-hero-grid > *, .community-grid > *, .services-layout > *,
+.quiz-strip-inner > *, .learning-grid > *, .split > *, .card-grid > *,
+.footer-grid > *, .form-grid > *, .call-to-quiz > *, .brand > span {
+  min-inline-size: 0;
+}
+.button, .pill-button, .text-link, .service-button, .translation-link,
+.scope-tag, .explore-topic-label {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* A sentence-length title needs the available line width and a smaller scale. */
+.supports-hero h1 {
+  max-width: 100%;
+  font-size: clamp(1.75rem, 1.125rem + 2.8vw, 3.5rem);
+  line-height: 1.18;
+}
+.supports-hero {
+  padding-block: clamp(2rem, 5vw, 4rem);
+}
