@@ -70,8 +70,6 @@
 :root body .event-poster-grid figcaption { padding-top: .65rem; }
 :root body .event-poster-grid h3 { font-size: 1.1rem; margin: 0 0 .25rem; }
 :root body .event-poster-grid p { font-size: .9rem; }
-/* Portraits and thumbnails retain the complete photograph; no overlays or forced crops. */
-:root body .carousel-thumb img { object-fit: contain; }
 
 /* Browsers differ in when :active clears after a cancelled link press.
    Enhanced pointer state only controls the small, existing CTA movement. */
