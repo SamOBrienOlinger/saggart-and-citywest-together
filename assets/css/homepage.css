@@ -68,7 +68,7 @@ h2 { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; letter-sp
 }
 .home-shortcuts .pill-button { flex: 1 1 13rem; }
 .service-links .service-description {
-  margin: .65rem 0 .35rem;
+  margin: 0 .25rem 1.1rem;
   max-width: 38ch;
   color: var(--ink);
   font: 1rem/1.6 Arial, Helvetica, sans-serif;
@@ -109,7 +109,7 @@ h2 { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; letter-sp
 .quiz-copy { min-width: 0; flex: 1 1 12rem; }
 .quiz-copy h2 { font-size: clamp(1.3rem, 4vw, 2rem); font-weight: 500; line-height: 1.25; letter-spacing: -.02em; margin-bottom: .5rem; }
 .quiz-link { font-size: 1rem; text-decoration-color: var(--gold); text-decoration-thickness: 3px; }
-.local-services { background: var(--cream); padding-block: 2.5rem; }
+.local-services { background: #fff; padding-block: 2.5rem; }
 .services-layout { display: grid; gap: 1.5rem; }
 .services-layout h2 { font-size: clamp(2.35rem, 6vw, 3.5rem); margin-bottom: .7rem; }
 .service-links { display: grid; list-style: none; padding: 0; margin: 0; }
@@ -117,8 +117,11 @@ h2 { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; letter-sp
 .service-links li:last-child { border-bottom: 0; }
 .service-links a { display: grid; grid-template-columns: 2.5rem minmax(0,1fr); align-items: center; gap: 1rem; min-height: 82px; padding: 1rem .25rem; text-decoration: none; }@media (hover: hover) {
 .service-links a:hover { background: #efe9da; }}
-.service-links span { font: 1.12rem/1.25 Georgia, 'Times New Roman', serif; }
+.service-links span { font: 700 1.12rem/1.35 Georgia, 'Times New Roman', serif; }
 .service-icon { width: 2.5rem; height: 2.5rem; object-fit: contain; }
+.service-links a { text-align: start; }
+/* Keep the reference colours until a link is pressed; white remains legible then. */
+:root body .service-links a:active .service-icon { filter: brightness(0) invert(1); }
 .icon-teal { filter: invert(31%) sepia(80%) saturate(491%) hue-rotate(130deg) brightness(89%); }
 .icon-coral { filter: invert(60%) sepia(49%) saturate(672%) hue-rotate(326deg) brightness(96%); }
 .icon-gold { filter: invert(58%) sepia(64%) saturate(555%) hue-rotate(3deg) brightness(94%); }
@@ -135,6 +138,7 @@ h2 { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; letter-sp
   .service-links li:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
   .service-links li:nth-child(odd) { border-inline-end: 1px solid var(--line); }
   .service-links a { padding: 1.1rem; }
+  .service-links .service-description { margin-inline: 1.1rem; }
   .quiz-strip-inner { display: grid; grid-template-columns: 8rem minmax(0,1fr); gap: 2rem; max-width: 64rem; }
   .quiz-art { width: 100%; }
   .quiz-copy { border-inline-start: 1px solid var(--line); padding-inline-start: 2rem; }
