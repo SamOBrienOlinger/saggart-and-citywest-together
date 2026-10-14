@@ -50,7 +50,7 @@
 :root body .support-task { display: block; font-size: 1.1rem; line-height: 1.4; }
 :root body .support-area { display: block; margin-top: .4rem; font-size: .9rem; font-weight: 400; }
 :root body .service-explainer { margin: .75rem 0 0; font-size: .95rem; line-height: 1.6; }
-:root body .email-copy { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #bdd8d6; }
+:root body .email-copy { margin-block: 1.5rem 1.25rem; padding-top: 1rem; border-top: 1px solid #bdd8d6; }
 :root body #contact-email { -webkit-user-select: text; user-select: text; overflow-wrap: anywhere; }
 :root body .copy-status { min-height: 1.65em; margin-block: .6rem 0; font-size: 1rem; line-height: 1.65; }
 :root body .copy-status:empty { min-height: 0; margin: 0; }
@@ -75,22 +75,22 @@
 
 /* Browsers differ in when :active clears after a cancelled link press.
    Enhanced pointer state only controls the small, existing CTA movement. */
-:root body[data-page="home"] .community-actions > a.pill-button[data-press-ready] { transform: none; }
-:root body[data-page="home"] .community-actions > a.pill-button[data-press-ready]:not([data-pressed]):not(:hover):not(:focus-visible) {
+:root body[data-page="home"] .community-actions > a.pill-button[data-press-ready][href] { transform: none; }
+:root body[data-page="home"] .community-actions > a.pill-button[data-press-ready][href]:not([data-pressed]):not(:hover):not(:focus-visible) {
   background: #004b50;
   color: #fff;
 }
 @media (prefers-reduced-motion: no-preference) {
   @media (hover: hover) and (pointer: fine) {
-    :root body[data-page="home"] .community-actions > a.pill-button[data-press-ready]:hover { transform: translateY(-2px); }
+    :root body[data-page="home"] .community-actions > a.pill-button[data-press-ready][href]:hover { transform: translateY(-2px); }
   }
-  :root body[data-page="home"] .community-actions > a.pill-button[data-press-ready][data-pressed] {
+  :root body[data-page="home"] .community-actions > a.pill-button[data-press-ready][href][data-pressed] {
     transform: translateY(1px);
     transition-duration: 80ms;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  :root body[data-page="home"] .community-actions > a.pill-button[data-press-ready] { transform: none; transition: none; }
+  :root body[data-page="home"] .community-actions > a.pill-button[data-press-ready][href] { transform: none; transition: none; }
 }
 @media print {
   .supports-jumps, #copy-email, .copy-status, .event-posters > summary { display: none !important; }

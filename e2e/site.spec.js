@@ -141,8 +141,13 @@ test('approved homepage order, service destinations and visual evidence', async 
   await expect(ipasLink).not.toHaveAttribute('target', '_blank');
   await expect(page.getByRole('link', { name: /^Official IPAS website/ })).toHaveAttribute('href', 'https://ipas.irishimmigration.ie/');
   await page.locator('.community-carousel').scrollIntoViewIfNeeded();
-  // Decode every thumbnail that appears in the captured rail.
-  await page.locator('.carousel-thumb img').evaluateAll(images => Promise.all(images.slice(0, 5).map(img => img.decode())));
+  // Explicitly load the captured thumbnails and wait before decoding. Firefox may
+  // reject decode() while a lazy image has not started its request. Broken images
+  // still fail the complete/naturalWidth assertion rather than being ignored.
+  const capturedThumbs = page.locator('.carousel-thumb img');
+  await capturedThumbs.evaluateAll(images => images.slice(0, 5).forEach(img => { img.loading = 'eager'; }));
+  await expect.poll(() => capturedThumbs.evaluateAll(images => images.slice(0, 5).every(img => img.complete && img.naturalWidth > 0))).toBe(true);
+  await capturedThumbs.evaluateAll(images => Promise.all(images.slice(0, 5).map(img => img.decode())));
   // Capture the opening position so the sticky header does not cover the shortcut row.
   await page.evaluate(() => { document.activeElement?.blur(); window.scrollTo(0, 0); });
   await page.screenshot({ path: testInfo.outputPath('homepage.png'), fullPage: true });
