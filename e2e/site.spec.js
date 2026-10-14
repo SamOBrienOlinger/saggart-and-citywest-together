@@ -55,7 +55,7 @@ async function buttonContrast(locator) {
 
 test('button text stays legible and visits do not leave links tinted', async ({page, hasTouch}, testInfo) => {
   await page.goto('/');
-  const pill = page.locator('.pill-button');
+  const pill = page.locator('.community-actions .pill-button');
   await pill.scrollIntoViewIfNeeded();
   await page.mouse.move(0, 0);
   const before = await pill.screenshot();
@@ -141,6 +141,8 @@ test('approved homepage order, service destinations and visual evidence', async 
   await page.locator('.community-carousel').scrollIntoViewIfNeeded();
   // Decode every thumbnail that appears in the captured rail.
   await page.locator('.carousel-thumb img').evaluateAll(images => Promise.all(images.slice(0, 5).map(img => img.decode())));
+  // Capture the opening position so the sticky header does not cover the shortcut row.
+  await page.evaluate(() => { document.activeElement?.blur(); window.scrollTo(0, 0); });
   await page.screenshot({ path: testInfo.outputPath('homepage.png'), fullPage: true });
   await testInfo.attach('Homepage', { path: testInfo.outputPath('homepage.png'), contentType: 'image/png' });
 });

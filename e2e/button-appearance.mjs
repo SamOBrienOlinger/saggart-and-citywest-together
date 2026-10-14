@@ -14,7 +14,7 @@ export function inspectButtonAppearance(reference) {
   const selectors = 'button:not(.photo-open, .carousel-thumb, .gallery-thumbnail), summary, '
     + '.button, .pill-button, .service-button, .explore-topic, .back-top, .text-link, '
     + '.quiz-link, .story-link, .translation-link, .facts-jumps a, .facts-back, '
-    + '.service-links a, .group-documents-list a';
+    + '.group-documents-list a';
   const controls = [...document.querySelectorAll(selectors)].filter(element =>
     element.getClientRects().length && getComputedStyle(element).visibility !== 'hidden'
     && !element.matches(':disabled, :hover, :focus-visible, :active'));
@@ -29,5 +29,25 @@ export function inspectButtonAppearance(reference) {
       }])),
     });
   }
-  return { standard, checked: controls.length, issues };
+  // Local service links deliberately retain the illustrated reference design.
+  // Guard against the shared button rules shrinking or whitening their icons again.
+  const serviceLinks = [...document.querySelectorAll('#local-services .service-links a')]
+    .filter(element => element.getClientRects().length
+      && !element.matches(':hover, :focus-visible, :active'));
+  const iconColours = new Set();
+  for (const link of serviceLinks) {
+    const icon = link.querySelector('.service-icon');
+    const iconStyle = icon && getComputedStyle(icon);
+    const linkStyle = getComputedStyle(link);
+    if (!iconStyle || parseFloat(iconStyle.width) < 40 || parseFloat(iconStyle.height) < 40
+      || iconStyle.color === 'rgb(255, 255, 255)' || iconStyle.filter !== 'none'
+      || linkStyle.borderRadius !== '0px') {
+      issues.push({ label: link.textContent.trim(), issue: 'Local service icon or illustrated link styling was lost.' });
+    }
+    if (iconStyle) iconColours.add(iconStyle.color);
+  }
+  if (serviceLinks.length === 4 && iconColours.size !== 3) {
+    issues.push({ issue: 'Local services must retain the teal, coral and gold icon colours.' });
+  }
+  return { standard, checked: controls.length + serviceLinks.length, issues };
 }
