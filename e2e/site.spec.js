@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { questions } from '../assets/data/questions.js';
+import { activateHistoryLink } from './history-link-actions.mjs';
 
 const pages = ['index.html', 'learn.html', 'facts.html', 'citywest-supports.html', 'quiz.html', 'contact.html', 'about.html', 'privacy.html', 'accessibility.html'];
 const answers = new Map(questions.map(q => [q.question, q.options[q.correctIndex]]));
@@ -217,11 +218,15 @@ test('history combines photographs, full images and related local stories', asyn
   await page.keyboard.press('Escape');
   await expect(dialog).not.toBeVisible();
   await expect(open).toBeFocused();
-  await page.getByRole('link', {name:'Read the local stories', exact:true}).click();
+  await activateHistoryLink(page.getByRole('link', {name:'Read the local stories', exact:true}), hasTouch);
+  await expect(page).toHaveURL(/learn\.html#history-stories$/);
   await expect(page.locator('#history-stories')).toBeInViewport();
-  await page.getByRole('link', {name:'See the mill photograph', exact:true}).click();
+  await activateHistoryLink(page.getByRole('link', {name:'See the mill photograph', exact:true}), hasTouch);
+  await expect(page).toHaveURL(/learn\.html#photo-mill$/);
   await expect(page.locator('#photo-mill')).toBeVisible();
   await expect(gallery.locator('[data-gallery-count]')).toHaveText('3 / 6');
+  await expect(gallery.locator('.gallery-thumbnail').nth(2)).toHaveAttribute('aria-pressed', 'true');
+  await expect.poll(() => page.locator('#photo-mill .gallery-main-photo').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
   await gallery.screenshot({path:testInfo.outputPath('history-gallery.png')});
   await testInfo.attach('Integrated history gallery', {path:testInfo.outputPath('history-gallery.png'),contentType:'image/png'});
 });
