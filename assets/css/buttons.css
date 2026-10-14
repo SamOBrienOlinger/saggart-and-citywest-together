@@ -231,3 +231,32 @@
     color: HighlightText;
   }
 }
+
+/* Centre the homepage call to action in both stacked and two-column layouts.
+   Keep the shared pill colours, label styling and accessible focus ring. */
+:root body[data-page="home"] .community-actions {
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: clamp(1.3rem, 2.5vw, 2rem);
+}
+:root body[data-page="home"] .community-actions > a.pill-button {
+  width: min(100%, clamp(11rem, 60%, 18rem));
+  flex: 0 1 auto;
+}
+
+/* Interaction-only motion: no looping animation or movement for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  :root body[data-page="home"] .community-actions > a.pill-button {
+    transition: transform 180ms ease;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    :root body[data-page="home"] .community-actions > a.pill-button:hover {
+      transform: translateY(-2px);
+    }
+  }
+  :root body[data-page="home"] .community-actions > a.pill-button:active {
+    transform: translateY(1px);
+    transition-duration: 80ms;
+  }
+}
