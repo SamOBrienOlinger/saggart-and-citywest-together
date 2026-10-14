@@ -1,3 +1,4 @@
+import { initialiseUIRefinements } from './ui-refinements.js?v=20261014-ux';
 import{initialiseTranslationControl}from'./translation.js?v=plain-20260920';
 const toggle = document.querySelector('.nav-toggle');
 const menu = document.querySelector('#site-menu');
@@ -61,3 +62,5 @@ document.querySelectorAll('a[target="_blank"]').forEach(link=>{link.rel='noopene
 
 
 initialiseTranslationControl(menu);
+
+initialiseUIRefinements();

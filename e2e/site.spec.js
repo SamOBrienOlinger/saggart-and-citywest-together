@@ -125,7 +125,7 @@ test('approved homepage order, service destinations and visual evidence', async 
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Our area. Our story. Together.', { useInnerText: true });
   await expect(page.getByRole('link', { name: 'Try the 10-question quiz', exact: true })).toHaveCount(1);
-  expect(await page.locator('.quiz-strip').evaluate(el => !!(el.compareDocumentPosition(document.querySelector('#local-services')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
+  expect(await page.locator('#local-services').evaluate(el => !!(el.compareDocumentPosition(document.querySelector('.community-section')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
   for (const [name, path, target] of [
     ['Health services', 'learn.html#health', '#health'],
     ['English classes', 'citywest-supports.html#english-classes', '#english-classes'],
@@ -137,8 +137,9 @@ test('approved homepage order, service destinations and visual evidence', async 
     await page.goto('/');
   }
   const ipasLink = page.locator('#local-services').getByRole('link', { name: /^Citywest IPAS supports/ });
-  await expect(ipasLink).toHaveAttribute('href', 'https://ipas.irishimmigration.ie/');
-  await expect(ipasLink).toHaveAttribute('target', '_blank');
+  await expect(ipasLink).toHaveAttribute('href', 'citywest-supports.html');
+  await expect(ipasLink).not.toHaveAttribute('target', '_blank');
+  await expect(page.getByRole('link', { name: /^Official IPAS website/ })).toHaveAttribute('href', 'https://ipas.irishimmigration.ie/');
   await page.locator('.community-carousel').scrollIntoViewIfNeeded();
   // Decode every thumbnail that appears in the captured rail.
   await page.locator('.carousel-thumb img').evaluateAll(images => Promise.all(images.slice(0, 5).map(img => img.decode())));
@@ -152,8 +153,8 @@ test('all carousel media, wrap-around, keyboard and full-image dialog work', asy
   await page.goto('/');
   const thumbs = page.locator('.carousel-thumb');
   const slides = page.locator('.community-slide');
-  await expect(thumbs).toHaveCount(21);
-  for (let index = 0; index < 21; index++) {
+  await expect(thumbs).toHaveCount(18);
+  for (let index = 0; index < 18; index++) {
     await activate(thumbs.nth(index), hasTouch);
     await expect(page.locator('[data-current]')).toHaveText(String(index + 1));
     await expect(page.locator('.carousel-thumb[aria-current="true"]')).toHaveCount(1);
@@ -163,7 +164,7 @@ test('all carousel media, wrap-around, keyboard and full-image dialog work', asy
   await activate(page.getByRole('button', { name: 'Next image', exact: true }), hasTouch);
   await expect(page.locator('[data-current]')).toHaveText('1');
   await activate(page.getByRole('button', { name: 'Previous image', exact: true }), hasTouch);
-  await expect(page.locator('[data-current]')).toHaveText('21');
+  await expect(page.locator('[data-current]')).toHaveText('18');
   await page.getByRole('button', { name: 'Next image', exact: true }).press('Home');
   await expect(page.locator('[data-current]')).toHaveText('1');
   await page.getByRole('button', { name: 'Next image', exact: true }).press('ArrowRight');
@@ -319,7 +320,7 @@ test('enlarged text, reduced motion and RTL carousel remain usable', async ({ pa
   await next.press('ArrowRight');
   await expect(page.locator('[data-current]')).toHaveText('1');
   await next.press('End');
-  await expect(page.locator('[data-current]')).toHaveText('21');
+  await expect(page.locator('[data-current]')).toHaveText('18');
   await fitsViewport(page);
 });
 
