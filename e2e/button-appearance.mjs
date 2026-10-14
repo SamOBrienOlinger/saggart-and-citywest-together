@@ -29,9 +29,10 @@ export function inspectButtonAppearance(reference) {
       }])),
     });
   }
-  // Local service links deliberately retain the illustrated reference design.
+  // Primary service links retain the illustrated reference design.
+  // Supporting source links in the descriptions are deliberately ordinary text links.
   // Guard against the shared button rules shrinking or whitening their icons again.
-  const serviceLinks = [...document.querySelectorAll('#local-services .service-links a')]
+  const serviceLinks = [...document.querySelectorAll('#local-services .service-links > li > a')]
     .filter(element => element.getClientRects().length
       && !element.matches(':hover, :focus-visible, :active'));
   const iconColours = new Set();

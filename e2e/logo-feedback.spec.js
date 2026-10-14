@@ -48,12 +48,12 @@ test('logo hover highlights are circular, not rectangular, on every page', async
 });
 
 test('logo keyboard focus and pressed feedback stay circular on every page', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   for (const path of pages) {
     await openPage(page, path);
     for (const link of await page.locator(logoLinks).all()) {
-      await link.focus();
       await page.keyboard.press('Tab');
-      await page.keyboard.press('Shift+Tab');
+      await link.focus();
       await expect(link).toBeFocused();
       expect(await link.evaluate(a => a.matches(':focus-visible'))).toBe(true);
       await expectCircularFeedback(link);
@@ -61,7 +61,11 @@ test('logo keyboard focus and pressed feedback stay circular on every page', asy
       await expect(link).toHaveCSS('box-shadow', 'none');
       await expect(link.locator('img')).toHaveCSS('outline-color', 'rgb(255, 255, 255)');
       await expect(link.locator('img')).toHaveCSS('box-shadow', 'rgb(7, 59, 69) 0px 0px 0px 6px');
-      await link.evaluate(a => a.blur());
+      await link.evaluate(a => {
+        a.blur();
+        // Finish focus scrolling before placing the pointer, including narrow WebKit.
+        a.scrollIntoView({ block: 'center', behavior: 'instant' });
+      });
       await link.locator('img').hover();
       await page.mouse.down();
       try {

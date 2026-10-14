@@ -1,3 +1,4 @@
+import './community-ux.js?v=20261014-ux';
 import{initialiseTranslationControl}from'./translation.js?v=plain-20260920';
 const toggle = document.querySelector('.nav-toggle');
 const menu = document.querySelector('#site-menu');
