@@ -31,3 +31,59 @@
     height: 2.75rem;
   }
 }
+
+/* The link includes the image (and, in the header, the wordmark). Keep the
+   generic link highlight off that rectangular box; draw feedback on the circle. */
+:root body :is(.site-header a.brand[href], .site-footer a.footer-brand[href]) {
+  background: transparent;
+  color: #fff;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Keep footer spacing outside the link so its hit area is a true circle. */
+.site-footer .footer-brand {
+  border-radius: 50%;
+  margin-bottom: 1rem;
+  vertical-align: top;
+}
+.site-footer .footer-logo { margin: 0; }
+
+.site-header .brand-logo,
+.site-footer .footer-logo {
+  outline: 3px solid transparent;
+  outline-offset: 3px;
+}
+
+@media (hover: hover) {
+  :root body :is(.site-header a.brand[href], .site-footer a.footer-brand[href]):hover :is(.brand-logo, .footer-logo) {
+    outline-color: #fff0d5;
+  }
+}
+
+:root body :is(.site-header a.brand[href], .site-footer a.footer-brand[href]):active :is(.brand-logo, .footer-logo) {
+  outline-color: #fff;
+  box-shadow: 0 0 0 6px #74351d;
+}
+
+/* Keyboard focus remains visible, but its two-tone ring follows the logo. */
+:root body :is(.site-header a.brand[href], .site-footer a.footer-brand[href]):focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+:root body :is(.site-header a.brand[href], .site-footer a.footer-brand[href]):focus-visible :is(.brand-logo, .footer-logo) {
+  outline-color: #fff;
+  box-shadow: 0 0 0 6px #073b45;
+}
+
+@media (forced-colors: active) {
+  :root body :is(.site-header a.brand[href], .site-footer a.footer-brand[href]):is(:focus-visible, :active) :is(.brand-logo, .footer-logo) {
+    outline-color: Highlight;
+    box-shadow: none;
+  }
+}
+@media (forced-colors: active) and (hover: hover) {
+  :root body :is(.site-header a.brand[href], .site-footer a.footer-brand[href]):hover :is(.brand-logo, .footer-logo) {
+    outline-color: Highlight;
+  }
+}
