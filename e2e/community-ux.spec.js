@@ -13,6 +13,7 @@ test('copy email works with visible and announced feedback', async ({ page }) =>
   await copy.focus();
   await copy.press('Enter');
   await expect(page.locator('[data-copy-success]')).toBeVisible();
+  await expect(copy).toBeFocused();
   expect(await page.evaluate(() => window.copiedEmail)).toBe('saggartcitywesttogether@gmail.com');
   await expect(page.locator('#copy-email-status')).toHaveAttribute('role', 'status');
 });

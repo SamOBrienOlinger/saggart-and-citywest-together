@@ -7,6 +7,7 @@ const copyFailure = document.querySelector('[data-copy-failure]');
 if (copyButton && emailLink && copySuccess && copyFailure) {
   copyButton.hidden = false;
   copyButton.addEventListener('click', async () => {
+    const hadFocus = document.activeElement === copyButton;
     copySuccess.hidden = true;
     copyFailure.hidden = true;
     copyButton.disabled = true;
@@ -29,6 +30,11 @@ if (copyButton && emailLink && copySuccess && copyFailure) {
       }
     } finally {
       copyButton.disabled = false;
+      // Disabling a focused control can move focus to the body in some browsers.
+      // Restore it only when the visitor has not moved to a different control.
+      if (hadFocus && document.activeElement === document.body) {
+        copyButton.focus({ preventScroll: true });
+      }
     }
   });
 }

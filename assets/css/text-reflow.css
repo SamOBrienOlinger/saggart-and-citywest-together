@@ -1,13 +1,3 @@
-/* Shared text reflow, including the separately styled homepage. */
-html {
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-}
-body {
-  min-inline-size: 0;
-  overflow-wrap: break-word;
-  overflow-wrap: anywhere;
-}
 :where(h1, h2, h3, h4, h5, h6, p, li, dt, dd, blockquote, figcaption, summary, label) {
   min-inline-size: 0;
   max-inline-size: 100%;
@@ -68,7 +58,7 @@ body:not([data-page="home"]) .section { padding-block: clamp(1.75rem, 4vw, 3rem)
 :root body .facts-resource .resource-meta { margin: 0; }
 /* Source dates and cautions remain visible, not hidden in a disclosure. */
 :root body .facts-resource .resource-context { margin-top: .8rem; padding-top: .8rem; }
-:root body .contact-card h2 { font-size: clamp(1.4rem, 1.1rem + 1vw, 1.8rem); line-height: 1.3; }
+:root body[data-page="contact"] .form-shell .card h2 { font-size: clamp(1.4rem, 1.1rem + 1vw, 1.8rem); line-height: 1.3; }
 :root body .contact-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-block: 1rem; }
 :root body .contact-actions > * { flex: 0 1 auto; }
 :root body #community-email { user-select: text; -webkit-user-select: text; overflow-wrap: anywhere; }
