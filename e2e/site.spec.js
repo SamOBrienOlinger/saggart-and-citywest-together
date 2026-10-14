@@ -85,9 +85,10 @@ test('button text stays legible and visits do not leave links tinted', async ({p
 
 test('links visibly respond while hovered or held, then return to normal', async ({page, hasTouch}) => {
   await page.goto('/facts.html');
-  // Include selected navigation, section cards, external resources and footer links.
+  // Include selected navigation, section cards, external resources and footer text links.
+  // Image-only logos have circular feedback covered in logo-feedback.spec.js.
   await openMenuIfNeeded(page);
-  for (const selector of ['[data-nav="facts"]', '.facts-jumps a', '.facts-resource a', 'footer a']) {
+  for (const selector of ['[data-nav="facts"]', '.facts-jumps a', '.facts-resource a', 'footer li a']) {
     const link = page.locator(selector).first();
     await link.scrollIntoViewIfNeeded();
     await page.mouse.move(0, 0);
