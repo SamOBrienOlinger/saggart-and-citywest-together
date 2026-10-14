@@ -92,3 +92,30 @@
 }
 @media (prefers-contrast: more) { .site-footer { background: #003f40; } }
 @media print { .site-footer { display: none !important; } }
+
+/* Compact shared footer. Keep every route and the QR link; don't reduce touch targets. */
+:root body footer.site-footer { padding-block: 2rem 1rem; }
+:root body footer.site-footer .footer-grid {
+  grid-template-columns: minmax(7rem, .5fr) minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 1.5rem;
+}
+:root body footer.site-footer .footer-grid ul {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: .5rem;
+  margin-block: .5rem;
+  align-items: start;
+}
+:root body footer.site-footer .footer-grid ul > li { min-width: 0; }
+:root body footer.site-footer .footer-connect { gap: .75rem; }
+:root body footer.site-footer .footer-connect p { gap: .5rem; }
+:root body footer.site-footer .footer-note { margin-top: 1.25rem; padding-top: .75rem; }
+@media (max-width: 70rem) {
+  :root body footer.site-footer .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  :root body footer.site-footer { padding-top: 1.5rem; }
+  :root body footer.site-footer .footer-grid { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  :root body footer.site-footer .footer-grid ul { grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); }
+  :root body footer.site-footer .footer-qr { width: 6rem; height: 6rem; }
+  :root body footer.site-footer .footer-connect { align-items: flex-start; }
+}
