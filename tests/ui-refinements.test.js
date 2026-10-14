@@ -3,12 +3,13 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 const read = path => readFileSync(new URL('../' + path, import.meta.url), 'utf8');
 
-test('local services precede community content and distinguish the local guide from IPAS', () => {
+test('local services precede community content and retain the local Citywest guide without the removed external link', () => {
   const home = read('index.html');
   assert.ok(home.indexOf('<section id="local-services"') < home.indexOf('<section class="community-section"'));
   assert.match(home, /href="citywest-supports\.html"[^>]*><svg/);
-  assert.match(home, /Official IPAS website/);
-  assert.match(home, /href="https:\/\/ipas\.irishimmigration\.ie\/" target="_blank"/);
+  assert.doesNotMatch(home, /Official IPAS website/);
+  assert.doesNotMatch(home, /href="https:\/\/ipas\.irishimmigration\.ie\/"/);
+  assert.doesNotMatch(home, /class="container official-service-link"/);
 });
 test('contact supports native email plus an optional, accessible clipboard interaction', () => {
   const html = read('contact.html');

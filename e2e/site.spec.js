@@ -140,7 +140,9 @@ test('approved homepage order, service destinations and visual evidence', async 
   const ipasLink = page.locator('#local-services').getByRole('link', { name: /^Citywest IPAS supports/ });
   await expect(ipasLink).toHaveAttribute('href', 'citywest-supports.html');
   await expect(ipasLink).not.toHaveAttribute('target', '_blank');
-  await expect(page.getByRole('link', { name: /^Official IPAS website/ })).toHaveAttribute('href', 'https://ipas.irishimmigration.ie/');
+  await expect(page.locator('#local-services').getByRole('link', { name: /^Official IPAS website/ })).toHaveCount(0);
+  await expect(page.locator('#local-services a[href="https://ipas.irishimmigration.ie/"]')).toHaveCount(0);
+  await expect(page.locator('#local-services .official-service-link')).toHaveCount(0);
   await page.locator('.community-carousel').scrollIntoViewIfNeeded();
   // Explicitly load the captured thumbnails and wait before decoding. Firefox may
   // reject decode() while a lazy image has not started its request. Broken images
