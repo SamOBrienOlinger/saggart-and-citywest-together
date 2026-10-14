@@ -46,7 +46,7 @@ export function inspectButtonAppearance(reference) {
     }
     if (iconStyle) iconColours.add(iconStyle.color);
   }
-  if (serviceLinks.length === 3 && iconColours.size !== 3) {
+  if (serviceLinks.length === 4 && iconColours.size !== 3) {
     issues.push({ issue: 'Local services must retain the teal, coral and gold icon colours.' });
   }
   return { standard, checked: controls.length + serviceLinks.length, issues };
