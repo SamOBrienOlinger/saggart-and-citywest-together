@@ -1,0 +1,33 @@
+/* Shared logo treatment. Load after page styles so every page uses the same frame. */
+.site-header .brand-logo,
+.site-footer .footer-logo {
+  display: block;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  object-fit: contain;
+  object-position: center;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #fff;
+}
+
+.site-header .brand-logo {
+  width: 3.375rem;
+  height: 3.375rem;
+}
+
+.site-footer .footer-logo {
+  width: 7rem;
+  height: 7rem;
+}
+
+@media (max-width: 70rem) {
+  .site-header .brand-logo {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
