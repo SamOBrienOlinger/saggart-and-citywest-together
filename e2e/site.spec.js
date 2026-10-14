@@ -136,7 +136,7 @@ test('approved homepage order, service destinations and visual evidence', async 
     await expect(page.locator(target)).toBeAttached();
     await page.goto('/');
   }
-  const ipasLink = page.locator('#local-services').getByRole('link', { name: /^Citywest IPAS supports/ });
+  const ipasLink = page.locator('.home-hero-feature').getByRole('link', { name: /^Citywest IPAS supports/ });
   await expect(ipasLink).toHaveAttribute('href', 'https://ipas.irishimmigration.ie/');
   await expect(ipasLink).toHaveAttribute('target', '_blank');
   await page.locator('.community-carousel').scrollIntoViewIfNeeded();

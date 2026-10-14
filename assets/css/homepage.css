@@ -57,7 +57,11 @@ h2 { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; letter-sp
 .home-hero-copy { min-width: 0; }
 .home-hero h1 { font-size: clamp(2.9rem, 12.3vw, 5.1rem); line-height: .98; font-weight: 800; letter-spacing: -.045em; }
 .home-hero-copy p { max-width: 36ch; font-size: 1.1rem; line-height: 1.5; margin-top: 1.3rem; }
-.home-hero-art { width: 100%; order: -1; border-radius: 1rem; }
+.home-hero-feature { display: grid; gap: 1rem; min-width: 0; order: -1; }
+.home-hero-art { width: 100%; border-radius: 1rem; }
+.hero-ipas { display: grid; justify-items: center; gap: .65rem; min-width: 0; padding: 1.1rem; border-radius: 1rem; background: var(--paper); color: var(--ink); text-align: center; }
+.hero-ipas .service-icon { flex: 0 0 1.5rem; width: 1.5rem; height: 1.5rem; color: currentColor; }
+.hero-ipas-description { max-width: 38ch; margin: 0; font-size: .9375rem; line-height: 1.5; }
 /* Direct routes keep common tasks easy to find without changing the shared pills. */
 .home-shortcuts {
   display: flex;
@@ -137,6 +141,7 @@ h2 { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; letter-sp
   .service-links li { border-bottom: 0; }
   .service-links li:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
   .service-links li:nth-child(odd) { border-inline-end: 1px solid var(--line); }
+  .service-links li:last-child:nth-child(odd) { grid-column: 1 / -1; border-inline-end: 0; }
   .service-links a { padding: 1.1rem; }
   .service-links .service-description { margin-inline: 1.1rem; }
   .quiz-strip-inner { display: grid; grid-template-columns: 8rem minmax(0,1fr); gap: 2rem; max-width: 64rem; }
@@ -147,7 +152,8 @@ h2 { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; letter-sp
 @media (min-width: 56rem) {
   .home-hero { padding-block: 2.25rem; }
   .home-hero-grid { grid-template-columns: .8fr 1fr; gap: 3rem; align-items: center; }
-  .home-hero-art { order: 0; border-radius: 1.4rem; }
+  .home-hero-feature { order: 0; }
+  .home-hero-art { border-radius: 1.4rem; }
   .home-hero h1 { font-size: clamp(4.6rem,6.8vw,6.4rem); }
   .home-hero-copy p { font-size: 1.25rem; }
   .community-section { padding-block: 2.8rem; }
