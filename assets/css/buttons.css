@@ -162,8 +162,9 @@
 :root body .site-header .translate-toggle { width: 100%; margin-top: 0; }
 @media (min-width: 70.001rem) {
   :root body .site-header .brand { flex: 1 1 15rem; max-width: 17rem; }
-  :root body .site-header .nav-list { flex: 1 1 48rem; flex-wrap: nowrap; }
-  :root body .site-header .nav-list > li { flex: 1 1 auto; min-width: 0; }
+  :root body .site-header .nav-list { flex: 1 1 48rem; flex-wrap: wrap; }
+  :root body .site-header .nav-list > li { flex: 1 1 0; min-width: min-content; }
+  :root body .site-header :is(.nav-list > li > a, .translate-toggle) { overflow-wrap: normal; }
 }
 @media (max-width: 70rem) {
   :root body .site-header .nav-list { grid-template-columns: minmax(0, 1fr); }
