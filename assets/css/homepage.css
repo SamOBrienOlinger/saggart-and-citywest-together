@@ -121,10 +121,10 @@ h2 { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; letter-sp
 .service-icon { width: 2.5rem; height: 2.5rem; object-fit: contain; }
 .service-links a { text-align: start; }
 /* Keep the reference colours until a link is pressed; white remains legible then. */
-:root body .service-links a:active .service-icon { filter: brightness(0) invert(1); }
-.icon-teal { filter: invert(31%) sepia(80%) saturate(491%) hue-rotate(130deg) brightness(89%); }
-.icon-coral { filter: invert(60%) sepia(49%) saturate(672%) hue-rotate(326deg) brightness(96%); }
-.icon-gold { filter: invert(58%) sepia(64%) saturate(555%) hue-rotate(3deg) brightness(94%); }
+:root body .service-links a:active .service-icon { color: #fff; }
+.icon-teal { color: #187f78; }
+.icon-coral { color: var(--coral); }
+.icon-gold { color: var(--gold); }
 .image-dialog { width: min(65rem, calc(100% - 1.5rem)); max-height: calc(100vh - 1.5rem); max-height: calc(100dvh - 1.5rem); padding: 1rem; border: 0; border-radius: 1rem; color: var(--ink); background: var(--paper); }
 .image-dialog::backdrop { background: #001f29d9; }
 .image-dialog-toolbar { display: flex; align-items: center; justify-content: flex-end; gap: 1rem; margin-bottom: .75rem; }

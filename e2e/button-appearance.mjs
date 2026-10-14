@@ -40,11 +40,11 @@ export function inspectButtonAppearance(reference) {
     const iconStyle = icon && getComputedStyle(icon);
     const linkStyle = getComputedStyle(link);
     if (!iconStyle || parseFloat(iconStyle.width) < 40 || parseFloat(iconStyle.height) < 40
-      || iconStyle.filter === 'none' || iconStyle.filter === 'brightness(0) invert(1)'
+      || iconStyle.color === 'rgb(255, 255, 255)' || iconStyle.filter !== 'none'
       || linkStyle.borderRadius !== '0px') {
       issues.push({ label: link.textContent.trim(), issue: 'Local service icon or illustrated link styling was lost.' });
     }
-    if (iconStyle) iconColours.add(iconStyle.filter);
+    if (iconStyle) iconColours.add(iconStyle.color);
   }
   if (serviceLinks.length === 4 && iconColours.size !== 3) {
     issues.push({ issue: 'Local services must retain the teal, coral and gold icon colours.' });
