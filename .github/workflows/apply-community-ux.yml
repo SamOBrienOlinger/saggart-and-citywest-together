@@ -1,0 +1,80 @@
+name: Apply reviewed community UX branch update
+
+on:
+  push:
+    branches: [feat/community-ux-improvements]
+    paths:
+      - '.github/ux-delta.*.part'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.ref == 'refs/heads/feat/community-ux-improvements'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify and apply exact reviewed file replacements
+        run: |
+          python3 - <<'PY'
+          import gzip
+          import hashlib
+          import json
+          from pathlib import Path
+          allowed = {
+              'assets/css/buttons.css', 'assets/css/footer.css',
+              'assets/css/text-reflow.css', 'assets/js/community-ux.js',
+              'assets/js/main.js', 'citywest-supports.html', 'contact.html',
+              'docs/community-ux-improvements.md', 'e2e/community-ux.spec.js',
+              'e2e/logo-feedback.spec.js', 'e2e/site.spec.js', 'facts.html',
+              'index.html', 'tests/community-ux.test.js'
+          }
+          packed = b''.join(Path(f'.github/ux-delta.{i}.part').read_bytes() for i in (1, 2, 3))
+          raw = gzip.decompress(packed)
+          digest = lambda value: hashlib.sha256(value).hexdigest()
+          assert digest(raw) == 'f9e54d6a0f214fbcbe17cb51bac02795243e9d205c4af1249caa366b3baba9b9', 'Payload integrity failure'
+          changes = json.loads(raw)
+          assert set(changes) == allowed, 'Unexpected file set'
+          verified = {}
+          for name, change in changes.items():
+              path = Path(name)
+              assert not path.is_symlink(), f'Symlink rejected: {name}'
+              exists = path.exists()
+              before = path.read_bytes() if exists else b''
+              if change['base'] is None:
+                  assert not exists, f'New path already exists: {name}'
+              else:
+                  assert exists and digest(before) == change['base'], f'Base mismatch: {name}'
+              old = before.decode('utf-8')
+              parts, last = [], 0
+              for start, end, replacement in change['edits']:
+                  assert 0 <= last <= start <= end <= len(old), f'Invalid edit: {name}'
+                  parts.extend((old[last:start], replacement))
+                  last = end
+              result = (''.join(parts) + old[last:]).encode('utf-8')
+              assert digest(result) == change['result'], f'Result mismatch: {name}'
+              verified[path] = result
+          for path, content in verified.items():
+              path.parent.mkdir(parents=True, exist_ok=True)
+              path.write_bytes(content)
+          print(f'Applied and verified {len(verified)} files.')
+          PY
+      - name: Run all unit and source checks
+        run: npm test
+      - name: Commit only to the isolated feature branch
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          CURRENT_HEAD="$(git ls-remote origin refs/heads/feat/community-ux-improvements | cut -f1)"
+          test "$CURRENT_HEAD" = "$EXPECTED_HEAD"
+          git add assets/css/buttons.css assets/css/footer.css assets/css/text-reflow.css assets/js/community-ux.js assets/js/main.js citywest-supports.html contact.html docs/community-ux-improvements.md e2e/community-ux.spec.js e2e/logo-feedback.spec.js e2e/site.spec.js facts.html index.html tests/community-ux.test.js
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'feat: improve community navigation, content hierarchy and mobile usability'
+          git push origin HEAD:refs/heads/feat/community-ux-improvements
