@@ -37,6 +37,16 @@ test('all text and icon buttons match Get involved, including generated controls
       await expectTextReflow(page, expect, `${path} with button styles and languages open`);
     });
   }
+  await open(page, 'index.html');
+  const navigationToggle = page.getByRole('button', { name: 'Toggle navigation', exact: true });
+  if (await navigationToggle.isVisible()) await navigationToggle.click();
+  await testInfo.attach('Shared navigation pills', {
+    body: await page.locator('.nav').screenshot(), contentType: 'image/png',
+  });
+  await page.keyboard.press('Escape');
+  await testInfo.attach('Shared footer pills', {
+    body: await page.locator('.site-footer').screenshot(), contentType: 'image/png',
+  });
   await open(page, 'quiz.html');
   await page.locator('#start-quiz').click();
   await expect.poll(() => page.locator('.answer-button').count()).toBeGreaterThanOrEqual(2);
@@ -101,12 +111,19 @@ test('buttons share hover, keyboard focus and pressed feedback without movement'
   const reference = await interactionStates(page, page.locator('.community-actions .pill-button'), hasTouch);
   for (const [path, selector] of [
     ['index.html', '.quiz-link'], ['index.html', '.carousel-arrow'],
+    ['about.html', '.nav-list a[data-nav=learn]'],
+    ['index.html', '.site-footer li a'], ['index.html', '.footer-connect p a'],
+    ['index.html', '.footer-note a'],
     ['learn.html', '.explore-topic'], ['learn.html', '.gallery-control'],
     ['quiz.html', '#start-quiz'], ['contact.html', 'a.button'],
     ['about.html', 'a.button'], ['facts.html', '.facts-jumps a'],
     ['facts.html', 'summary'], ['citywest-supports.html', '.service-button'],
   ]) {
     await open(page, path);
+    if (selector.startsWith('.nav-list')) {
+      const toggle = page.getByRole('button', { name: 'Toggle navigation', exact: true });
+      if (await toggle.isVisible()) await toggle.click();
+    }
     const control = page.locator(selector).first();
     expect(await interactionStates(page, control, hasTouch), `${path} ${selector}`).toEqual(reference);
   }

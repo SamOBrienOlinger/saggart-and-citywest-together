@@ -14,7 +14,7 @@ export function inspectButtonAppearance(reference) {
   const selectors = 'button:not(.photo-open, .carousel-thumb, .gallery-thumbnail), summary, '
     + '.button, .pill-button, .service-button, .explore-topic, .back-top, .text-link, '
     + '.quiz-link, .story-link, .translation-link, .facts-jumps a, .facts-back, '
-    + '.group-documents-list a';
+    + '.group-documents-list a, .nav-list a[href], .site-footer a:not(:has(img))';
   const controls = [...document.querySelectorAll(selectors)].filter(element =>
     element.getClientRects().length && getComputedStyle(element).visibility !== 'hidden'
     && !element.matches(':disabled, :hover, :focus-visible, :active'));

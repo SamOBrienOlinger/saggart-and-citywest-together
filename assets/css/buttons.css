@@ -1,9 +1,10 @@
-/* Get involved is the standard for buttons. Local service links keep their illustrated layout.
+/* Get involved is the standard for buttons. Navigation and footer text links share the same style.
+   Local service links keep their illustrated layout.
    Load after page styles. Photo controls keep their image shapes and spacing. */
 :root body :is(button, summary, .button, .pill-button, .service-button,
   .explore-topic, .back-top, .text-link, .quiz-link, .story-link,
   .translation-link, .facts-jumps a, .facts-back,
-  .group-documents-list a):not(.photo-open, .carousel-thumb, .gallery-thumbnail) {
+  .group-documents-list a, .nav-list a[href], .site-footer a:not(:has(img))):not(.photo-open, .carousel-thumb, .gallery-thumbnail) {
   appearance: none;
   align-items: center;
   justify-content: center;
@@ -36,7 +37,7 @@
 /* Preserve the navigation toggle's responsive visibility and native summaries. */
 :root body :is(button, .button, .pill-button, .service-button, .explore-topic,
   .back-top, .text-link, .quiz-link, .story-link, .translation-link,
-  .facts-jumps a, .facts-back, .group-documents-list a):not(
+  .facts-jumps a, .facts-back, .group-documents-list a, .nav-list a[href], .site-footer a:not(:has(img))):not(
   .nav-toggle, .photo-open, .carousel-thumb, .gallery-thumbnail) { display: inline-flex; }
 :root body summary { list-style-position: inside; }
 :root body :is(.photo-open, .carousel-thumb, .gallery-thumbnail) {
@@ -48,7 +49,7 @@
   transform: none;
 }
 /* Selected controls remain identifiable without changing their pill design. */
-:root body :is(button, a.explore-topic, a.translation-link):is(
+:root body :is(button, a.explore-topic, a.translation-link, .nav-list a[href]):is(
   [aria-pressed="true"], [aria-current], [aria-expanded="true"]),
 :root body :is(.facts-details, .group-documents)[open] > summary {
   box-shadow: inset 0 0 0 2px #e8c36e;
@@ -61,7 +62,7 @@
   :root body :is(button, summary, .button, .pill-button, .service-button,
     .explore-topic, .back-top, .text-link, .quiz-link, .story-link,
     .translation-link, .facts-jumps a, .facts-back,
-    .group-documents-list a):not(:disabled):hover {
+    .group-documents-list a, .nav-list a[href], .site-footer a:not(:has(img))):not(:disabled):hover {
     background: #fff0d5;
     color: #74351d;
     text-decoration: underline;
@@ -72,7 +73,7 @@
 :root body :is(button, summary, .button, .pill-button, .service-button,
   .explore-topic, .back-top, .text-link, .quiz-link, .story-link,
   .translation-link, .facts-jumps a, .facts-back,
-  .group-documents-list a):focus-visible {
+  .group-documents-list a, .nav-list a[href], .site-footer a:not(:has(img))):focus-visible {
   background: #fff0d5;
   color: #74351d;
   outline: 3px solid #fff;
@@ -84,7 +85,7 @@
 :root body :is(button, summary, .button, .pill-button, .service-button,
   .explore-topic, .back-top, .text-link, .quiz-link, .story-link,
   .translation-link, .facts-jumps a, .facts-back,
-  .group-documents-list a):not(:disabled):active {
+  .group-documents-list a, .nav-list a[href], .site-footer a:not(:has(img))):not(:disabled):active {
   background: #74351d;
   color: #fff;
   transform: none;
@@ -153,6 +154,29 @@
   }
   :root body .carousel-count { grid-column: 1 / -1; grid-row: 1; text-align: center; }
 }
+/* Shared navigation spacing leaves room for the full pill padding and focus rings. */
+:root body .site-header .nav { flex-wrap: wrap; gap: .75rem; }
+:root body .site-header .nav-list { gap: .75rem; }
+:root body .site-header .nav-list > li > a { width: 100%; }
+:root body .site-header .translate-menu { border-inline-start: 0; padding-inline-start: 0; }
+:root body .site-header .translate-toggle { width: 100%; margin-top: 0; }
+@media (min-width: 70.001rem) {
+  :root body .site-header .brand { flex: 1 1 15rem; max-width: 17rem; }
+  :root body .site-header .nav-list { flex: 1 1 48rem; flex-wrap: wrap; }
+  :root body .site-header .nav-list > li { flex: 1 1 0; min-width: min-content; }
+  :root body .site-header .nav-list > li > :is(a[href], .translate-toggle) { overflow-wrap: break-word; }
+}
+@media (max-width: 70rem) {
+  :root body .site-header .nav-list { grid-template-columns: minmax(0, 1fr); }
+  :root body .site-header:not(.nav-ready) .nav-list,
+  :root body .site-header.nav-ready .nav-list.open { display: grid; }
+  :root body .site-header.nav-ready .nav-toggle { display: inline-flex; }
+}
+/* Keep image-only logo and QR links intact; give text pills comfortable separation. */
+:root body .site-footer .footer-grid ul { display: grid; gap: .75rem; justify-items: start; }
+:root body .site-footer .footer-connect p { display: flex; flex-direction: column; align-items: flex-start; gap: .75rem; }
+:root body .site-footer .footer-connect p > br { display: none; }
+
 /* A tall phone header must scroll away so enlarged text cannot cover controls. */
 @media (max-width: 430px) {
   :root body .site-header { position: relative; }
@@ -163,7 +187,7 @@
   :root body :is(button, summary, .button, .pill-button, .service-button,
     .explore-topic, .back-top, .text-link, .quiz-link, .story-link,
     .translation-link, .facts-jumps a, .facts-back,
-    .group-documents-list a, .explore-topic-icon, .service-icon) {
+    .group-documents-list a, .nav-list a[href], .site-footer a:not(:has(img)), .explore-topic-icon, .service-icon) {
     animation: none !important;
     transition: none !important;
   }
@@ -173,7 +197,7 @@
   :root body :is(button, summary, .button, .pill-button, .service-button,
     .explore-topic, .back-top, .text-link, .quiz-link, .story-link,
     .translation-link, .facts-jumps a, .facts-back,
-    .group-documents-list a):not(.photo-open, .carousel-thumb, .gallery-thumbnail),
+    .group-documents-list a, .nav-list a[href], .site-footer a:not(:has(img))):not(.photo-open, .carousel-thumb, .gallery-thumbnail),
   :root body button:is(.photo-open, .carousel-thumb, .gallery-thumbnail) {
     background: ButtonFace;
     color: ButtonText;
@@ -183,7 +207,7 @@
   :root body :is(button, summary, .button, .pill-button, .service-button,
     .explore-topic, .back-top, .text-link, .quiz-link, .story-link,
     .translation-link, .facts-jumps a, .facts-back,
-    .group-documents-list a):not(:disabled):is(:focus-visible, :active) {
+    .group-documents-list a, .nav-list a[href], .site-footer a:not(:has(img))):not(:disabled):is(:focus-visible, :active) {
     background: Highlight;
     color: HighlightText;
     outline-color: Highlight;
@@ -202,7 +226,7 @@
   :root body :is(button, summary, .button, .pill-button, .service-button,
     .explore-topic, .back-top, .text-link, .quiz-link, .story-link,
     .translation-link, .facts-jumps a, .facts-back,
-    .group-documents-list a):not(:disabled):hover {
+    .group-documents-list a, .nav-list a[href], .site-footer a:not(:has(img))):not(:disabled):hover {
     background: Highlight;
     color: HighlightText;
   }
