@@ -1,6 +1,43 @@
 import { test, expect } from '@playwright/test';
 import { expectTextReflow } from './text-reflow.mjs';
 const email = 'saggartcitywesttogether@gmail.com';
+
+// Original event posters remain slides 7-9, not a separate disclosure.
+async function checkGalleryPosters(page, hasTouch, scripts = true) {
+  const files = ['potluck-poster.jpg', 'human-library-poster.jpg', 'village-clean-up-poster.jpg'];
+  await expect(page.locator('.community-slide')).toHaveCount(21);
+  await expect(page.locator('.event-archive')).toHaveCount(0);
+  for (let i = 0; i < files.length; i++) {
+    const slide = page.locator('.community-slide').nth(i + 6);
+    if (scripts) {
+      const thumbnail = page.locator('.carousel-thumb').nth(i + 6);
+      if (hasTouch) await thumbnail.tap();
+      else await thumbnail.click();
+      await expect(page.locator('[data-current]')).toHaveText(String(i + 7));
+      await expect(slide).toHaveAttribute('aria-hidden', 'false');
+    } else {
+      // Scroll the real, native no-script rail; do not change the slide state.
+      await slide.evaluate(el => el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant' }));
+    }
+    const image = slide.locator('img');
+    await expect(image).toHaveAttribute('src', 'assets/images/community/' + files[i]);
+    await expect(image).toBeInViewport();
+    await expect.poll(() => image.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+    if (scripts) {
+      const open = slide.getByRole('button');
+      if (hasTouch) await open.tap();
+      else await open.click();
+      await expect(page.locator('.image-dialog')).toBeVisible();
+      await expect(page.locator('.dialog-image')).toHaveAttribute('src', new RegExp(files[i].replaceAll('.', '\\.') + '$'));
+      await expect.poll(() => page.locator('.dialog-image').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+      if (hasTouch) await page.locator('.dialog-close').tap();
+      else await page.locator('.dialog-close').click();
+      await expect(page.locator('.image-dialog')).not.toBeVisible();
+      await expect(open).toBeFocused();
+    }
+  }
+}
+
 async function contact(page) {
   await page.goto('/contact.html');
   await expect(page.locator('#copy-email')).toBeVisible();
@@ -46,7 +83,7 @@ test('clipboard messages use the translated page text', async ({ page }) => {
   await page.locator('#copy-email').click();
   await expect(page.locator('#copy-email-status')).toHaveText('Adresse e-mail copiée.');
 });
-test('task links, Facts order and poster archive are usable with enlarged text and RTL', async ({ page }, info) => {
+test('task links, Facts order and original gallery posters are usable with enlarged text and RTL', async ({ page, hasTouch }, info) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/citywest-supports.html');
   for (const id of ['english-classes', 'work-and-training', 'rights-and-advice', 'local-service-help']) {
@@ -58,16 +95,10 @@ test('task links, Facts order and poster archive are usable with enlarged text a
   await expect(page.locator('.facts-resource > h3.resource-purpose')).toHaveCount(16);
   expect(await page.locator('.facts-resource').evaluateAll(articles => articles.every(a => a.firstElementChild.matches('h3.resource-purpose')))).toBe(true);
   await page.goto('/');
-  await expect(page.locator('.event-poster-grid')).not.toBeVisible();
-  await page.locator('.event-posters > summary').click();
-  await expect(page.locator('.event-poster-grid img')).toHaveCount(3);
-  for (const image of await page.locator('.event-poster-grid img').all()) {
-    await image.scrollIntoViewIfNeeded();
-    await expect.poll(() => image.evaluate(im => im.complete && im.naturalWidth > 0)).toBe(true);
-  }
   await page.evaluate(() => { document.documentElement.dir = 'rtl'; document.documentElement.style.fontSize = '200%'; });
-  await expectTextReflow(page, expect, 'expanded event archive in RTL at 200% text');
-  await info.attach('Archived posters, enlarged RTL', { body: await page.locator('.event-archive').screenshot(), contentType: 'image/png' });
+  await checkGalleryPosters(page, hasTouch);
+  await expectTextReflow(page, expect, 'original gallery posters in RTL at 200% text');
+  await info.attach('Original gallery posters, enlarged RTL', { body: await page.locator('.community-carousel').screenshot(), contentType: 'image/png' });
 });
 test('cancelled pointer press and blur always reset the Get involved movement', async ({ page }) => {
   await page.goto('/');
@@ -84,7 +115,7 @@ test('cancelled pointer press and blur always reset the Get involved movement', 
 });
 test.describe('without JavaScript', () => {
   test.use({ javaScriptEnabled: false });
-  test('contact, task shortcuts, Facts and poster disclosure remain available', async ({ page }) => {
+  test('contact, task shortcuts, Facts and gallery posters remain available', async ({ page, hasTouch }) => {
     await page.goto('/contact.html');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Contact us and get involved');
     await expect(page.getByRole('link', { name: 'Email the community', exact: true })).toBeVisible();
@@ -95,7 +126,8 @@ test.describe('without JavaScript', () => {
     await page.goto('/facts.html');
     await expect(page.locator('.facts-resource > h3.resource-purpose')).toHaveCount(16);
     await page.goto('/');
-    await page.locator('.event-posters > summary').click();
-    await expect(page.locator('.event-poster-grid')).toBeVisible();
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await expect(page.locator('.carousel-controls')).toBeHidden();
+    await checkGalleryPosters(page, hasTouch, false);
   });
 });
