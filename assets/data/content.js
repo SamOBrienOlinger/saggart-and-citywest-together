@@ -31,7 +31,7 @@ export const sources = {
 };
 
 export const learningSections = [
-  { id: 'place', title: 'Place and identity', intro: 'Meet two connected communities at the meeting point of historic village, growing neighbourhood and Dublin Mountains landscape.', items: [
+  { id: 'place', title: 'Place and identity', intro: '', items: [
     { title: 'Saggart village', scope: 'Historic village', body: 'Saggart is an historic village in the foothills of the Dublin Mountains, south of the N7. Its village form, older buildings and long history of milling remain important to local identity.', source: 'village' },
     { title: 'Citywest and Fortunestown', scope: 'Growing neighbourhood', body: 'Citywest and Fortunestown form a newer residential and employment district east of Saggart. Planning for the area connects housing growth with public transport, services and public spaces.', source: 'neighbourhood' },
     { title: 'Teach Sagard', scope: 'Irish place name', body: 'The Placenames Database of Ireland records Teach Sagard as the Irish form of Saggart. Using official place names helps preserve the language and history carried by the landscape.', source: 'logainm' }
