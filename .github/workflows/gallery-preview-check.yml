@@ -1,0 +1,133 @@
+name: Verify original gallery display and public preview
+on:
+  push:
+    branches: [feat/ui-ux-refinements-20261014]
+    paths: [.github/workflows/gallery-preview-check.yml]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Check original images, poster interactions, framing and history
+        run: npx playwright test e2e/site.spec.js e2e/ui-refinements.spec.js e2e/gallery-display-preservation.spec.js --project=chromium-desktop --project=webkit-iphone-emulation --grep 'all carousel media|original gallery posters|gallery posters remain|original thumbnail framing|history combines' --retries=0
+      - name: Compare rendered gallery with baseline and inspect real preview URLs
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/gallery-baseline" gallery-proof
+          git archive bdad1bf9bbe54a9c779d49590cd37a46e01ec1e4 | tar -x -C "$RUNNER_TEMP/gallery-baseline"
+          python3 -m http.server 4181 --bind 127.0.0.1 --directory "$RUNNER_TEMP/gallery-baseline" > /tmp/baseline-server.log 2>&1 &
+          BASE_PID=$!
+          python3 -m http.server 4182 --bind 127.0.0.1 > /tmp/current-server.log 2>&1 &
+          CURRENT_PID=$!
+          trap 'kill "$BASE_PID" "$CURRENT_PID" 2>/dev/null || true' EXIT
+          node --input-type=module <<'JS'
+          import { chromium, webkit, devices, expect } from '@playwright/test';
+          import { readFile, writeFile } from 'node:fs/promises';
+          import { createHash } from 'node:crypto';
+          import assert from 'node:assert/strict';
+          const records = [];
+          const expected = JSON.parse(await readFile('tests/fixtures/community-gallery.json', 'utf8')).images;
+          const props = ['width','height','objectFit','objectPosition','borderRadius','aspectRatio','padding','margin','display'];
+          async function inspect(page, name, url) {
+            const response = await page.goto(url, { waitUntil: 'networkidle', timeout: 45000 });
+            const status = response?.status();
+            await expect(page.locator('.community-slide')).toHaveCount(21);
+            await expect(page.locator('.carousel-controls')).toBeVisible();
+            const actual = await page.locator('.community-slide img').evaluateAll(images => images.map(image => image.getAttribute('src')));
+            assert.deepEqual(actual, expected.map(image => image.src));
+            await page.locator('.community-slide img, .carousel-thumb img').evaluateAll(images => images.forEach(image => { image.loading = 'eager'; }));
+            await expect.poll(() => page.locator('.community-slide img, .carousel-thumb img').evaluateAll(images => images.every(image => image.complete && image.naturalWidth > 0)), { timeout: 45000 }).toBe(true);
+            const styles = await page.locator('.community-slide img, .carousel-thumb img').evaluateAll((images, props) => images.map(image => {
+              const css = getComputedStyle(image);
+              return Object.fromEntries(props.map(prop => [prop, css[prop]]));
+            }), props);
+            for (const index of [0,6,7,8]) {
+              await page.locator('.carousel-thumb').nth(index).click();
+              await expect(page.locator('[data-current]')).toHaveText(String(index+1));
+              await page.locator('.community-carousel').screenshot({ path: `gallery-proof/${name}-${index+1}.png`, animations: 'disabled' });
+            }
+            return { name, url, status, images: actual, styles, archiveCount: await page.locator('.event-archive').count() };
+          }
+          for (const [name, engine, config] of [
+            ['desktop', chromium, { viewport: { width: 1440, height: 1000 } }],
+            ['iphone', webkit, devices['iPhone 13']],
+          ]) {
+            const browser = await engine.launch();
+            const context = await browser.newContext({ ...config, reducedMotion: 'reduce' });
+            const page = await context.newPage();
+            try {
+              const original = await inspect(page, `${name}-original`, 'http://127.0.0.1:4181/index.html');
+              const corrected = await inspect(page, `${name}-corrected`, 'http://127.0.0.1:4182/index.html');
+              assert.deepEqual(corrected.styles, original.styles);
+              records.push({ name, comparison: 'same image sources, order, dimensions and framing', original, corrected });
+            } catch (error) {
+              records.push({ name, error: String(error) });
+              process.exitCode = 1;
+            } finally { await browser.close(); }
+          }
+          const prefix = 'SamOBrienOlinger/saggart-and-citywest-together';
+          const commit = 'c323d6edc27893600672d9f46ec647a778b10a7a';
+          const candidates = [
+            ['existing-branch-link', `https://raw.githack.com/${prefix}/feat/ui-ux-refinements-20261014/index.html`],
+            ['exact-version-preview', `https://raw.githack.com/${prefix}/${commit}/index.html`],
+            ['exact-version-cdn', `https://rawcdn.githack.com/${prefix}/${commit}/index.html`],
+          ];
+          const browser = await chromium.launch();
+          for (const [name, url] of candidates) {
+            const context = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+            const page = await context.newPage();
+            try {
+              const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
+              const html = await response.text();
+              await writeFile(`gallery-proof/${name}.html`, html);
+              records.push({ name, phase: 'http', url, finalURL: page.url(), status: response.status(), headers: await response.allHeaders(), galleryItemsInSource: (html.match(/class="community-slide"/g) || []).length });
+              if (await page.locator('.community-slide').count() !== 21) {
+                records.push({ name, verified: false, reason: 'URL did not directly serve the expected 21-item gallery', visibleText: (await page.locator('body').innerText()).slice(0,3000) });
+                await page.screenshot({ path: `gallery-proof/${name}-page.png`, fullPage: true });
+                continue;
+              }
+              const result = await inspect(page, name, url);
+              const original = records.find(record => record.name === 'iphone')?.original;
+              const thumbFits = result.styles.slice(21).map(style => style.objectFit);
+              assert.deepEqual(thumbFits, expected.map((_, index) => index < 18 ? 'cover' : 'contain'));
+              const hashes = [];
+              for (const image of expected) {
+                const reply = await context.request.get(new URL(image.src, page.url()).href);
+                assert.equal(reply.status(), 200);
+                const hash = createHash('sha256').update(await reply.body()).digest('hex');
+                assert.equal(hash, image.sha256);
+                hashes.push({ src: image.src, sha256: hash });
+              }
+              records.push({ ...result, verified: true, downloadedOriginalImageHashes: hashes });
+            } catch (error) {
+              records.push({ name, url, verified: false, error: String(error) });
+              await page.screenshot({ path: `gallery-proof/${name}-error.png`, fullPage: true }).catch(() => {});
+            } finally { await context.close(); }
+          }
+          await browser.close();
+          await writeFile('gallery-proof/report.json', JSON.stringify(records, null, 2));
+          console.log(JSON.stringify(records.map(({styles,original,corrected,downloadedOriginalImageHashes,...record}) => record), null, 2));
+          JS
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: gallery-display-and-public-preview
+          path: |
+            gallery-proof/
+            test-results/
+            playwright-report/
+          retention-days: 7
