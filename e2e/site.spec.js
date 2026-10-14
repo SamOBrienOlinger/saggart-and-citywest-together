@@ -256,7 +256,7 @@ test('navigation, languages and real contact route work', async ({ page, context
   await expect(page).toHaveURL(/contact\.html#contact-details$/);
   await expect(page.getByRole('link', { name: 'Email the community', exact: true })).toHaveAttribute('href', 'mailto:saggartcitywesttogether@gmail.com');
   await expect(page.locator('form')).toHaveCount(0);
-  await expect(page.getByText('This opens your email app. Write and send your message there.')).toBeVisible();
+  await expect(page.getByText('The “Email the community” button opens your email app. Write and send your message there.', { exact: true })).toBeVisible();
   await fitsViewport(page);
 
   // Verify the external handoff without relying on Google's live service.
