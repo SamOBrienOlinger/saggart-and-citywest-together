@@ -1,0 +1,73 @@
+name: Apply verified UI refinements to feature branch
+
+on:
+  push:
+    branches: [feat/ui-ux-refinements-20261014]
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.ref == 'refs/heads/feat/ui-ux-refinements-20261014'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Validate and apply exact source changes
+        run: |
+          python3 - <<'PY'
+          import gzip, hashlib, json, pathlib, subprocess
+          branch = 'feat/ui-ux-refinements-20261014'
+          base = 'bdad1bf9bbe54a9c779d49590cd37a46e01ec1e4'
+          expected = '37378cb59a2da8071fdf2001b76b1a8fe4dc6fe1e2ec8a83539a0c78a6f6d8b0'
+          data = b''.join(pathlib.Path(f'.github/ui-ux-payload/part-{i}').read_bytes() for i in range(4))
+          assert hashlib.sha256(data).hexdigest() == expected, 'Payload checksum mismatch'
+          manifest = json.loads(gzip.decompress(data))
+          assert manifest['branch'] == branch and manifest['base'] == base
+          assert subprocess.check_output(['git', 'rev-parse', 'HEAD^'], text=True).strip() == base
+          allowed = {'assets/css/footer.css', 'assets/css/reading-layout.css', 'assets/js/main.js', 'assets/js/ui-refinements.js', 'citywest-supports.html', 'contact.html', 'e2e/logo-feedback.spec.js', 'e2e/site.spec.js', 'e2e/ui-refinements.spec.js', 'facts.html', 'index.html', 'docs/ui-ux-refinements.md', 'tests/ui-refinements.test.js'}
+          assert {entry['path'] for entry in manifest['files']} == allowed
+          assert len(manifest['files']) == len(allowed)
+          def blob(data):
+              return hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()
+          ready = []
+          for entry in manifest['files']:
+              path = pathlib.Path(entry['path'])
+              if entry['before'] is None:
+                  assert not path.exists(), str(path)
+                  text = entry['content']
+              else:
+                  old = path.read_bytes()
+                  assert blob(old) == entry['before'], 'Base mismatch: ' + str(path)
+                  text = old.decode('utf-8')
+                  for start, end, replacement in reversed(entry['splices']):
+                      text = text[:start] + replacement + text[end:]
+              new = text.encode('utf-8')
+              assert blob(new) == entry['after'], 'Result mismatch: ' + str(path)
+              ready.append((path, new))
+          for path, data in ready:
+              path.parent.mkdir(parents=True, exist_ok=True)
+              path.write_bytes(data)
+              print('Verified:', path)
+          for i in range(4):
+              pathlib.Path(f'.github/ui-ux-payload/part-{i}').unlink()
+          pathlib.Path('.github/workflows/apply-ui-ux-branch.yml').unlink()
+          PY
+      - run: npm ci
+      - run: npm test
+      - name: Commit only to the requested feature branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/css/footer.css assets/css/reading-layout.css assets/js/main.js assets/js/ui-refinements.js citywest-supports.html contact.html e2e/logo-feedback.spec.js e2e/site.spec.js e2e/ui-refinements.spec.js facts.html index.html docs/ui-ux-refinements.md tests/ui-refinements.test.js .github/ui-ux-payload .github/workflows/apply-ui-ux-branch.yml
+          git diff --cached --check
+          git commit -m 'feat: improve support discovery, reading flow, contact actions and mobile presentation' -m 'Implement the seven reviewed UX refinements while retaining the existing brand and pill buttons. Preserve all original photographs; move posters into a separate archive. Add clipboard fallbacks, motion-state cleanup and regression coverage. Remove the temporary verified-change applicator.'
+          git push origin HEAD:refs/heads/feat/ui-ux-refinements-20261014
+          git rev-parse HEAD
