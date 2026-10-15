@@ -1,9 +1,11 @@
 @import url("reading-layout.css?v=20261014-ux");
-/* The homepage and inner pages share this footer independently of page styles. */
-.site-footer {
+/* Layout only. Shared button feedback, circular branding, link destinations,
+   QR artwork and the no-JavaScript language routes remain unchanged. */
+:root body .site-footer {
   background: #063e40;
   color: #dbe8ed;
-  padding: 2.25rem 0 1.25rem;
+  padding-block: clamp(1.5rem, 3vw, 2.5rem) 1.25rem;
+  padding-inline: env(safe-area-inset-left, 0px) env(safe-area-inset-right, 0px);
   font: 1rem/1.65 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 .site-footer .container {
@@ -11,110 +13,155 @@
   margin-inline: auto;
   padding-inline: 0;
 }
-.site-footer .footer-grid {
+:root body .site-footer .footer-grid {
   display: grid;
-  grid-template-columns: minmax(0, .45fr) minmax(0, 1.55fr) minmax(0, 1fr);
-  gap: 1.5rem;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 1.25rem;
 }
-.site-footer .footer-grid > * { min-width: 0; }
-.site-footer .footer-brand {
+.site-footer .footer-grid > div { min-width: 0; }
+:root body .site-footer .footer-grid > div:first-child {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: min(5rem, 100%);
+}
+:root body .site-footer .footer-brand {
   display: inline-flex;
   flex: none;
+  width: 100%;
+  max-width: 100%;
   align-items: center;
   gap: .75rem;
-  max-width: none;
+  margin: 0;
   color: #fff;
   font-size: 1rem;
   font-weight: 850;
   line-height: inherit;
   letter-spacing: -.02em;
   text-decoration: none;
+  vertical-align: top;
 }
-.site-footer .footer-logo {
+:root body .site-footer .footer-logo {
   display: block;
-  width: 7rem;
+  width: 100%;
   height: auto;
-  aspect-ratio: 493 / 492;
-  margin-bottom: 1rem;
+  max-width: 100%;
+  margin: 0;
+  aspect-ratio: 1;
   object-fit: contain;
   object-position: center;
   background: #fff;
   border-radius: 50%;
 }
 .site-footer h2 {
-  margin: 0 0 .55em;
+  margin: 0 0 .75rem;
   color: #e8c36e;
-  font: 700 1rem/1.12 Georgia, "Times New Roman", serif;
+  font: 700 1rem/1.4 Georgia, "Times New Roman", serif;
+  text-align: center;
   text-transform: uppercase;
-  letter-spacing: .1em;
+  letter-spacing: .08em;
 }
-.site-footer ul { margin: 1rem 0; padding: 0; list-style: none; }
-.site-footer p { max-width: 70ch; margin: 0 0 1rem; }
+.site-footer p { max-width: none; margin: 0; }
+.site-footer ul { margin: 0; padding: 0; list-style: none; }
 .site-footer a { color: #fff; text-underline-offset: .2em; }
-.site-footer li a, .site-footer .footer-connect a {
-  display: inline-flex;
+/* Equal tracks replace the uneven tag-like wrapping, without restyling pills. */
+:root body .site-footer .footer-grid > div > ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  align-items: stretch;
+  justify-items: stretch;
+  gap: .75rem;
+  margin: 0;
+}
+.site-footer .footer-grid > div > ul > li { min-width: 0; max-width: 100%; }
+.site-footer .footer-grid > div > ul > li:last-child:nth-child(odd) { grid-column: 1 / -1; }
+:root body .site-footer .footer-grid > div > ul > li > a {
+  width: 100%;
+  height: 100%;
+  min-height: 48px;
+}
+/* Keep the QR link first in the visual and keyboard order. The three contact
+   buttons form a stable stack beside it instead of wrapping unpredictably. */
+:root body .site-footer .footer-grid .footer-connect {
+  display: grid;
+  grid-template-columns: minmax(0, .7fr) minmax(0, 1.3fr);
+  gap: 1rem;
   align-items: center;
-  min-height: 44px;
+  width: 100%;
+  max-width: 25rem;
+  margin-inline: auto;
+}
+:root body .site-footer .footer-connect > a {
+  display: inline-flex;
+  justify-self: center;
+  align-items: center;
+  min-width: 0;
   max-width: 100%;
 }
-.site-footer .footer-connect {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1rem;
-}
-.site-footer .footer-connect > a { flex-shrink: 0; }
-.site-footer .footer-connect p { min-width: 0; margin: 0; }
-.site-footer .footer-qr {
+:root body .site-footer .footer-qr {
   display: block;
-  width: 8rem;
-  height: 8rem;
+  width: 7rem;
+  height: auto;
+  max-width: 100%;
+  aspect-ratio: 1;
   padding: .35rem;
   object-fit: contain;
   object-position: center;
   background: #fff;
   border-radius: .65rem;
 }
-.site-footer .footer-note {
-  margin-top: 2.5rem;
-  padding-top: 1.2rem;
+:root body .site-footer .footer-grid .footer-connect p,
+:root body .site-footer .footer-grid > div > h2 + p {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+  gap: .75rem;
+  min-width: 0;
+  margin: 0;
+}
+:root body .site-footer .footer-grid .footer-connect p > a,
+:root body .site-footer .footer-grid > div > h2 + p > a { width: 100%; }
+:root body .site-footer .footer-grid .footer-connect p > br,
+:root body .site-footer .footer-grid > div > h2 + p > br { display: none; }
+:root body .site-footer .footer-note {
+  width: min(calc(100% - 2rem), 70rem);
+  max-width: none;
+  margin: 1.25rem auto 0;
+  padding-top: 1.25rem;
   border-top: 1px solid rgb(255 255 255 / .2);
+  text-align: center;
   color: #c6dddd;
   font-size: .85rem;
 }
-@media (max-width: 70rem) {
-  .site-footer .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .site-footer .footer-grid > :first-child { grid-column: 1 / -1; }
+/* The existing minimal 404 footer and no-script language links stay available. */
+.site-footer > p.container:not(.footer-note) { text-align: center; }
+.site-footer .translation-fallback { margin-top: 1.5rem; }
+.site-footer .translation-fallback ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: .75rem;
 }
-@media (max-width: 760px) {
-  .site-footer .footer-grid { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
-  .site-footer .footer-connect { align-items: flex-start; }
+.site-footer .translation-fallback li > a { width: 100%; }
+@media (min-width: 44rem) {
+  :root body .site-footer .footer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2rem;
+  }
+  .site-footer h2 { text-align: start; }
+  :root body .site-footer .footer-grid .footer-connect { margin-inline: 0; }
 }
-@media (prefers-contrast: more) { .site-footer { background: #003f40; } }
+@media (min-width: 64rem) {
+  :root body .site-footer .footer-grid {
+    grid-template-columns: minmax(0, .35fr) minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: clamp(1.75rem, 3.5vw, 3rem);
+  }
+  :root body .site-footer .footer-grid > div:first-child {
+    grid-column: auto;
+    justify-self: start;
+    width: min(7rem, 100%);
+  }
+}
+@media (prefers-contrast: more) {
+  :root body .site-footer { background: #003f40; }
+}
 @media print { .site-footer { display: none !important; } }
-
-/* Group links rather than restyling their shared pill controls. */
-:root body .site-footer .footer-grid > div ul {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: .5rem;
-  margin-block: .75rem 0;
-}
-:root body .site-footer .footer-grid > div ul li { max-width: 100%; }
-:root body .site-footer .footer-grid .footer-connect p {
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: .5rem;
-}
-:root body .site-footer .footer-note { margin-top: 1.5rem; padding-top: 1rem; }
-@media (max-width: 760px) {
-  :root body .site-footer { padding-block: 1.5rem 1rem; }
-  :root body .site-footer .footer-grid { gap: 1rem; }
-  :root body .site-footer .footer-brand { margin-bottom: 0; }
-  :root body .site-footer .footer-logo { width: 5rem; height: 5rem; }
-  :root body .site-footer .footer-connect { gap: .75rem; flex-wrap: nowrap; align-items: flex-start; }
-  :root body .site-footer .footer-qr { width: 5rem; height: 5rem; }
-  :root body .site-footer .footer-connect p { flex: 1 1 0; }
-}
