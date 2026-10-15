@@ -4,9 +4,13 @@ import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 const read = path => readFileSync(new URL('../' + path, import.meta.url), 'utf8');
 
-test('local services precede community content and retain the local Citywest guide without the removed external link', () => {
+test('community content precedes local services and retains the local Citywest guide without the removed external link', () => {
   const home = read('index.html');
-  assert.ok(home.indexOf('<section id="local-services"') < home.indexOf('<section class="community-section"'));
+  const sections = ['<section class="community-section"', '<section id="local-services"', '<section class="quiz-strip"'];
+  const positions = sections.map(section => home.indexOf(section));
+  sections.forEach(section => assert.equal(home.split(section).length - 1, 1, section));
+  assert.ok(positions[0] > home.indexOf('<nav class="home-shortcuts'));
+  assert.ok(positions[0] < positions[1] && positions[1] < positions[2]);
   assert.match(home, /href="citywest-supports\.html"[^>]*><svg/);
   assert.doesNotMatch(home, /Official IPAS website/);
   assert.doesNotMatch(home, /href="https:\/\/ipas\.irishimmigration\.ie\/"/);
