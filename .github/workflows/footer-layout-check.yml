@@ -5,6 +5,7 @@ on:
     paths:
       - assets/css/footer.css
       - e2e/footer-layout.spec.js
+      - e2e/footer.spec.js
       - tests/footer-preservation.test.js
       - .github/workflows/footer-layout-check.yml
 permissions:
@@ -29,7 +30,7 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import subprocess, hashlib, json, re
+          import subprocess, json
           baseline = '7b862c4bc9af862342afa3579df8e529da80f2b6'
           pages = sorted(Path('.').glob('*.html'))
           assert len(pages) == 11
@@ -39,8 +40,8 @@ jobs:
               current = path.read_bytes()
               old = b'assets/css/footer.css?v=20261013-footer'
               new = b'assets/css/footer.css?v=20261015-footer-layout'
-              assert current == original, str(path) + ': unexpected HTML change'
-              assert current.count(old) == 1, str(path)
+              assert current.replace(new, old) == original, str(path) + ': unexpected HTML change'
+              assert current.count(old) + current.count(new) == 1, str(path)
               updated = current.replace(old, new)
               path.write_bytes(updated)
               assert updated.replace(new, old) == original
