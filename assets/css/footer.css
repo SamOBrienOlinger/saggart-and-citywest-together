@@ -133,6 +133,11 @@
   color: #c6dddd;
   font-size: .85rem;
 }
+/* The portfolio credit is 25% smaller than the shared 1rem link label.
+   Retain the existing touch target, pill styling and all interaction feedback. */
+:root body .site-footer > p.container > a[href="https://samobrienolinger.github.io/SamOBrienOlinger/"] {
+  font-size: .75rem;
+}
 /* The existing minimal 404 footer and no-script language links stay available. */
 .site-footer > p.container:not(.footer-note) { text-align: center; }
 .site-footer .translation-fallback { margin-top: 1.5rem; }
