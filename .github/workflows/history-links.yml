@@ -1,0 +1,45 @@
+name: Repeat iPhone history-link regression
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'e2e/history-link-actions.mjs'
+      - 'e2e/history-links.spec.js'
+      - 'e2e/site.spec.js'
+      - 'assets/js/gallery.js'
+      - 'assets/css/gallery.css'
+      - 'learn.html'
+      - '.github/workflows/history-links.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: history-links-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  iphone-repeat:
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps webkit
+      - name: Run each history journey 15 times without retries
+        run: npx playwright test e2e/site.spec.js e2e/history-links.spec.js --project=webkit-iphone-emulation --grep 'history combines|history link' --repeat-each=15 --workers=2 --retries=0
+      - name: Preserve traces, results and native-input evidence
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: history-links-iphone-repeat
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 14

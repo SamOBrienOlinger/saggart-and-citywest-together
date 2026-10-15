@@ -51,9 +51,10 @@ test('logo keyboard focus and pressed feedback stay circular on every page', asy
   for (const path of pages) {
     await openPage(page, path);
     for (const link of await page.locator(logoLinks).all()) {
-      await link.focus();
+      // Establish keyboard modality, then target the actual logo. Tab/Shift+Tab
+      // is not a reliable round trip when a responsive menu closes on focusout.
       await page.keyboard.press('Tab');
-      await page.keyboard.press('Shift+Tab');
+      await link.focus();
       await expect(link).toBeFocused();
       expect(await link.evaluate(a => a.matches(':focus-visible'))).toBe(true);
       await expectCircularFeedback(link);

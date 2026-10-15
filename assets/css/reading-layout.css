@@ -1,0 +1,97 @@
+/* Shared, quieter typography for information pages. Homepage branding is unchanged.
+   Imported by footer.css, which is included on every page, including no-JS views. */
+:root body:not([data-page="home"]) .page-hero,
+:root body[data-page="facts"] .facts-hero { padding-block: clamp(1.5rem, 4vw, 3rem); }
+:root body:not([data-page="home"]) .page-hero h1,
+:root body[data-page="facts"] .facts-hero h1 {
+  max-width: 25ch;
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  line-height: 1.15;
+  letter-spacing: -.025em;
+  margin-bottom: .65rem;
+}
+:root body:not([data-page="home"]) .page-hero .lede,
+:root body[data-page="facts"] .facts-hero .lede {
+  max-width: 65ch;
+  font-size: 1.125rem;
+  line-height: 1.65;
+}
+:root body[data-page="facts"] .facts-hero-line {
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  line-height: 1.3;
+}
+:root body:not([data-page="home"]) main .section,
+:root body[data-page="facts"] .facts-section { padding-block: clamp(1.5rem, 3vw, 3rem); }
+:root body:not([data-page="home"]) main :is(.card, .learning-section-header, .facts-section-heading) h2 {
+  font-size: clamp(1.4rem, 3.25vw, 2.2rem);
+  line-height: 1.25;
+  letter-spacing: -.02em;
+}
+:root body .facts-resource h3.resource-purpose {
+  font-size: 1.35rem;
+  line-height: 1.35;
+  margin: 0 0 .7rem;
+}
+:root body .facts-resource .resource-publisher { margin: 1rem 0 .25rem; }
+:root body .facts-resource .resource-meta { margin-bottom: .75rem; }
+:root body .facts-resource .resource-source { margin: 0; font-weight: 700; line-height: 1.5; }
+:root body .facts-resource .resource-source a {
+  display: inline-block;
+  min-height: 44px;
+  padding-block: .4rem;
+}
+:root body .facts-resource .resource-context { line-height: 1.6; }
+:root body .supports-jumps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: .75rem;
+  margin-bottom: 1.5rem;
+}
+:root body .support-task { display: block; font-size: 1.1rem; line-height: 1.4; }
+:root body .support-area { display: block; margin-top: .4rem; font-size: .9rem; font-weight: 400; }
+:root body .service-explainer { margin: .75rem 0 0; font-size: .95rem; line-height: 1.6; }
+:root body .email-copy { margin-block: 1.5rem 1.25rem; padding-top: 1rem; border-top: 1px solid #bdd8d6; }
+:root body #contact-email { -webkit-user-select: text; user-select: text; overflow-wrap: anywhere; }
+:root body .copy-status { min-height: 1.65em; margin-block: .6rem 0; font-size: 1rem; line-height: 1.65; }
+:root body .copy-status:empty { min-height: 0; margin: 0; }
+:root body .official-service-link { margin-top: 1rem; font-size: .95rem; }
+:root body .official-service-link a { display: inline-block; min-height: 44px; padding-block: .65rem; }
+:root body .event-archive { padding-block: 0 2rem; }
+:root body .event-archive h2 { font-size: clamp(1.5rem, 3vw, 2rem); margin-bottom: .75rem; }
+:root body .event-archive > p { max-width: 65ch; line-height: 1.6; margin-bottom: 1rem; }
+:root body .event-poster-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 1.5rem;
+  padding-top: 1.25rem;
+}
+:root body .event-poster-grid figure { margin: 0; min-width: 0; }
+:root body .event-poster-grid img { width: 100%; height: 20rem; object-fit: contain; background: #fffdf8; }
+:root body .event-poster-grid figcaption { padding-top: .65rem; }
+:root body .event-poster-grid h3 { font-size: 1.1rem; margin: 0 0 .25rem; }
+:root body .event-poster-grid p { font-size: .9rem; }
+
+/* Browsers differ in when :active clears after a cancelled link press.
+   Enhanced pointer state only controls the small, existing CTA movement. */
+:root body[data-page="home"] .community-actions > a.pill-button[data-press-ready][href] { transform: none; }
+:root body[data-page="home"] .community-actions > a.pill-button[data-press-ready][href]:not([data-pressed]):not(:hover):not(:focus-visible) {
+  background: #004b50;
+  color: #fff;
+}
+@media (prefers-reduced-motion: no-preference) {
+  @media (hover: hover) and (pointer: fine) {
+    :root body[data-page="home"] .community-actions > a.pill-button[data-press-ready][href]:hover { transform: translateY(-2px); }
+  }
+  :root body[data-page="home"] .community-actions > a.pill-button[data-press-ready][href][data-pressed] {
+    transform: translateY(1px);
+    transition-duration: 80ms;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root body[data-page="home"] .community-actions > a.pill-button[data-press-ready][href] { transform: none; transition: none; }
+}
+@media print {
+  .supports-jumps, #copy-email, .copy-status, .event-posters > summary { display: none !important; }
+  :root body .event-poster-grid { display: grid; }
+  :root body .event-poster-grid figure { break-inside: avoid; }
+}

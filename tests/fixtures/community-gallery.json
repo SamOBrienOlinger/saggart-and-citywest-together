@@ -1,0 +1,89 @@
+{
+  "baseline": "bdad1bf9bbe54a9c779d49590cd37a46e01ec1e4",
+  "images": [
+    {
+      "src": "assets/images/community/potluck-family-cropped-20261010.jpg",
+      "sha256": "164fd5374a086ad31e2c0ca735cb164a308cd1befed6c555da1fc42f61184174"
+    },
+    {
+      "src": "assets/images/community/potluck-table.jpg",
+      "sha256": "c0feb207734688bd795feba6bf0ce59f9cfc8fff764dd58dca59cad867d76d7d"
+    },
+    {
+      "src": "assets/images/community/potluck-games.jpg",
+      "sha256": "93af3185ce01fd16ac4f97b2300dab98d42853c48c4d38d4f14c128bffe39fa3"
+    },
+    {
+      "src": "assets/images/community/potluck-connection.jpg",
+      "sha256": "ddd37d0bc64ff149f7b34969800018c2eb5660ace653dcc97702be095dd3ec18"
+    },
+    {
+      "src": "assets/images/community/potluck-playing.jpg",
+      "sha256": "01fc37004ed2b50bce929929a2fbbc8f47b400778f220898d18ae30728ee0507"
+    },
+    {
+      "src": "assets/images/community/potluck-hall.jpg",
+      "sha256": "b16a489bb6fd64bc45ae9bcc548b4a94e4c43f0a2b77ffb7200a360d44387001"
+    },
+    {
+      "src": "assets/images/community/potluck-poster.jpg",
+      "sha256": "2ae3545ad2648f190127fc5a53fbde08b5644d6646af8ec2d2b359f85374f21d"
+    },
+    {
+      "src": "assets/images/community/human-library-poster.jpg",
+      "sha256": "ee55783cbcbc0f48be2f80a62b8022eb7b9721105d714d0939a41b1e6a29aaf9"
+    },
+    {
+      "src": "assets/images/community/village-clean-up-poster.jpg",
+      "sha256": "57829a4afc0ab69bda2b8b967233759fd982ef65dd8df8d83e6493fdb794e2a0"
+    },
+    {
+      "src": "assets/images/community/community-book-browsing.jpg",
+      "sha256": "7f8fcbc89cc5e224ffec1cd1a0b8474f4a5786cc7741135778bd1f0b407dddf9"
+    },
+    {
+      "src": "assets/images/community/community-young-reader.jpg",
+      "sha256": "7ab1a1d643687ffc4ec08f462bb535e493bd93b3d00677082141a0637f73371d"
+    },
+    {
+      "src": "assets/images/community/community-storytelling.jpg",
+      "sha256": "803d04b78c2be4171596cea9e21d89df2a95776907090a45d5e92246cd4f8f73"
+    },
+    {
+      "src": "assets/images/community/community-donations.jpg",
+      "sha256": "d326b7ef496542246973c6d9f99b6f18b57e810b71de7cb9a09fca0a6fb3d678"
+    },
+    {
+      "src": "assets/images/community/community-book-table.jpg",
+      "sha256": "9a85e7bf9f1417f62981dfa5a9936885d60b51c8a377d4702a34c037a25e8b9a"
+    },
+    {
+      "src": "assets/images/community/potluck-sharing-dishes.jpg",
+      "sha256": "de94e98896782d5fbaff5baac9677a045db9b10e1649de8f4b7407b11de512b1"
+    },
+    {
+      "src": "assets/images/community/community-smoothie-bike.jpg",
+      "sha256": "4578bf3bf201b773482cce8278d352556fe89db1dcb05d264a21e2d8953ebf4d"
+    },
+    {
+      "src": "assets/images/community/community-sharing-smoothies.jpg",
+      "sha256": "af700442a82c04ef3ce2283483a7af596eda31dc6093307055a2fd9ed63f2084"
+    },
+    {
+      "src": "assets/images/community/community-table-conversation.jpg",
+      "sha256": "fcfc0e8252ddfbb2446a03272872eb2274ebede41507b6e07c03cf0ad5ba4b7b"
+    },
+    {
+      "src": "assets/images/community/potluck-dishes-and-ingredients.jpg",
+      "sha256": "6cd7975323bf92a0ea42d096487c5cab642690b4a8c2593c6ecc5a266a559bbe"
+    },
+    {
+      "src": "assets/images/community/potluck-sweet-treats.jpg",
+      "sha256": "5502e3e504365f4e21f12341757eb35e882a5e0e340cc329d9227d92f9e0da01"
+    },
+    {
+      "src": "assets/images/community/community-group-gathering.jpg",
+      "sha256": "0497e78561344b5d3f8ed5d594d72bc4f1b9f75d14b452a85b4a77e54d7075da"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { questions } from '../assets/data/questions.js';
+import { activateHistoryLink } from './history-link-actions.mjs';
 
 const pages = ['index.html', 'learn.html', 'facts.html', 'citywest-supports.html', 'quiz.html', 'contact.html', 'about.html', 'privacy.html', 'accessibility.html'];
 const answers = new Map(questions.map(q => [q.question, q.options[q.correctIndex]]));
@@ -125,7 +126,7 @@ test('approved homepage order, service destinations and visual evidence', async 
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Our area. Our story. Together.', { useInnerText: true });
   await expect(page.getByRole('link', { name: 'Try the 10-question quiz', exact: true })).toHaveCount(1);
-  expect(await page.locator('.quiz-strip').evaluate(el => !!(el.compareDocumentPosition(document.querySelector('#local-services')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
+  expect(await page.locator('#local-services').evaluate(el => !!(el.compareDocumentPosition(document.querySelector('.community-section')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
   for (const [name, path, target] of [
     ['Health services', 'learn.html#health', '#health'],
     ['English classes', 'citywest-supports.html#english-classes', '#english-classes'],
@@ -137,11 +138,19 @@ test('approved homepage order, service destinations and visual evidence', async 
     await page.goto('/');
   }
   const ipasLink = page.locator('#local-services').getByRole('link', { name: /^Citywest IPAS supports/ });
-  await expect(ipasLink).toHaveAttribute('href', 'https://ipas.irishimmigration.ie/');
-  await expect(ipasLink).toHaveAttribute('target', '_blank');
+  await expect(ipasLink).toHaveAttribute('href', 'citywest-supports.html');
+  await expect(ipasLink).not.toHaveAttribute('target', '_blank');
+  await expect(page.locator('#local-services').getByRole('link', { name: /^Official IPAS website/ })).toHaveCount(0);
+  await expect(page.locator('#local-services a[href="https://ipas.irishimmigration.ie/"]')).toHaveCount(0);
+  await expect(page.locator('#local-services .official-service-link')).toHaveCount(0);
   await page.locator('.community-carousel').scrollIntoViewIfNeeded();
-  // Decode every thumbnail that appears in the captured rail.
-  await page.locator('.carousel-thumb img').evaluateAll(images => Promise.all(images.slice(0, 5).map(img => img.decode())));
+  // Explicitly load the captured thumbnails and wait before decoding. Firefox may
+  // reject decode() while a lazy image has not started its request. Broken images
+  // still fail the complete/naturalWidth assertion rather than being ignored.
+  const capturedThumbs = page.locator('.carousel-thumb img');
+  await capturedThumbs.evaluateAll(images => images.slice(0, 5).forEach(img => { img.loading = 'eager'; }));
+  await expect.poll(() => capturedThumbs.evaluateAll(images => images.slice(0, 5).every(img => img.complete && img.naturalWidth > 0))).toBe(true);
+  await capturedThumbs.evaluateAll(images => Promise.all(images.slice(0, 5).map(img => img.decode())));
   // Capture the opening position so the sticky header does not cover the shortcut row.
   await page.evaluate(() => { document.activeElement?.blur(); window.scrollTo(0, 0); });
   await page.screenshot({ path: testInfo.outputPath('homepage.png'), fullPage: true });
@@ -211,11 +220,15 @@ test('history combines photographs, full images and related local stories', asyn
   await page.keyboard.press('Escape');
   await expect(dialog).not.toBeVisible();
   await expect(open).toBeFocused();
-  await page.getByRole('link', {name:'Read the local stories', exact:true}).click();
+  await activateHistoryLink(page.getByRole('link', {name:'Read the local stories', exact:true}), hasTouch);
+  await expect(page).toHaveURL(/learn\.html#history-stories$/);
   await expect(page.locator('#history-stories')).toBeInViewport();
-  await page.getByRole('link', {name:'See the mill photograph', exact:true}).click();
+  await activateHistoryLink(page.getByRole('link', {name:'See the mill photograph', exact:true}), hasTouch);
+  await expect(page).toHaveURL(/learn\.html#photo-mill$/);
   await expect(page.locator('#photo-mill')).toBeVisible();
   await expect(gallery.locator('[data-gallery-count]')).toHaveText('3 / 6');
+  await expect(gallery.locator('.gallery-thumbnail').nth(2)).toHaveAttribute('aria-pressed', 'true');
+  await expect.poll(() => page.locator('#photo-mill .gallery-main-photo').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
   await gallery.screenshot({path:testInfo.outputPath('history-gallery.png')});
   await testInfo.attach('Integrated history gallery', {path:testInfo.outputPath('history-gallery.png'),contentType:'image/png'});
 });
