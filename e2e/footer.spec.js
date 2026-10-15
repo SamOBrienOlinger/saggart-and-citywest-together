@@ -35,19 +35,26 @@ test('homepage footer matches the other pages at normal and enlarged text', asyn
     let reference;
     for (const path of ['contact.html', 'index.html']) {
       await page.goto('/' + path);
+      const normalRootFont = await page.locator('html').evaluate(root => parseFloat(getComputedStyle(root).fontSize));
       await page.evaluate(scale => { document.documentElement.style.fontSize = `${scale * 100}%`; }, scale);
       await expect(page.locator('footer')).toBeVisible();
-      // WebKit can apply enlarged text one frame later. Text pills use the root
-      // font size; image-only links and images retain their inherited sizing.
-      await expect.poll(() => page.locator('footer a, footer img').evaluateAll(elements =>
-        elements.every(element => {
-          const reference = element.matches('a:not(:has(img))')
-            ? document.documentElement : element.parentElement;
-          return getComputedStyle(element).fontSize === getComputedStyle(reference).fontSize;
-        })))
-        .toBe(true);
+      // Matching a child to its parent is not enough: both can still contain
+      // the old computed font during a WebKit reflow. Require the requested
+      // size on the root and every 1rem/inherited footer component first.
+      const inheritedComponents = 'html, footer, footer .footer-grid, footer .footer-brand, footer .footer-logo, footer h2, footer ul, footer li a, footer .footer-connect, footer .footer-qr, footer .footer-connect p';
+      await expect.poll(() => page.locator(inheritedComponents).evaluateAll((elements, target) =>
+        elements.every(element => Math.abs(parseFloat(getComputedStyle(element).fontSize) - target) < .01),
+        normalRootFont * scale), { message: 'all footer components have the requested text scale' }).toBe(true);
       await expect.poll(() => page.locator('footer img').evaluateAll(images =>
         images.every(image => image.complete && image.naturalWidth > 0))).toBe(true);
+      let previous;
+      let stableSamples = 0;
+      await expect.poll(async () => {
+        const sample = JSON.stringify(await footerSnapshot(page));
+        stableSamples = sample === previous ? stableSamples + 1 : 0;
+        previous = sample;
+        return stableSamples;
+      }, { intervals: [50, 100], message: 'footer font and geometry have settled' }).toBeGreaterThanOrEqual(3);
       await expectTextReflow(page, expect, `${path} footer at ${scale * 100}% text`);
       const snapshot = await footerSnapshot(page);
       if (path === 'contact.html') reference = snapshot;
