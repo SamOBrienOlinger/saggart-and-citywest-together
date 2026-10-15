@@ -23,13 +23,15 @@
 :root body .site-footer .footer-grid > div:first-child {
   grid-column: 1 / -1;
   justify-self: center;
+  width: min(5rem, 100%);
 }
 :root body .site-footer .footer-brand {
   display: inline-flex;
   flex: none;
-  width: fit-content;
+  width: 100%;
   max-width: 100%;
   align-items: center;
+  gap: .75rem;
   margin: 0;
   color: #fff;
   font-size: 1rem;
@@ -41,7 +43,7 @@
 }
 :root body .site-footer .footer-logo {
   display: block;
-  width: 5rem;
+  width: 100%;
   height: auto;
   max-width: 100%;
   margin: 0;
@@ -156,8 +158,8 @@
   :root body .site-footer .footer-grid > div:first-child {
     grid-column: auto;
     justify-self: start;
+    width: min(7rem, 100%);
   }
-  :root body .site-footer .footer-logo { width: 7rem; height: auto; }
 }
 @media (prefers-contrast: more) {
   :root body .site-footer { background: #003f40; }
