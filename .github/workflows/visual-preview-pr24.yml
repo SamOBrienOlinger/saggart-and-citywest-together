@@ -20,99 +20,68 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - name: Render the exact branch and check its public preview
-        shell: bash
+      - name: Open and render the public branch preview
         run: |
-          mkdir -p visual-preview
-          git rev-parse HEAD > visual-preview/source-commit.txt
-          python3 scripts/serve-test-site.py > visual-preview/server.log 2>&1 &
-          SERVER_PID=$!
-          trap 'kill "$SERVER_PID"' EXIT
-          for i in $(seq 1 20); do
-            if curl -fsS http://127.0.0.1:4180/ > /dev/null; then break; fi
-            sleep 1
-          done
+          mkdir -p public-preview-evidence
           node --input-type=module <<'NODE'
-          import { chromium, devices } from '@playwright/test';
+          import {chromium,devices} from '@playwright/test';
           import fs from 'node:fs';
           import assert from 'node:assert/strict';
-          const commit = '6d65058f264a9de1a8bdb0bfff39493429736d3a';
-          const preview = `https://rawcdn.githack.com/SamOBrienOlinger/saggart-and-citywest-together/${commit}/`;
-          const report = { commit, branch: 'fix/browser-reflow-and-controls', preview, rendering: 'Chromium', publicPreview: {}, pages: [] };
-          const browser = await chromium.launch();
+          const commit='6d65058f264a9de1a8bdb0bfff39493429736d3a';
+          const base=`https://rawcdn.githack.com/SamOBrienOlinger/saggart-and-citywest-together/${commit}/`;
+          const report={commit,branch:'fix/browser-reflow-and-controls',preview:base+'index.html',profiles:[],confirmationScreens:0};
+          const browser=await chromium.launch();
           try {
-            for (const [name, options] of [
-              ['desktop', { viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 }],
-              ['mobile', { ...devices['iPhone 13'], deviceScaleFactor: 1 }],
-            ]) {
-              const context = await browser.newContext(options);
-              const page = await context.newPage();
-              for (const [label, path] of [['home', 'index.html'], ['facts', 'facts.html'], ['history', 'learn.html#heritage'], ['quiz', 'quiz.html']]) {
-                const response = await page.goto('http://127.0.0.1:4180/' + path, { waitUntil: 'networkidle' });
-                assert.equal(response.status(), 200);
-                await page.locator('.site-header.nav-ready').waitFor();
-                await page.evaluate(() => { for (const img of document.images) if (img.getAttribute('src')) img.loading = 'eager'; });
-                await page.waitForFunction(() => [...document.images].filter(img => img.getAttribute('src')).every(img => img.complete));
-                await page.evaluate(() => document.fonts.ready);
-                const broken = await page.evaluate(() => [...document.images].filter(img => img.getAttribute('src') && !img.naturalWidth).map(img => img.getAttribute('src')));
-                report.pages.push({profile:name,label,path,viewport:page.viewportSize(),brokenImages:broken});
-                if (label === 'history') {
-                  await page.locator('#heritage').evaluate(el => el.scrollIntoView({behavior:'instant',block:'start'}));
-                  await page.locator('#heritage').screenshot({path:`visual-preview/${name}-${label}.png`,animations:'disabled'});
-                } else {
-                  await page.evaluate(() => { document.activeElement?.blur(); window.scrollTo({top:0,behavior:'instant'}); });
-                  await page.screenshot({path:`visual-preview/${name}-${label}.png`,fullPage:true,animations:'disabled'});
-                  if (label === 'home') {
-                    await page.screenshot({path:`visual-preview/${name}-home-top.png`,animations:'disabled'});
-                    await page.locator('.site-footer').screenshot({path:`visual-preview/${name}-footer.png`,animations:'disabled'});
-                    if (name === 'desktop') {
-                      const logo = page.locator('.site-header .brand img');
-                      await logo.evaluate(el => el.scrollIntoView({behavior:'instant',block:'center'}));
-                      await logo.hover();
-                      await page.locator('.site-header').screenshot({path:'visual-preview/desktop-logo-hover.png',animations:'disabled'});
-                    }
-                  }
+            const response=await fetch(base+'index.html',{signal:AbortSignal.timeout(20000)});
+            report.homepageHTTPStatus=response.status;
+            report.exactHomepageSource=(await response.text())===fs.readFileSync('index.html','utf8');
+            assert.ok(response.ok&&report.exactHomepageSource);
+            for(const [profile,options] of [['desktop',{viewport:{width:1440,height:900},deviceScaleFactor:1}],['mobile',{...devices['iPhone 13'],deviceScaleFactor:1}]]) {
+              const context=await browser.newContext(options);
+              const page=await context.newPage();
+              const result={profile,viewport:page.viewportSize(),pages:[],scriptErrors:[]};
+              report.profiles.push(result);
+              page.on('pageerror',error=>result.scriptErrors.push(error.message));
+              async function confirmHost() {
+                const open=page.getByText('Open the page',{exact:true});
+                if(await open.isVisible()) {
+                  report.confirmationScreens++;
+                  await open.click();
+                  await page.waitForLoadState('networkidle');
                 }
               }
+              for(const path of ['index.html','facts.html','learn.html#heritage','quiz.html']) {
+                await page.goto(base+path,{waitUntil:'networkidle',timeout:45000});
+                await confirmHost();
+                await page.locator('.site-header.nav-ready').waitFor({timeout:15000});
+                const heading=await page.locator('h1').innerText();
+                const style=await page.locator('.site-header').evaluate(el=>getComputedStyle(el).backgroundColor);
+                assert.notEqual(style,'rgba(0, 0, 0, 0)');
+                result.pages.push({path,url:page.url(),heading,headerStyle:style});
+                if(path==='index.html') await page.screenshot({path:`public-preview-evidence/${profile}-public-home.png`,animations:'disabled'});
+                if(path==='quiz.html') {
+                  await page.locator('#start-quiz').click();
+                  await page.locator('#answer-options button').first().waitFor();
+                  result.quizStarts=true;
+                }
+              }
+              assert.equal(result.scriptErrors.length,0);
+              result.verified=true;
               await context.close();
             }
-            const page = await browser.newPage({viewport:{width:1440,height:900}});
-            const publicCheck = report.publicPreview;
-            publicCheck.scriptErrors = [];
-            publicCheck.failedRequests = [];
-            page.on('pageerror', error => publicCheck.scriptErrors.push(error.message));
-            page.on('requestfailed', request => publicCheck.failedRequests.push({url:request.url(),failure:request.failure()}));
-            try {
-              const response = await fetch(preview + 'index.html', {signal:AbortSignal.timeout(20000)});
-              const html = await response.text();
-              publicCheck.status = response.status;
-              publicCheck.exactHomepageSource = html === fs.readFileSync('index.html','utf8');
-              assert.ok(response.ok && publicCheck.exactHomepageSource);
-              await page.goto(preview + 'index.html', {waitUntil:'networkidle',timeout:45000});
-              await page.locator('.site-header.nav-ready').waitFor({timeout:15000});
-              publicCheck.headerStyle = await page.locator('.site-header').evaluate(el => getComputedStyle(el).backgroundColor);
-              await page.screenshot({path:'visual-preview/public-preview-desktop.png'});
-              await page.locator('#site-menu a[href="quiz.html"]').click();
-              await page.waitForURL('**/quiz.html');
-              await page.locator('#start-quiz').click();
-              await page.locator('#answer-options button').first().waitFor();
-              publicCheck.browserVerified = true;
-              publicCheck.quizNavigationVerified = true;
-            } catch (error) {
-              publicCheck.error = String(error);
-              await page.screenshot({path:'visual-preview/public-preview-diagnostic.png'}).catch(() => {});
-              publicCheck.pageURL = page.url();
-            }
-            await page.close();
+            report.browserVerified=true;
+          } catch(error) {
+            report.error=String(error);
+            throw error;
           } finally {
             await browser.close();
-            fs.writeFileSync('visual-preview/manifest.json', JSON.stringify(report,null,2));
+            fs.writeFileSync('public-preview-evidence/verification.json',JSON.stringify(report,null,2));
             console.log(JSON.stringify(report,null,2));
           }
           NODE
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: pr24-exact-branch-visual-preview
-          path: visual-preview/
+          name: pr24-public-preview-verification
+          path: public-preview-evidence/
           retention-days: 14
