@@ -1,0 +1,52 @@
+name: Verify published Quiz navbar
+on:
+  push:
+    branches: [fix/quiz-navbar-20261016]
+    paths: [.github/workflows/check-published-quiz-navbar.yml]
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify all published pages match the tested release
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from urllib.request import Request, urlopen
+          import json, re, subprocess, time
+          release = '0e08d1ead33aecbad65f6adc131eff8ebec8e192'
+          base = 'https://samobrienolinger.github.io/saggart-and-citywest-together/'
+          pages = sorted(Path('.').glob('*.html'))
+          records = []
+          for path in pages:
+              expected = subprocess.check_output(['git', 'show', release + ':' + path.name])
+              actual = b''
+              for attempt in range(20):
+                  with urlopen(Request(base + path.name, headers={'Cache-Control': 'no-cache'}), timeout=20) as response:
+                      actual = response.read()
+                      status = response.status
+                  if actual == expected:
+                      break
+                  time.sleep(5)
+              assert actual == expected, f'Public page does not match the release: {path.name}'
+              nav = re.search(r'<ul\b[^>]*\bid="site-menu"[^>]*>.*?</ul>', actual.decode(), re.S).group()
+              assert len(re.findall(r'data-nav="quiz"', nav)) == 1
+              assert re.search(r'<a href="quiz\.html" data-nav="quiz"(?: aria-current="page")?>Quiz</a>', nav)
+              records.append({'page': path.name, 'status': status, 'quiz_links': 1, 'matches_release': True})
+          assert len(records) == 11
+          print(json.dumps({'release': release, 'verified': True, 'pages': records}, indent=2))
+          PY
+      - name: Remove this completed verification workflow from the working branch
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/check-published-quiz-navbar.yml
+          git commit -m 'Remove completed published Quiz navbar check'
+          git push origin HEAD:fix/quiz-navbar-20261016
