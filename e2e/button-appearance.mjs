@@ -21,11 +21,27 @@ export function inspectButtonAppearance(reference) {
   const issues = [];
   for (const element of controls) {
     const actual = appearance(element);
-    const differences = properties.filter(property => actual[property] !== standard[property]);
+    // The approved portfolio credit is 25% smaller, not a full-size action label.
+    // Check its exact scaled typography while retaining every other pill check.
+    const isPortfolioCredit = element.matches('.site-footer > p.container > '
+      + 'a[href="https://samobrienolinger.github.io/SamOBrienOlinger/"]');
+    const expected = isPortfolioCredit ? { ...standard,
+      fontSize: `${parseFloat(standard.fontSize) * .75}px`,
+      lineHeight: `${parseFloat(standard.lineHeight) * .75}px`,
+    } : standard;
+    const differences = properties.filter(property => {
+      if (actual[property] === expected[property]) return false;
+      // WebKit rounds fractional computed line heights at the subpixel level.
+      if (isPortfolioCredit && ['fontSize', 'lineHeight'].includes(property)) {
+        const difference = Math.abs(parseFloat(actual[property]) - parseFloat(expected[property]));
+        return !actual[property].endsWith('px') || !Number.isFinite(difference) || difference > .001;
+      }
+      return true;
+    });
     if (differences.length) issues.push({
       label: element.getAttribute('aria-label') || element.textContent.trim().slice(0, 90),
       differences: Object.fromEntries(differences.map(property => [property, {
-        expected: standard[property], actual: actual[property],
+        expected: expected[property], actual: actual[property],
       }])),
     });
   }
