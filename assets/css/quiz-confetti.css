@@ -1,0 +1,36 @@
+/* A clipped, non-interactive overlay; it never moves quiz content or intercepts taps. */
+.quiz-confetti {
+  --confetti-distance: calc(100vh + 3rem);
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 80;
+  contain: strict;
+}
+.quiz-confetti-piece {
+  position: absolute;
+  top: -1.5rem;
+  display: block;
+  width: var(--confetti-size);
+  height: calc(var(--confetti-size) * 1.5);
+  border-radius: 1px;
+  background: var(--confetti-colour);
+  pointer-events: none;
+  animation: quiz-confetti-fall var(--confetti-duration) linear var(--confetti-delay) both;
+}
+.quiz-confetti-piece:nth-child(3n) { border-radius: 50%; }
+@keyframes quiz-confetti-fall {
+  0% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0; }
+  8% { opacity: .95; }
+  88% { opacity: .95; }
+  100% { transform: translate3d(var(--confetti-drift), var(--confetti-distance), 0) rotate(var(--confetti-spin)); opacity: 0; }
+}
+@supports (height: 100dvh) {
+  .quiz-confetti { --confetti-distance: calc(100dvh + 3rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .quiz-confetti { display: none !important; }
+  .quiz-confetti-piece { animation: none !important; }
+}
+@media print { .quiz-confetti, #stop-confetti { display: none !important; } }
