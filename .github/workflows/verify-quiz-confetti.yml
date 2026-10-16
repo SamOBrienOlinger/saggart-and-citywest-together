@@ -1,0 +1,82 @@
+name: Verify score-based quiz confetti
+on:
+  push:
+    branches: [feat/quiz-score-confetti-20261016]
+    paths: [.github/workflows/verify-quiz-confetti.yml]
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Integrate only the optional confetti controller and stylesheet
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('assets/js/quiz.js');s=p.read_text()
+          edits=[
+            ('const $=id=>', "import{createQuizConfetti}from'./quiz-confetti.js?v=20261016';\nconst $=id=>"),
+            ('let session=[],index=0,score=0,answered=false;', "const confetti=createQuizConfetti({stopButton:$('stop-confetti'),focusTarget:els.resultHeading});let session=[],index=0,score=0,answered=false;"),
+            ('function start(){try{','function start(){confetti.stop();try{'),
+            ('els.resultHeading.focus()}', 'els.resultHeading.focus();confetti.play(score,session.length)}'),
+          ]
+          for old,new in edits:
+            assert s.count(old)==1, old
+            s=s.replace(old,new,1)
+          p.write_text(s)
+          p=Path('quiz.html');s=p.read_text()
+          edits=[
+            ('assets/js/quiz.js?v=plain-20260920-2','assets/js/quiz.js?v=confetti-20261016'),
+            ('<link rel="stylesheet" href="assets/css/branding.css','<link rel="stylesheet" href="assets/css/quiz-confetti.css?v=20261016"><link rel="stylesheet" href="assets/css/branding.css'),
+            ('Review learning topics</a></div>','Review learning topics</a><button id="stop-confetti" class="button" type="button" hidden>Stop confetti</button></div>'),
+          ]
+          for old,new in edits:
+            assert s.count(old)==1, old
+            s=s.replace(old,new,1)
+          p.write_text(s)
+          PY
+      - run: npm ci
+      - name: Unit tests including every score boundary and original content integrity
+        run: npm test | tee unit-tests.log
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - name: New confetti checks in all eight browser and device profiles
+        run: |
+          npx playwright test e2e/quiz-confetti.spec.js --retries=0
+          mkdir -p confetti-proof
+          cp -r test-results playwright-report confetti-proof/
+      - name: Existing complete shuffled quiz and restart journey in all eight profiles
+        run: |
+          npx playwright test e2e/site.spec.js --grep '^complete shuffled quiz scores correctly and restarts$' --retries=0
+          mkdir -p existing-quiz-proof
+          cp -r test-results playwright-report existing-quiz-proof/
+      - name: Commit verified integration and remove the temporary verifier
+        run: |
+          git diff -- assets/js/quiz.js quiz.html > integration.diff
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/js/quiz.js quiz.html
+          git rm .github/workflows/verify-quiz-confetti.yml
+          git commit -m 'Integrate verified score-based confetti and remove one-off check'
+          git push origin HEAD:feat/quiz-score-confetti-20261016
+          git rev-parse HEAD > verified-commit.txt
+          git rev-parse HEAD^{tree} > verified-tree.txt
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: score-confetti-proof
+          path: |
+            confetti-proof/
+            existing-quiz-proof/
+            test-results/
+            playwright-report/
+            unit-tests.log
+            integration.diff
+            verified-commit.txt
+            verified-tree.txt
+          retention-days: 7
