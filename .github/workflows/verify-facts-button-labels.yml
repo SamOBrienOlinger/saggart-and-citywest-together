@@ -1,0 +1,112 @@
+name: Verify Facts button labels
+on:
+  push:
+    branches: [fix/facts-button-labels-20261016]
+    paths: [.github/workflows/verify-facts-button-labels.yml]
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Simplify only the four Facts section button labels
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re, subprocess
+          path = Path('facts.html')
+          assert subprocess.check_output(['git','rev-parse','HEAD:facts.html'], text=True).strip() == '547d4617e691d8240309825b10527e9201c1663e'
+          original = path.read_bytes()
+          before = b'''<nav class="container facts-jumps" aria-label="Facts sections">
+          <a href="#migration">Migration &amp; racism <small>10 selected resources</small></a>
+          <a href="#local-cso">Local facts and figures <small>Saggart &amp; Citywest</small></a>
+          <a href="#information">Information &amp; misinformation <small>3 selected resources</small></a>
+          <a href="#digital-literacy">How can I tell what is real? <small>3 selected resources</small></a>
+          </nav>'''
+          after = b'''<nav class="container facts-jumps" aria-label="Facts sections">
+          <a href="#migration">Migration &amp; racism</a>
+          <a href="#local-cso">Local facts and figures</a>
+          <a href="#information">Information &amp; misinformation</a>
+          <a href="#digital-literacy">How can I tell what is real?</a>
+          </nav>'''
+          assert original.count(before) == 1
+          updated = original.replace(before, after, 1)
+          assert updated.replace(after, before, 1) == original
+          for attribute in [b'href', b'id', b'src']:
+              pattern = rb'\b' + attribute + rb'="([^"]*)"'
+              assert re.findall(pattern, updated) == re.findall(pattern, original), attribute
+          path.write_bytes(updated)
+          print('Only the four button subtitles removed; all destinations, IDs, image sources and remaining bytes preserved.')
+          PY
+          cat > e2e/facts-button-labels-preview.spec.js <<'JS'
+          import { test, expect } from '@playwright/test';
+          const labels = ['Migration & racism', 'Local facts and figures', 'Information & misinformation', 'How can I tell what is real?'];
+          const targets = ['#migration', '#local-cso', '#information', '#digital-literacy'];
+          for (const method of ['pointer', 'keyboard']) {
+            test(`Facts buttons retain their destinations using ${method}`, async ({ page, hasTouch }) => {
+              await page.emulateMedia({ reducedMotion: 'reduce' });
+              for (let index = 0; index < targets.length; index++) {
+                await page.goto('/facts.html');
+                const buttons = page.locator('.facts-jumps > a');
+                await expect(buttons).toHaveText(labels);
+                await expect(page.locator('.facts-jumps small')).toHaveCount(0);
+                const button = buttons.nth(index);
+                await expect(button).toHaveAttribute('href', targets[index]);
+                await expect(button).toHaveAccessibleName(labels[index]);
+                if (method === 'keyboard') await button.press('Enter');
+                else if (hasTouch) await button.tap();
+                else await button.click();
+                await expect.poll(() => new URL(page.url()).hash).toBe(targets[index]);
+                await expect(page.locator(targets[index])).toBeInViewport();
+                expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
+              }
+            });
+          }
+          test('Facts buttons retain native navigation without JavaScript', async ({ browser, baseURL }) => {
+            const context = await browser.newContext({ baseURL, javaScriptEnabled: false, reducedMotion: 'reduce', viewport: { width: 390, height: 844 } });
+            try {
+              const page = await context.newPage();
+              for (let index = 0; index < targets.length; index++) {
+                await page.goto('/facts.html');
+                const button = page.locator('.facts-jumps > a').nth(index);
+                await expect(button).toHaveText(labels[index]);
+                await button.click();
+                await expect.poll(() => new URL(page.url()).hash).toBe(targets[index]);
+              }
+            } finally { await context.close(); }
+          });
+          JS
+      - run: npm ci
+      - run: npm test
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Verify desktop, iPhone, keyboard and no-JavaScript navigation
+        run: npx playwright test e2e/facts-button-labels-preview.spec.js --project=chromium-desktop --project=webkit-iphone-emulation --retries=0
+      - name: Commit only the tested Facts text change
+        shell: bash
+        run: |
+          git diff --check
+          git add facts.html
+          git rm .github/workflows/verify-facts-button-labels.yml
+          rm e2e/facts-button-labels-preview.spec.js
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Simplify Facts section button labels' -m 'Remove the resource-count and area subtitles from the four Facts navigation buttons. Keep the four main labels, hrefs, IDs, styling, scripts and all other page content unchanged. Exact preservation checks, unit tests and focused desktop/iPhone navigation tests passed.'
+          git push origin HEAD:fix/facts-button-labels-20261016
+          git diff --stat 18099b2946fa43fcb5c21a47910e9e3b2758b10c HEAD
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: facts-button-label-checks
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 7
