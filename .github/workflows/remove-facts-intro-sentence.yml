@@ -1,0 +1,55 @@
+name: Verify Facts sentence removal
+on:
+  push:
+    branches: [fix/remove-facts-intro-sentence-20261016]
+    paths: [.github/workflows/remove-facts-intro-sentence.yml]
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Remove exactly the requested sentence and preserve every other byte
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          path = Path('facts.html')
+          original = path.read_bytes()
+          baseline = subprocess.check_output(['git', 'show', 'fa5d126a4290af60cf5aa1375cd390d04b114be9:facts.html'])
+          assert original == baseline, 'Unexpected intervening Facts changes'
+          sentence = b' Start with a clear explanation, then follow the original evidence.'
+          old = b'<p>Ten recommended resources for challenging migration myths and racial stereotypes.' + sentence + b'</p>'
+          new = b'<p>Ten recommended resources for challenging migration myths and racial stereotypes.</p>'
+          assert original.count(sentence) == 1
+          assert original.count(old) == 1
+          updated = original.replace(old, new, 1)
+          assert sentence.strip() not in updated
+          assert updated.replace(new, old, 1) == original
+          path.write_bytes(updated)
+          print('Removed one sentence from facts.html. All remaining bytes are unchanged.')
+          PY
+      - run: npm ci
+      - run: npm test
+      - name: Commit only the verified page and remove the temporary workflow
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add facts.html
+          git rm .github/workflows/remove-facts-intro-sentence.yml
+          git commit -m 'Remove the requested explanatory sentence from Facts' -m 'Delete only Start with a clear explanation, then follow the original evidence. Keep the preceding sentence and all links, images, styles and functionality unchanged. Exact-byte preservation checks and the unit suite passed.'
+          test "$(git diff --name-only fa5d126a4290af60cf5aa1375cd390d04b114be9 HEAD)" = 'facts.html'
+          git diff fa5d126a4290af60cf5aa1375cd390d04b114be9 HEAD -- facts.html
+          git push origin HEAD:fix/remove-facts-intro-sentence-20261016
+          echo "Verified commit: $(git rev-parse HEAD)"
+          echo "Verified tree: $(git rev-parse HEAD^{tree})"
