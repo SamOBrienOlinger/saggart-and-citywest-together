@@ -1,0 +1,45 @@
+name: Repeat iPhone logo-feedback regression
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'e2e/logo-feedback.spec.js'
+      - 'assets/css/branding.css'
+      - 'assets/css/styles.css'
+      - 'assets/js/nav.js'
+      - '*.html'
+      - 'playwright.config.js'
+      - '.github/workflows/logo-feedback.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: logo-feedback-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  iphone-repeat:
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps webkit
+      - name: Run every-page logo focus and press checks 15 times without retries
+        run: npx playwright test e2e/logo-feedback.spec.js --project=webkit-iphone-emulation --grep 'logo keyboard focus and pressed feedback' --repeat-each=15 --workers=2 --retries=0
+      - name: Preserve results, screenshots and failure traces
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: logo-feedback-iphone-repeat
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 14
