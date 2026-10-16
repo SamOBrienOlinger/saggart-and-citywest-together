@@ -1,0 +1,131 @@
+name: Verify published quiz confetti
+on:
+  push:
+    branches: [feat/quiz-score-confetti-20261016]
+    paths: [.github/workflows/verify-live-confetti.yml]
+permissions:
+  contents: read
+jobs:
+  live-quiz:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Complete real quiz attempts on the published website
+        run: |
+          node --input-type=module <<'JS'
+          import { chromium, webkit, devices, expect } from '@playwright/test';
+          import { readFile, writeFile, mkdir } from 'node:fs/promises';
+          import assert from 'node:assert/strict';
+          import { questions } from './assets/data/questions.js';
+          const base = 'https://samobrienolinger.github.io/saggart-and-citywest-together/';
+          const answers = new Map(questions.map(q => [q.question, q.options[q.correctIndex]]));
+          const report = [];
+          await mkdir('live-confetti-proof', { recursive: true });
+          for (const [profile, engine, options] of [
+            ['desktop', chromium, { viewport: { width: 1440, height: 900 } }],
+            ['iphone-emulation', webkit, devices['iPhone 13']],
+          ]) {
+            const browser = await engine.launch();
+            const context = await browser.newContext({ ...options, reducedMotion: 'no-preference' });
+            const page = await context.newPage();
+            const errors = [];
+            page.on('pageerror', error => errors.push(error.message));
+            try {
+              const expectedHTML = await readFile('quiz.html', 'utf8');
+              await expect.poll(async () => {
+                const response = await context.request.get(base + 'quiz.html');
+                return response.status() === 200 && (await response.text()) === expectedHTML;
+              }, { timeout: 90000, intervals: [2000, 5000, 10000] }).toBe(true);
+              const assets = [
+                ['quiz.html', 'quiz.html'],
+                ['assets/js/quiz.js?v=confetti-20261016', 'assets/js/quiz.js'],
+                ['assets/js/quiz-confetti.js?v=20261016', 'assets/js/quiz-confetti.js'],
+                ['assets/css/quiz-confetti.css?v=20261016', 'assets/css/quiz-confetti.css'],
+                ['assets/data/questions.js', 'assets/data/questions.js'],
+              ];
+              for (const [url, path] of assets) {
+                const response = await context.request.get(base + url);
+                assert.equal(response.status(), 200, url);
+                assert.equal(await response.text(), await readFile(path, 'utf8'), url);
+              }
+              for (const [score, reduced] of [[7, false], [3, false], [7, true]]) {
+                await page.emulateMedia({ reducedMotion: reduced ? 'reduce' : 'no-preference' });
+                const response = await page.goto(base + 'quiz.html', { waitUntil: 'load' });
+                assert.equal(response.status(), 200);
+                await expect(page.locator('#stop-confetti')).toBeHidden();
+                await page.locator('#start-quiz').press('Enter');
+                for (let index = 0; index < 10; index++) {
+                  await expect(page.locator('#question-progress')).toHaveText(`Question ${index + 1} of 10`);
+                  const question = await page.locator('#question-text').innerText();
+                  const correct = answers.get(question);
+                  const choices = await page.locator('#answer-options button').allTextContents();
+                  assert.ok(choices.includes(correct));
+                  await page.getByRole('button', { name: index < score ? correct : choices.find(text => text !== correct), exact: true }).press('Enter');
+                  await expect(page.locator('.quiz-confetti')).toHaveCount(0);
+                  await page.locator('#next-question').press('Enter');
+                }
+                await expect(page.locator('#result-score')).toHaveText(`${score}/10`);
+                await expect(page.locator('#result-heading')).toBeFocused();
+                await expect(page.locator('#best-score-result')).toHaveText('Your best score: 7/10');
+                const count = reduced ? 0 : score < 4 ? 6 : 84;
+                await expect(page.locator('.quiz-confetti-piece')).toHaveCount(count);
+                const record = { profile, score, reducedMotion: reduced, count, assetsMatchRelease: true };
+                if (count) {
+                  record.mode = await page.locator('.quiz-confetti').getAttribute('data-confetti-mode');
+                  assert.equal(record.mode, score < 4 ? 'gentle' : 'celebration');
+                  await expect(page.locator('.quiz-confetti')).toHaveAttribute('aria-hidden', 'true');
+                  await expect(page.locator('.quiz-confetti')).toHaveCSS('pointer-events', 'none');
+                  record.durations = await page.locator('.quiz-confetti-piece').evaluateAll(pieces => pieces.map(piece => getComputedStyle(piece).animationDuration));
+                  for (const value of record.durations) {
+                    const duration = parseFloat(value);
+                    assert.ok(duration >= (score < 4 ? 12 : 2.6) && duration <= (score < 4 ? 16 : 4));
+                  }
+                  const first = page.locator('.quiz-confetti-piece').first();
+                  const start = await first.boundingBox();
+                  await page.waitForTimeout(score < 4 ? 3000 : 1200);
+                  const later = await first.boundingBox();
+                  assert.ok(later.y > start.y + 10);
+                  record.movedDown = later.y - start.y;
+                  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+                  await page.screenshot({ path: `live-confetti-proof/${profile}-${score}.png` });
+                  if (options.hasTouch) await page.locator('#stop-confetti').tap();
+                  else await page.locator('#stop-confetti').press('Enter');
+                  await expect(page.locator('.quiz-confetti')).toHaveCount(0);
+                  await expect(page.locator('#stop-confetti')).toBeHidden();
+                  record.stopControlWorks = true;
+                } else {
+                  await expect(page.locator('#stop-confetti')).toBeHidden();
+                }
+                await page.locator('#try-again').press('Enter');
+                await expect(page.locator('#current-score')).toHaveText('0');
+                await expect(page.locator('.quiz-confetti')).toHaveCount(0);
+                record.retryWorks = true;
+                report.push(record);
+              }
+              assert.deepEqual(errors, []);
+            } catch (error) {
+              report.push({ profile, error: String(error), applicationErrors: errors });
+              await page.screenshot({ path: `live-confetti-proof/${profile}-error.png`, fullPage: true }).catch(() => {});
+              throw error;
+            } finally {
+              await browser.close();
+              await writeFile('live-confetti-proof/report.json', JSON.stringify(report, null, 2));
+            }
+          }
+          console.log(JSON.stringify(report, null, 2));
+          JS
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: published-quiz-confetti-proof
+          path: live-confetti-proof/
+          retention-days: 7
