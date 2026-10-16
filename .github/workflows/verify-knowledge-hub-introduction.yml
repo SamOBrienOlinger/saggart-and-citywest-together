@@ -1,0 +1,48 @@
+name: Verify Knowledge Hub introduction
+on:
+  push:
+    branches: [fix/knowledge-hub-introduction-20261016]
+    paths: [.github/workflows/verify-knowledge-hub-introduction.yml]
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Update the introduction without duplicating its description
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+          path = Path('facts.html')
+          original = path.read_bytes()
+          blob = hashlib.sha1(b'blob ' + str(len(original)).encode() + b'\0' + original).hexdigest()
+          assert blob == '27a37b4127af6aa4eb1951f307dc5c5ffa8ce156', 'Review the changed source page before editing'
+          old = b'<p class="lede">Reliable information about migration, our local area and the things we see online. Explore the evidence, ask better questions and share with care.</p>'
+          new = b'<p class="lede">Welcome to our Knowledge Hub. Here you will find reliable information about migration, our local area and the things we see online.</p>'
+          assert original.count(old) == 1
+          updated = original.replace(old, new, 1)
+          assert updated.replace(new, old, 1) == original
+          assert b'<p class="facts-hero-line">Explore evidence.<br>Ask better questions.<br>Find real answers.<br><span>Share with care.</span></p>' in updated
+          assert updated.count(b'Welcome to our Knowledge Hub.') == 1
+          path.write_bytes(updated)
+          print('Updated only the Facts introduction. The four-line heading and every other byte remain unchanged.')
+          PY
+      - run: npm ci
+      - run: npm test
+      - name: Commit the verified page and remove the temporary workflow
+        shell: bash
+        run: |
+          git rm .github/workflows/verify-knowledge-hub-introduction.yml
+          git add facts.html
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Update the Facts introduction to welcome visitors to the Knowledge Hub' -m 'Use the requested introductory paragraph once, without repeating the existing description. Preserve the four-line heading, links, styling, images, scripts and all other page content. Exact-content preservation checks and the unit suite passed.'
+          git push origin HEAD:fix/knowledge-hub-introduction-20261016
