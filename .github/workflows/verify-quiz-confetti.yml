@@ -52,7 +52,7 @@ jobs:
           cp -r test-results playwright-report confetti-proof/
       - name: Existing complete shuffled quiz and restart journey in all eight profiles
         run: |
-          npx playwright test e2e/site.spec.js --grep '^complete shuffled quiz scores correctly and restarts$' --retries=0
+          npx playwright test e2e/site.spec.js --grep 'complete shuffled quiz scores correctly and restarts' --retries=0
           mkdir -p existing-quiz-proof
           cp -r test-results playwright-report existing-quiz-proof/
       - name: Commit verified integration and remove the temporary verifier
