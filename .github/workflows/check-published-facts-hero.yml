@@ -1,0 +1,46 @@
+name: Verify published Facts hero
+on:
+  push:
+    branches: [fix/facts-hero-copy-20261016]
+    paths: [.github/workflows/check-published-facts-hero.yml]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 52b9e48b4a918a0ed3a7af420bd355cf390b4b92
+          persist-credentials: false
+      - name: Verify the public page matches the tested release
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from urllib.request import Request, urlopen
+          from urllib.error import URLError
+          import hashlib, json, time, re
+          url = 'https://samobrienolinger.github.io/saggart-and-citywest-together/facts.html'
+          expected = Path('facts.html').read_bytes()
+          actual = b''
+          status = None
+          for attempt in range(12):
+              try:
+                  with urlopen(Request(url, headers={'Cache-Control': 'no-cache'}), timeout=15) as response:
+                      actual = response.read()
+                      status = response.status
+                  if actual == expected:
+                      break
+              except URLError as error:
+                  print(str(error))
+              time.sleep(5)
+          assert actual == expected, 'Published Facts page does not yet match the tested release'
+          heading = re.search(rb'<p class="facts-hero-line">(.*?)</p>', actual).group(1).decode()
+          assert heading == 'Explore evidence.<br>Ask better questions.<br>Find real answers.<br><span>Share with care.</span>'
+          assert b'Check the claim.' not in actual
+          assert b'Find the source.' not in actual
+          assert b'id="local-cso"' in actual
+          print(json.dumps({'release': '52b9e48b4a918a0ed3a7af420bd355cf390b4b92', 'url': url, 'status': status, 'matches_tested_release': True, 'heading': heading, 'sha256': hashlib.sha256(actual).hexdigest()}, indent=2))
+          PY
