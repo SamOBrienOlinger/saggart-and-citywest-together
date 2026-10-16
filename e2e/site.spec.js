@@ -3,7 +3,7 @@ import { questions } from '../assets/data/questions.js';
 import { activateHistoryLink } from './history-link-actions.mjs';
 
 const pages = ['index.html', 'learn.html', 'facts.html', 'citywest-supports.html', 'quiz.html', 'contact.html', 'about.html', 'privacy.html', 'accessibility.html'];
-const answers = new Map(questions.map(q => [q.question, q.options[q.correctIndex]])));
+const answers = new Map(questions.map(q => [q.question, q.options[q.correctIndex]]));
 
 async function fitsViewport(page) {
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
@@ -354,6 +354,7 @@ test.describe('without JavaScript', () => {
     // if a click races that browser-driven smooth scroll.
     await page.goto('/');
     await page.locator('#site-menu').getByRole('link', { name: 'Facts', exact: true }).click();
+    await expect(page.locator('#migration .facts-resource')).toHaveCount(10);
     await page.locator('summary', { hasText: 'Earlier census data' }).click();
     await expect(page.getByRole('link', { name: /^Census 2016 Small Area Population Statistics/ })).toBeVisible();
     await fitsViewport(page);
@@ -395,7 +396,7 @@ test('language choices cover every page and follow the current section', async (
   for (const path of pages) {
     await page.goto('/' + path);
     await openMenuIfNeeded(page);
-    await activate(page.getByRole('button', {name:'Languages',exact:true}),hasTouch);
+    await activate(page.getByRole('button', {name:'Languages', exact:true}), hasTouch);
     const links = page.locator('.translation-link');
     await expect(links).toHaveCount(9);
     for (const link of await links.all()) {
@@ -409,7 +410,7 @@ test('language choices cover every page and follow the current section', async (
   await page.goto('/facts.html');
   await page.locator('.facts-jumps a[href="#local-cso"]').click();
   await openMenuIfNeeded(page);
-  await activate(page.getByRole('button',{name:'Languages',exact:true}),hasTouch);
+  await activate(page.getByRole('button', {name:'Languages', exact:true}), hasTouch);
   expect(new URL(await page.locator('.translation-link').first().getAttribute('href')).searchParams.get('u')).toMatch(/facts\.html#local-cso$/);
 });
 
