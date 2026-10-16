@@ -1,0 +1,118 @@
+name: Visual preview of PR 24
+on:
+  push:
+    branches: [preview/render-pr24-6d65058]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 6d65058f264a9de1a8bdb0bfff39493429736d3a
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Render the exact branch and check its public preview
+        shell: bash
+        run: |
+          mkdir -p visual-preview
+          git rev-parse HEAD > visual-preview/source-commit.txt
+          python3 scripts/serve-test-site.py > visual-preview/server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          for i in $(seq 1 20); do
+            if curl -fsS http://127.0.0.1:4180/ > /dev/null; then break; fi
+            sleep 1
+          done
+          node --input-type=module <<'NODE'
+          import { chromium, devices } from '@playwright/test';
+          import fs from 'node:fs';
+          import assert from 'node:assert/strict';
+          import crypto from 'node:crypto';
+          const commit = '6d65058f264a9de1a8bdb0bfff39493429736d3a';
+          const preview = `https://raw.githack.com/SamOBrienOlinger/saggart-and-citywest-together/${commit}/`;
+          const report = { commit, branch: 'fix/browser-reflow-and-controls', preview, rendering: 'Chromium', publicPreview: {}, pages: [] };
+          const browser = await chromium.launch();
+          try {
+            try {
+              const response = await fetch(preview + 'index.html', {signal: AbortSignal.timeout(25000)});
+              const html = await response.text();
+              report.publicPreview = { status: response.status, contentType: response.headers.get('content-type'), exactHomepageSource: html === fs.readFileSync('index.html', 'utf8') };
+              if (response.ok && report.publicPreview.exactHomepageSource) {
+                const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+                const errors = [];
+                page.on('pageerror', error => errors.push(error.message));
+                await page.goto(preview + 'index.html', { waitUntil: 'networkidle', timeout: 60000 });
+                await page.locator('.site-header.nav-ready').waitFor({timeout: 15000});
+                const css = await page.locator('.site-header').evaluate(el => getComputedStyle(el).backgroundColor);
+                assert.notEqual(css, 'rgba(0, 0, 0, 0)');
+                await page.locator('#site-menu a[href="quiz.html"]').click();
+                await page.waitForURL('**/quiz.html');
+                await page.locator('#start-quiz').click();
+                await page.locator('#answer-options button').first().waitFor();
+                report.publicPreview.browserVerified = true;
+                report.publicPreview.quizNavigationVerified = true;
+                report.publicPreview.scriptErrors = errors;
+                await page.close();
+              }
+            } catch (error) {
+              report.publicPreview.error = String(error);
+            }
+            for (const [name, options] of [
+              ['desktop', { viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 }],
+              ['mobile', { ...devices['iPhone 13'], defaultBrowserType: undefined, deviceScaleFactor: 1 }],
+            ]) {
+              const context = await browser.newContext(options);
+              const page = await context.newPage();
+              for (const [label, path] of [['home', 'index.html'], ['facts', 'facts.html'], ['history', 'learn.html#heritage'], ['quiz', 'quiz.html']]) {
+                const response = await page.goto('http://127.0.0.1:4180/' + path, { waitUntil: 'networkidle' });
+                assert.equal(response.status(), 200);
+                await page.locator('.site-header.nav-ready').waitFor();
+                await page.evaluate(() => {
+                  for (const img of document.images) img.loading = 'eager';
+                });
+                await page.waitForFunction(() => [...document.images].every(img => img.complete));
+                await page.evaluate(() => document.fonts.ready);
+                const broken = await page.evaluate(() => [...document.images].filter(img => !img.naturalWidth).map(img => img.getAttribute('src')));
+                assert.equal(broken.length, 0, `${name} ${label}: broken image`);
+                if (label === 'history') {
+                  await page.locator('#heritage').evaluate(el => el.scrollIntoView({behavior:'instant',block:'start'}));
+                  await page.locator('#heritage').screenshot({path:`visual-preview/${name}-${label}.png`,animations:'disabled'});
+                } else {
+                  await page.evaluate(() => { document.activeElement?.blur(); window.scrollTo({top:0,behavior:'instant'}); });
+                  await page.screenshot({path:`visual-preview/${name}-${label}.png`,fullPage:true,animations:'disabled'});
+                  if (label === 'home') {
+                    await page.screenshot({path:`visual-preview/${name}-home-top.png`,animations:'disabled'});
+                    await page.locator('.site-footer').screenshot({path:`visual-preview/${name}-footer.png`,animations:'disabled'});
+                    if (name === 'desktop') {
+                      const logo = page.locator('.site-header .brand img');
+                      await logo.evaluate(el => el.scrollIntoView({behavior:'instant',block:'center'}));
+                      await logo.hover();
+                      await page.locator('.site-header').screenshot({path:'visual-preview/desktop-logo-hover.png',animations:'disabled'});
+                    }
+                  }
+                }
+                report.pages.push({profile:name,label,path,viewport:page.viewportSize(),brokenImages:broken});
+              }
+              await context.close();
+            }
+          } finally {
+            await browser.close();
+            fs.writeFileSync('visual-preview/manifest.json', JSON.stringify(report,null,2));
+            console.log(JSON.stringify(report,null,2));
+          }
+          NODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pr24-exact-branch-visual-preview
+          path: visual-preview/
+          retention-days: 14
