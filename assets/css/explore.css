@@ -103,3 +103,14 @@ body[data-page="learn"] .learning-section:target .learning-section-header { bord
 @media print {
   .explore-directory { display: none; }
 }
+
+/* Keep the three existing Community icons together; wrap the label when needed. */
+:root body[data-page="learn"] .explore-topic--community { flex-wrap: wrap; }
+:root body[data-page="learn"] .explore-community-icons {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .25rem;
+  flex: 0 0 auto;
+  max-inline-size: 100%;
+}
