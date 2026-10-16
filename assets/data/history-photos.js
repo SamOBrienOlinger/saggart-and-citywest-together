@@ -68,8 +68,8 @@ export const historyPhotos = [
   {
     "id": "photo-welcome",
     "label": "Welcome",
-    "title": "Welcome to the village",
-    "description": "Explore visitor information and things to see in Saggart through Dublin’s Outdoors.",
+    "title": "Welcome",
+    "description": "",
     "credit": "",
     "src": "assets/images/welcome-to-saggart-v3.jpg",
     "srcset": null,
