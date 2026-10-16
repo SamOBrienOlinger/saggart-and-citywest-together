@@ -1,0 +1,40 @@
+name: Verify published Facts button labels
+on:
+  push:
+    branches: [fix/facts-button-labels-20261016]
+    paths: [.github/workflows/check-published-facts-buttons.yml]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 355dcd5a3102ce629da87b44e4316e931efa2c20
+          persist-credentials: false
+      - name: Check the actual public page against the tested release
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from urllib.request import Request, urlopen
+          from html import unescape
+          import re, time, hashlib, json
+          url = 'https://samobrienolinger.github.io/saggart-and-citywest-together/facts.html'
+          expected = Path('facts.html').read_bytes()
+          for attempt in range(12):
+              with urlopen(Request(url, headers={'Cache-Control':'no-cache'}), timeout=20) as reply:
+                  actual = reply.read()
+                  status = reply.status
+              if actual == expected:
+                  break
+              time.sleep(5)
+          assert actual == expected, 'Published Facts page does not yet match the tested release'
+          markup = re.search(r'<nav class="container facts-jumps"[^>]*>(.*?)</nav>', actual.decode(), re.S).group(1)
+          links = [(href, unescape(label)) for href, label in re.findall(r'<a href="([^"]+)">([^<]+)</a>', markup)]
+          assert links == [('#migration','Migration & racism'),('#local-cso','Local facts and figures'),('#information','Information & misinformation'),('#digital-literacy','How can I tell what is real?')]
+          assert '<small>' not in markup
+          print(json.dumps({'url':url,'status':status,'release':'355dcd5a3102ce629da87b44e4316e931efa2c20','matches_tested_release':True,'sha256':hashlib.sha256(actual).hexdigest(),'buttons':links}, indent=2))
+          PY
