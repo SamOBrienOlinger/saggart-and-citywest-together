@@ -3,27 +3,29 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 
-// Exact footer markup before the layout-only update, at release 7b862c4.
+// Expected footer markup, including the requested Quiz label change on 16 October 2026.
 // Intentional future content changes must explicitly update this fixture.
 const originals = {
   '404.html': 'ac724f753e737025b33aa9bbbfedaf21bd22ed9e47f032766fd93c7e59ab9c17',
-  'about.html': '5a5d32fae3c8c5d74e45077ac8638417e81b66e0298326b67c181335c13d725b',
-  'accessibility.html': 'eb9e993f6201ee596f8d0ef73c93c0325c505450e12fac121e2142308a20def3',
-  'citywest-supports.html': '69f8c683ef9cc8248c4b6d2e13970a1d75c356caf9db3305d1a4afe4fae54dcf',
-  'contact.html': '26b858c61275d2ac8b64761a0c687c3428c9105859148ac6e951f623cf91d15e',
-  'facts.html': '5a10467e53d802532c28515cc1ad63b260296485ae958a297ef251db0d3658f4',
-  'gallery.html': '124ad216e22667328832a0cb26794a937ab1214c32b5c85f2edc895f9078839a',
-  'index.html': '6b20213cb66db8c3fdb25222343488afc3272261821c4bc3e8a92095694bd4d1',
-  'learn.html': '24db678ac06f1fae20f5cf287b61ef98bdf544422f249723854ff81d66c130d4',
-  'privacy.html': '374351876e232f665f8e4401fce94d7a906168f1ee87c5e75cc4afd5ba8aa2ff',
-  'quiz.html': '33384e746474307a82d0dfa31228db62483c8dbe5aed4a11b3fa41d9c7d43611',
+  'about.html': '23ddb79e696a48debf1e9e11dec8e3dcfef2dadbc35ab469d8b7b1c7ca436a20',
+  'accessibility.html': '47fbcb77eb347cf74317d6cac9ac83a13cbc6f917e721e424272429211aa0426',
+  'citywest-supports.html': 'c4dcd69f13fcfc68cf559fd2031456858587af143f91f12e154857c9d6dd0e8a',
+  'contact.html': '0a964bde8f6f0218de54180de52206150602c3fed5264b55f4cc37c5efe2e217',
+  'facts.html': 'cb38b38ca5aa4280a9393ff770c3b503ed569a09ee930e684041b9a2e88ff00e',
+  'gallery.html': 'f32932869e1f69d4c0eeba4251f6a98638bac026e18ab9c07b1a7849488d0a3a',
+  'index.html': 'f25bbedd7d2d90192aa2f27bebf8e6ef3aab232b62611ec13dca5016001f8e3f',
+  'learn.html': '3d28c44831cbe210b567e4a3be4af9ea0b672e6e8f376bc7de8722104ba7e2a2',
+  'privacy.html': 'cd623b5ebf4999552e99c838f3bba3b34d7c754e15104452e54fd54eb9239604',
+  'quiz.html': '72a7f61b27bda6f175a5d38b1416336e0cf08fb4079bd5cc18c80845ee12779c',
 };
 
-test('footer layout update preserves every link, label, image and no-script route verbatim', () => {
+test('footer retains the requested Quiz label and every other link, image and no-script route verbatim', () => {
   for (const [path, expected] of Object.entries(originals)) {
     const html = readFileSync(new URL('../' + path, import.meta.url), 'utf8');
     const footer = html.match(/<footer\b[\s\S]*?<\/footer>/)?.[0];
     assert.ok(footer, path);
+    assert.ok(!footer.includes('Take the quiz'), path);
+    if (footer.includes('href="quiz.html"')) assert.ok(footer.includes('<a href="quiz.html">Quiz</a>'), path);
     assert.equal(createHash('sha256').update(footer).digest('hex'), expected, path);
   }
 });
