@@ -42,3 +42,13 @@ test('Welcome has one caption heading and retains its original image and control
   assert.equal(createHash('sha256').update(image).digest('hex'), 'f2e34f56625fd2ff079aa831fcd4e8947898b7af582daad91ce1fe34d70e7077');
   assert.equal(historyPhotos.length, 6);
 });
+
+
+test('community participation uses the exact requested wording in the source and page', () => {
+  const expected = 'Regardless of age, ability, additional needs or social background, everyone can use local services and have a say in decisions about the area.';
+  const item = learningSections.find(section => section.id === 'community').items.find(item => item.title === 'Making it easier for everyone to join in');
+  assert.equal(item.body, expected);
+  assert.equal(item.source, 'community');
+  assert.ok(html.includes(`<p>${expected}</p>`));
+  assert.doesNotMatch(html, /Everyone should be able to use local services and have a say in decisions/);
+});
