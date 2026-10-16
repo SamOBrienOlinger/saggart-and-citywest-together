@@ -1,0 +1,41 @@
+name: Verify published Facts sentence removal
+on:
+  push:
+    branches: [fix/remove-facts-intro-sentence-20261016]
+    paths: [.github/workflows/check-published-facts-removal.yml]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 18099b2946fa43fcb5c21a47910e9e3b2758b10c
+          persist-credentials: false
+      - name: Verify the actual public page matches the tested release
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from urllib.request import Request, urlopen
+          from urllib.error import URLError
+          import hashlib, json, time
+          url = 'https://samobrienolinger.github.io/saggart-and-citywest-together/facts.html'
+          expected = Path('facts.html').read_bytes()
+          actual = None
+          for attempt in range(12):
+              try:
+                  with urlopen(Request(url, headers={'Cache-Control': 'no-cache'}), timeout=10) as response:
+                      status = response.status
+                      actual = response.read()
+                  if actual == expected:
+                      break
+              except URLError as error:
+                  print(f'Attempt {attempt + 1}: {error}')
+              time.sleep(5)
+          assert actual == expected, 'The published page does not yet match the tested release'
+          assert b'Start with a clear explanation, then follow the original evidence.' not in actual
+          assert b'<p>Ten recommended resources for challenging migration myths and racial stereotypes.</p>' in actual
+          print(json.dumps({'url': url, 'status': status, 'matches_tested_release': True, 'requested_sentence_removed': True, 'preceding_sentence_retained': True, 'sha256': hashlib.sha256(actual).hexdigest()}, indent=2))
+          PY
