@@ -1,0 +1,56 @@
+name: Verify published community quiz
+on:
+  push:
+    branches: [feat/quiz-community-topics-20261016]
+    paths: [.github/workflows/verify-published-quiz-topics.yml]
+permissions:
+  contents: read
+jobs:
+  published-files:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 03b49f8052ef873b266db7b09f41d7feaea5bac0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Compare the actual public HTML and quiz assets with the tested release
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import { readFileSync, writeFileSync } from 'node:fs';
+          import { createHash } from 'node:crypto';
+          import { setTimeout as delay } from 'node:timers/promises';
+          import { questions } from './assets/data/questions.js';
+          const base='https://samobrienolinger.github.io/saggart-and-citywest-together/';
+          const paths=['quiz.html','assets/js/quiz.js','assets/data/questions.js','assets/js/quiz-engine.js','assets/js/quiz-confetti.js','assets/css/quiz-confetti.css'];
+          let failure;
+          for(let attempt=1;attempt<=12;attempt++){
+            try{
+              const files=await Promise.all(paths.map(async path=>{
+                const response=await fetch(new URL(path+'?verify=topics-20261016',base),{signal:AbortSignal.timeout(15000),headers:{'Cache-Control':'no-cache'}});
+                assert.equal(response.status,200,path);
+                const actual=Buffer.from(await response.arrayBuffer());
+                const expected=readFileSync(path);
+                assert.ok(actual.equals(expected),'Published bytes differ: '+path);
+                return {path,status:response.status,bytes:actual.length,sha256:createHash('sha256').update(actual).digest('hex')};
+              }));
+              assert.equal(questions.length,40);
+              assert.ok(questions.every(q=>!q.id.startsWith('learning-')&&!/status of this educational resource/i.test(q.question)));
+              const report={verifiedAt:new Date().toISOString(),release:'03b49f8052ef873b266db7b09f41d7feaea5bac0',url:new URL('quiz.html',base).href,questionCount:questions.length,topics:questions.reduce((a,q)=>(a[q.topic]=(a[q.topic]||0)+1,a),{}),files,passed:true};
+              writeFileSync('published-quiz-verification.json',JSON.stringify(report,null,2));
+              console.log(JSON.stringify(report,null,2));
+              failure=null;
+              break;
+            }catch(error){failure=error;console.log('Attempt '+attempt+': '+error.message);if(attempt<12)await delay(5000)}
+          }
+          if(failure)throw failure;
+          JS
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: published-community-quiz-proof
+          path: published-quiz-verification.json
+          retention-days: 7
