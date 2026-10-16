@@ -1,0 +1,87 @@
+name: Complete and verify Explore page copy
+on:
+  push:
+    branches: [fix/explore-copy-20261016]
+    paths: [.github/workflows/complete-explore-copy.yml]
+permissions:
+  contents: write
+jobs:
+  verify-copy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/explore-copy-20261016
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply only the exact requested sentence in the page and its source
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD^)" = "14ec45f0da3812c711639bdcb63def6d3982ac00"
+          mkdir -p "$RUNNER_TEMP/explore-copy-proof"
+          python3 <<'PY'
+          from pathlib import Path
+          import re, subprocess
+          old = 'Everyone should be able to use local services and have a say in decisions, whatever their age or background, including people from minority ethnic communities.'
+          new = 'Regardless of age, ability, additional needs or social background, everyone can use local services and have a say in decisions about the area.'
+          for name in ['learn.html', 'assets/data/content.js']:
+              path = Path(name)
+              before = path.read_bytes()
+              assert before.count(old.encode()) == 1, name
+              after = before.replace(old.encode(), new.encode(), 1)
+              path.write_bytes(after)
+              assert after.replace(new.encode(), old.encode(), 1) == before
+          test = '''\n\ntest('community participation uses the exact requested wording in the source and page', () => {
+            const expected = 'Regardless of age, ability, additional needs or social background, everyone can use local services and have a say in decisions about the area.';
+            const item = learningSections.find(section => section.id === 'community').items.find(item => item.title === 'Making it easier for everyone to join in');
+            assert.equal(item.body, expected);
+            assert.equal(item.source, 'community');
+            assert.ok(html.includes(`<p>${expected}</p>`));
+            assert.doesNotMatch(html, /Everyone should be able to use local services and have a say in decisions/);
+          });\n'''
+          with Path('tests/explore-copy.test.js').open('a') as file:
+              file.write(test)
+          PY
+      - name: Verify all four copy requests and existing feature integrity
+        shell: bash
+        run: |
+          set -o pipefail
+          node --test tests/*.test.js | tee "$RUNNER_TEMP/explore-copy-proof/unit-tests.log"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "17b0f3c046c63af6993b88f3ecbab720418d8ad3"
+          python3 <<'PY'
+          from pathlib import Path
+          import re, subprocess
+          baseline = subprocess.check_output(['git','show','17b0f3c046c63af6993b88f3ecbab720418d8ad3:learn.html']).decode()
+          updated = Path('learn.html').read_text()
+          for pattern in [r'<img\b[^>]*>', r'<a\b[^>]*>', r'<script\b[^>]*>', r'<link\b[^>]*>', r'<footer\b[\s\S]*?</footer>']:
+              assert re.findall(pattern, baseline) == re.findall(pattern, updated), pattern
+          print('All original image, link, script, stylesheet tags and full footer markup are unchanged.')
+          PY
+      - name: Remove this one-off workflow and commit only the reviewed files
+        shell: bash
+        run: |
+          rm .github/workflows/complete-explore-copy.yml
+          git add learn.html assets/data/content.js tests/explore-copy.test.js .github/workflows/complete-explore-copy.yml
+          python3 <<'PY'
+          import subprocess
+          expected = {'learn.html','assets/data/content.js','assets/data/history-photos.js','scripts/history-gallery.mjs','tests/explore-copy.test.js'}
+          actual = set(subprocess.check_output(['git','diff','--cached','--name-only','17b0f3c046c63af6993b88f3ecbab720418d8ad3']).decode().splitlines())
+          assert actual == expected, actual
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Apply requested inclusive community wording and retain the three preceding copy edits'
+          git push origin HEAD:refs/heads/fix/explore-copy-20261016
+          git log -1 --format='%H%n%T%n%s' | tee "$RUNNER_TEMP/explore-copy-proof/commit.txt"
+          git diff 17b0f3c046c63af6993b88f3ecbab720418d8ad3 HEAD > "$RUNNER_TEMP/explore-copy-proof/changes.diff"
+          git archive --format=tar.gz HEAD > "$RUNNER_TEMP/explore-copy-proof/site.tar.gz"
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: explore-copy-ready-for-release
+          path: ${{ runner.temp }}/explore-copy-proof/
+          retention-days: 7
