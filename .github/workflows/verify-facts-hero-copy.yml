@@ -1,0 +1,86 @@
+name: Verify Facts hero copy
+on:
+  push:
+    branches: [fix/facts-hero-copy-20261016]
+    paths: [.github/workflows/verify-facts-hero-copy.yml]
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Replace only the requested heading
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+          path = Path('facts.html')
+          original = path.read_bytes()
+          blob = hashlib.sha1(b'blob ' + str(len(original)).encode() + b'\0' + original).hexdigest()
+          assert blob == '9ad512b6cf52c9d1734eb4f49bcaa789de0c0261', 'The source page changed; review before editing'
+          old = b'<p class="facts-hero-line">Check the claim.<br><span>Find the source.</span></p>'
+          new = b'<p class="facts-hero-line">Explore evidence.<br>Ask better questions.<br>Find real answers.<br><span>Share with care.</span></p>'
+          assert original.count(old) == 1
+          updated = original.replace(old, new, 1)
+          assert updated.replace(new, old, 1) == original
+          path.write_bytes(updated)
+          print('Updated only the four-line Facts hero copy. All other bytes are unchanged.')
+          PY
+          cat > e2e/facts-hero-copy-review.spec.js <<'JS'
+          import { test, expect } from '@playwright/test';
+          const copy = ['Explore evidence.', 'Ask better questions.', 'Find real answers.', 'Share with care.'];
+          test('four-line Facts heading remains readable and keeps section navigation', async ({ page, hasTouch }, info) => {
+            await page.emulateMedia({ reducedMotion: 'reduce' });
+            await page.goto('/facts.html');
+            const heading = page.locator('.facts-hero-line');
+            await expect(heading).toBeVisible();
+            await expect(heading.locator('br')).toHaveCount(3);
+            expect((await heading.innerText()).split('\n').map(line => line.trim())).toEqual(copy);
+            await expect(heading.locator('span')).toHaveText('Share with care.');
+            for (const width of [320, 390, 768, 1440]) {
+              await page.setViewportSize({ width, height: 1000 });
+              await expect(heading).toBeVisible();
+              const fits = await heading.evaluate(el => {
+                const rect = el.getBoundingClientRect();
+                return rect.left >= 0 && rect.right <= document.documentElement.clientWidth + 1 && el.scrollWidth <= el.clientWidth + 1;
+              });
+              expect(fits).toBe(true);
+              if (width === 390 || width === 1440) await page.locator('.facts-hero').screenshot({ path: info.outputPath(`facts-heading-${width}.png`) });
+            }
+            const link = page.locator('.facts-jumps a[href="#local-cso"]');
+            if (hasTouch) await link.tap(); else await link.click();
+            await expect(page).toHaveURL(/facts\.html#local-cso$/);
+            await expect(page.locator('#cso-title')).toBeInViewport();
+          });
+          JS
+      - run: npm ci
+      - run: npm test
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Check desktop and iPhone-emulated rendering
+        run: npx playwright test e2e/facts-hero-copy-review.spec.js --project=chromium-desktop --project=webkit-iphone-emulation --retries=0
+      - name: Commit the verified page without temporary test or workflow files
+        shell: bash
+        run: |
+          rm e2e/facts-hero-copy-review.spec.js
+          git rm .github/workflows/verify-facts-hero-copy.yml
+          git add facts.html
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Update the Facts heading to the requested four lines' -m 'Explore evidence. Ask better questions. Find real answers. Share with care. Preserve the existing hero class, final-line colour and every other byte of the page. Unit and focused desktop/iPhone-emulation checks passed.'
+          git push origin HEAD:fix/facts-hero-copy-20261016
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: facts-hero-copy-checks
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 7
