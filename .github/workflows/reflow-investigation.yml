@@ -1,0 +1,78 @@
+name: Browser reflow investigation
+on:
+  push:
+    branches: [fix/browser-reflow-and-controls]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Capture current source
+        run: |
+          mkdir -p reflow-evidence
+          git rev-parse HEAD > reflow-evidence/commit.txt
+          git archive --format=tar.gz HEAD > reflow-evidence/source.tar.gz
+      - name: Diagnose large text and pointer targets
+        shell: bash
+        run: |
+          python3 -m http.server 4173 > /tmp/reflow-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          sleep 2
+          node --input-type=module <<'NODE'
+          import { chromium } from '@playwright/test';
+          import fs from 'node:fs';
+          const browser = await chromium.launch();
+          const records = [];
+          for (const width of [390, 1280]) {
+            const page = await browser.newPage({viewport:{width,height:900}});
+            for (const target of ['/', '/about.html', '/facts.html', '/reading.html', '/#learning', '/#life-skills']) {
+              await page.goto('http://127.0.0.1:4173' + target);
+              await page.waitForTimeout(500);
+              await page.evaluate(() => {
+                document.documentElement.style.fontSize = '200%';
+                document.body.style.fontSize = '200%';
+              });
+              await page.waitForTimeout(300);
+              const result = await page.evaluate(() => {
+                const selector = el => el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') + [...el.classList].map(c => '.' + c).join('');
+                return {
+                  viewport:innerWidth, scrollWidth:document.scrollingElement.scrollWidth,
+                  overflow:[...document.querySelectorAll('body *')].flatMap(el => {
+                    const r=el.getBoundingClientRect(), s=getComputedStyle(el);
+                    if (!r.width || !r.height || s.visibility==='hidden' || s.display==='none' || (r.right<=innerWidth+1 && r.left>=-1)) return [];
+                    return [{selector:selector(el),left:r.left,right:r.right,width:r.width,clientWidth:el.clientWidth,scrollWidth:el.scrollWidth,display:s.display,position:s.position,minWidth:s.minWidth,widthCSS:s.width,whiteSpace:s.whiteSpace,fontSize:s.fontSize,overflowX:s.overflowX,text:el.textContent.trim().slice(0,90)}];
+                  }).slice(0,80),
+                  controls:[...document.querySelectorAll('#toTop,.scroll-to-top,.back-to-top,.close-card,.panel-close')].flatMap(el => {
+                    const r=el.getBoundingClientRect(); if (!r.width || !r.height) return [];
+                    const x=r.left+r.width/2, y=r.top+r.height/2;
+                    const s=getComputedStyle(el);
+                    return [{selector:selector(el),left:r.left,top:r.top,bottom:r.bottom,position:s.position,zIndex:s.zIndex,hit:document.elementFromPoint(x,y)?.outerHTML.slice(0,300)}];
+                  })
+                };
+              });
+              records.push({width,target,...result});
+              await page.screenshot({path:'reflow-evidence/'+width+'-'+target.replace(/[^a-z]/gi,'_')+'.png',fullPage:true});
+            }
+            await page.close();
+          }
+          fs.writeFileSync('reflow-evidence/diagnostics.json',JSON.stringify(records,null,2));
+          for (const r of records) console.log(JSON.stringify({width:r.width,target:r.target,scrollWidth:r.scrollWidth,overflow:r.overflow.slice(0,12),controls:r.controls}));
+          await browser.close();
+          NODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reflow-source-and-diagnostics
+          path: reflow-evidence/
+          retention-days: 7
