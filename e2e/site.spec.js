@@ -126,7 +126,10 @@ test('approved homepage order, service destinations and visual evidence', async 
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Our area. Our story. Together.', { useInnerText: true });
   await expect(page.getByRole('link', { name: 'Try the 10-question quiz', exact: true })).toHaveCount(1);
-  expect(await page.locator('#local-services').evaluate(el => !!(el.compareDocumentPosition(document.querySelector('.community-section')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
+  // The approved homepage places the community gallery before local services.
+  await expect(page.locator('.community-section')).toBeVisible();
+  await expect(page.locator('#local-services')).toBeVisible();
+  expect(await page.locator('#local-services').evaluate(el => !!(el.compareDocumentPosition(document.querySelector('.community-section')) & Node.DOCUMENT_POSITION_PRECEDING))).toBe(true);
   for (const [name, path, target] of [
     ['Health services', 'learn.html#health', '#health'],
     ['English classes', 'citywest-supports.html#english-classes', '#english-classes'],
