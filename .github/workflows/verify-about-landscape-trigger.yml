@@ -1,0 +1,84 @@
+name: Verify tall About card reveal
+on:
+  push:
+    branches: [verify/about-landscape-trigger-20261017]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: macos-15
+    timeout-minutes: 12
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps webkit
+      - name: Reproduce the original landscape failure with the unchanged regression test
+        shell: bash
+        run: |
+          mkdir -p reveal-evidence/baseline
+          cp about.html reveal-evidence/before.html
+          set +e
+          npx playwright test e2e/about-release.spec.js --grep='published About cards' --project=webkit-landscape --retries=0 > reveal-evidence/baseline-log.txt 2>&1
+          RESULT=$?
+          set -e
+          cp -R test-results/. reveal-evidence/baseline/
+          echo "$RESULT" > reveal-evidence/baseline-exit-code.txt
+          python3 - <<'PY'
+          import json, pathlib
+          d=json.loads(pathlib.Path('test-results/results.json').read_text())
+          print(json.dumps(d['stats'],indent=2))
+          assert d['stats']['unexpected']==1 and d['stats']['flaky']==0, 'The original landscape failure must reproduce before classifying the correction'
+          PY
+      - name: Change only the About reveal intersection threshold
+        run: |
+          python3 - <<'PY'
+          import pathlib, subprocess, json, hashlib
+          p=pathlib.Path('about.html'); before=p.read_bytes()
+          assert subprocess.check_output(['git','hash-object','--stdin'],input=before).decode().strip()=='b314287da1dddd35e97be5085d4c28e7a498c2eb'
+          old=b'{ threshold: 0.08, rootMargin:'; new=b'{ threshold: 0, rootMargin:'
+          assert before.count(old)==1
+          after=before.replace(old,new)
+          assert after.replace(new,old)==before
+          p.write_bytes(after)
+          pathlib.Path('reveal-evidence/after.html').write_bytes(after)
+          assert subprocess.check_output(['git','diff','--name-only']).decode().splitlines()==['about.html']
+          pathlib.Path('reveal-evidence/change.json').write_text(json.dumps({'changedFile':'about.html','beforeBlob':'b314287da1dddd35e97be5085d4c28e7a498c2eb','change':'IntersectionObserver threshold 0.08 to 0; all other bytes unchanged','afterBlob':subprocess.check_output(['git','hash-object','--stdin'],input=after).decode().strip(),'afterSha256':hashlib.sha256(after).hexdigest()},indent=2))
+          PY
+      - name: Repeat the exact landscape journey fifteen times without retries
+        run: npx playwright test e2e/about-release.spec.js --grep='published About cards' --project=webkit-landscape --repeat-each=15 --retries=0
+      - name: Verify unit tests
+        run: npm test > reveal-evidence/unit-tests.txt
+      - name: Store the verified immutable blob without moving any branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import assert from 'node:assert/strict';
+          const checks=JSON.parse(fs.readFileSync('test-results/results.json','utf8'));
+          assert.equal(checks.stats.expected,15);assert.equal(checks.stats.unexpected,0);assert.equal(checks.stats.flaky,0);assert.equal(checks.stats.skipped,0);
+          const data=JSON.parse(fs.readFileSync('reveal-evidence/change.json','utf8'));
+          const response=await fetch('https://api.github.com/repos/'+process.env.GITHUB_REPOSITORY+'/git/blobs',{method:'POST',headers:{Authorization:'Bearer '+process.env.GH_TOKEN,Accept:'application/vnd.github+json','Content-Type':'application/json','X-GitHub-Api-Version':'2022-11-28'},body:JSON.stringify({content:fs.readFileSync('about.html').toString('base64'),encoding:'base64'})});
+          assert.equal(response.status,201);
+          const blob=await response.json();assert.equal(blob.sha,data.afterBlob);
+          fs.writeFileSync('reveal-evidence/verified-blob.json',JSON.stringify({sha:blob.sha,url:blob.url,baselineFailureReproduced:true,correctedLandscapeJourneysPassed:15,productionBranchesUpdated:false},null,2));
+          console.log(JSON.stringify({storedBlob:blob.sha,productionBranchesUpdated:false}));
+          NODE
+      - name: Preserve baseline, patch and corrected results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: verified-about-landscape-trigger
+          path: |
+            reveal-evidence/
+            test-results/
+            playwright-report/
+          retention-days: 14
