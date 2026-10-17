@@ -1,0 +1,50 @@
+name: Repeated mobile regression journeys
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: regression-stability-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  iphone-stability:
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Unit tests
+        run: npm test
+      - name: Record exact source and production fingerprints
+        shell: bash
+        run: |
+          mkdir -p stability-evidence
+          git rev-parse HEAD > stability-evidence/commit.txt
+          git archive --format=tar.gz HEAD > stability-evidence/source.tar.gz
+          python3 - <<'PY'
+          import pathlib, hashlib, json, subprocess
+          files = subprocess.check_output(['git','ls-files','-z']).decode().split('\0')
+          fingerprints = {p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest() for p in files if p and (p.endswith('.html') or p.startswith('assets/'))}
+          pathlib.Path('stability-evidence/production-fingerprints.json').write_text(json.dumps(fingerprints,indent=2))
+          PY
+      - run: npx playwright install --with-deps webkit
+      - name: Repeat native history and logo journeys fifteen times without retries
+        run: npx playwright test e2e/history-links.spec.js e2e/logo-feedback.spec.js --project=webkit-iphone-emulation --grep-invert='logo hover' --repeat-each=15 --retries=0
+      - name: Preserve stability evidence
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-stability-iphone
+          path: |
+            stability-evidence/
+            playwright-report/
+            test-results/
+          retention-days: 14
