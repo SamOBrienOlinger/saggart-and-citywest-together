@@ -22,6 +22,7 @@ jobs:
       - name: Prepare only the approved About page
         run: |
           mkdir -p about-release-evidence
+          git fetch --depth=1 origin 6640813a7318a733ef989f06cddde5b413988e4e
           git fetch --depth=1 origin 123ab3a62139fd4f8f5571cecdb6068a5eda4b81
           git show 123ab3a62139fd4f8f5571cecdb6068a5eda4b81:about.html > about-release-evidence/approved-about.html
           python3 - <<'PY'
