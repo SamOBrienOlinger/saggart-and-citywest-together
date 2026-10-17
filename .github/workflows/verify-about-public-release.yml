@@ -1,0 +1,203 @@
+name: Verify About-only public release
+on:
+  push:
+    branches: [release/about-public-20261017]
+    paths: ['.github/workflows/verify-about-public-release.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Prepare only the approved About page
+        run: |
+          mkdir -p about-release-evidence
+          git fetch --depth=1 origin 123ab3a62139fd4f8f5571cecdb6068a5eda4b81
+          git show 123ab3a62139fd4f8f5571cecdb6068a5eda4b81:about.html > about-release-evidence/approved-about.html
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess, hashlib, json
+          original = Path('about-release-evidence/approved-about.html').read_bytes()
+          assert subprocess.check_output(['git', 'hash-object', '--stdin'], input=original).decode().strip() == 'bcabdc7755f82fe556a3fd192969078584c2921a'
+          old = b'const target = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));'
+          new = b'const target = location.hash ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;'
+          assert original.count(old) == 1
+          updated = original.replace(old, new)
+          assert updated.replace(new, old) == original
+          Path('about.html').write_bytes(updated)
+          assert b'<p class="eyebrow">About the group</p>' not in updated
+          assert b'<p class="topic-nav-label">On this page</p>' not in updated
+          assert b'<h2>Get in touch</h2>' not in updated
+          assert b'Local and newer residents' not in updated
+          assert b'local residents shared food' in updated
+          assert updated.count(b'class="about-section"') == 7
+          changes = subprocess.check_output(['git','diff','--name-only']).decode().splitlines()
+          assert changes == ['about.html'], changes
+          records = {}
+          for p in sorted(Path('.').glob('*.html')):
+              if p.name != 'about.html':
+                  assert p.read_bytes() == subprocess.check_output(['git','show','6640813a7318a733ef989f06cddde5b413988e4e:' + p.name])
+                  records[p.name] = hashlib.sha256(p.read_bytes()).hexdigest()
+          Path('about-release-evidence/preservation.json').write_text(json.dumps({'approvedCommit':'123ab3a62139fd4f8f5571cecdb6068a5eda4b81','productionBase':'6640813a7318a733ef989f06cddde5b413988e4e','changedProductionFiles':changes,'allOtherPagesByteIdentical':records,'onlyChangeFromApprovedAbout':'Use null, not an empty string, as the missing hash target so Node.contains cannot throw during animation startup.'}, indent=2))
+          PY
+      - run: npm ci
+      - name: Unit tests
+        run: npm test | tee about-release-evidence/unit-tests.txt
+      - name: Install verification browsers
+        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Verify About layouts, content and scroll reveals
+        run: |
+          python3 scripts/serve-test-site.py > about-release-evidence/server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4180/about.html > /dev/null; then break; fi
+            sleep 1
+          done
+          node --input-type=module <<'NODE'
+          import { chromium, firefox, webkit } from '@playwright/test';
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+          const base = 'http://127.0.0.1:4180/';
+          const reports = [];
+          const profiles = [
+            ['chromium-desktop',chromium,{viewport:{width:1440,height:1000}}],
+            ['chromium-mobile',chromium,{viewport:{width:390,height:844},isMobile:true,hasTouch:true}],
+            ['firefox-desktop',firefox,{viewport:{width:1440,height:1000}}],
+            ['webkit-desktop',webkit,{viewport:{width:1440,height:1000}}],
+            ['webkit-iphone-emulation',webkit,{viewport:{width:390,height:844},isMobile:true,hasTouch:true}],
+          ];
+          async function fits(page) {
+            const m = await page.evaluate(() => ({viewport:document.documentElement.clientWidth, document:document.documentElement.scrollWidth}));
+            assert.ok(m.document <= m.viewport + 1, JSON.stringify(m));
+          }
+          async function open(page, suffix='about.html') {
+            assert.equal((await page.goto(base+suffix)).status(),200);
+            await page.locator('.site-header.nav-ready').waitFor();
+          }
+          try {
+            for (const [name,engine,options] of profiles) {
+              const browser = await engine.launch();
+              const context = await browser.newContext({...options,reducedMotion:'no-preference'});
+              const page = await context.newPage();
+              const errors = [];
+              page.on('pageerror', e => errors.push(e.message));
+              try {
+                await open(page);
+                await page.waitForFunction(() => document.body.classList.contains('about-reveal-ready'));
+                const main = await page.locator('#main').innerText();
+                assert.ok(!main.includes('About the group'));
+                assert.ok(!main.includes('On this page'));
+                assert.ok(!main.includes('Get in touch'));
+                assert.ok(main.includes('local residents shared food'));
+                assert.equal(await page.locator('.about-content > .about-section').count(),7);
+                await fits(page);
+                const cards = page.locator('.about-content > .about-section');
+                assert.ok(await page.locator('.about-reveal-pending').count() > 0,'offscreen cards are ready to reveal');
+                for (let i=0; i<7; i++) {
+                  await cards.nth(i).evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
+                  await page.waitForFunction(i=>{
+                    const el=document.querySelectorAll('.about-content > .about-section')[i];
+                    return el.classList.contains('about-reveal-visible') && getComputedStyle(el).opacity === '1';
+                  },i);
+                  await fits(page);
+                }
+                assert.equal(await page.locator('.about-reveal-pending').count(),0);
+                await page.locator('img[src]').evaluateAll(images=>images.forEach(img=>img.loading='eager'));
+                await page.waitForFunction(()=>[...document.querySelectorAll('img[src]')].every(img=>img.complete && img.naturalWidth>0));
+                assert.equal(await page.locator('.page-jump-nav a').count(),5);
+                await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
+                await page.screenshot({path:`about-release-evidence/${name}-about.png`,fullPage:true});
+                // Every native section link still selects a visible section.
+                for (let i=0; i<5; i++) {
+                  const link=page.locator('.page-jump-nav a').nth(i);
+                  const href=await link.getAttribute('href');
+                  await link.click();
+                  await page.waitForURL('**/'+ 'about.html' + href);
+                  await page.waitForFunction(id=>{
+                    const section=document.getElementById(id).closest('.about-section');
+                    return getComputedStyle(section).opacity==='1';
+                  },href.slice(1));
+                }
+                // Direct deep links must remain visible on first load.
+                await open(page,'about.html#sources');
+                await page.waitForFunction(()=>getComputedStyle(document.getElementById('sources').closest('.about-section')).opacity==='1');
+                // Reduced motion removes the animation; test enlarged text and narrow reflow.
+                await page.emulateMedia({reducedMotion:'reduce'});
+                await open(page);
+                for (const width of [320,390,768,1440]) {
+                  await page.setViewportSize({width,height:900});
+                  for (const scale of [100,200]) {
+                    await page.evaluate(scale=>document.documentElement.style.fontSize=scale+'%',scale);
+                    await fits(page);
+                  }
+                }
+                assert.ok(await cards.evaluateAll(elements=>elements.every(el=>getComputedStyle(el).opacity==='1' && getComputedStyle(el).transform==='none')));
+                // Missing IntersectionObserver is a visible-content fallback.
+                const fallback=await browser.newContext({...options,reducedMotion:'no-preference'});
+                await fallback.addInitScript(()=>{delete window.IntersectionObserver;});
+                const fallbackPage=await fallback.newPage();
+                await open(fallbackPage);
+                assert.ok(await fallbackPage.locator('.about-section').evaluateAll(elements=>elements.every(el=>getComputedStyle(el).opacity==='1')));
+                await fallback.close();
+                // With scripts disabled, section anchors and all cards remain available.
+                const nojs=await browser.newContext({...options,javaScriptEnabled:false});
+                const plain=await nojs.newPage();
+                assert.equal((await plain.goto(base+'about.html')).status(),200);
+                assert.equal(await plain.locator('.about-section:visible').count(),7);
+                await plain.locator('.page-jump-nav a[href="#sources"]').click();
+                await plain.waitForURL('**/about.html#sources');
+                await fits(plain);
+                await nojs.close();
+                assert.deepEqual(errors,[]);
+                reports.push({profile:name,result:'passed',checks:['seven tinted cards','requested wording/removals','scroll-reveal startup without hash','all seven cards reveal','all images load','five section anchors','direct source deep link','320/390/768/1440px at 100/200% text','reduced motion','no IntersectionObserver fallback','JavaScript-disabled anchors','no page script errors']});
+              } catch (error) {
+                await page.screenshot({path:`about-release-evidence/${name}-failure.png`,fullPage:true}).catch(()=>{});
+                reports.push({profile:name,result:'failed',error:String(error),scriptErrors:errors});
+                throw error;
+              } finally { await browser.close(); }
+            }
+          } finally {
+            fs.writeFileSync('about-release-evidence/browser-results.json',JSON.stringify(reports,null,2));
+            console.log(JSON.stringify(reports,null,2));
+          }
+          NODE
+      - name: Store verified immutable About blob without updating main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import crypto from 'node:crypto';
+          import assert from 'node:assert/strict';
+          const content=fs.readFileSync('about.html','utf8');
+          const bytes=Buffer.from(content);
+          const expected=crypto.createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex');
+          const response=await fetch(`https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/git/blobs`,{
+            method:'POST',headers:{Authorization:`Bearer ${process.env.GH_TOKEN}`,Accept:'application/vnd.github+json','Content-Type':'application/json'},
+            body:JSON.stringify({content,encoding:'utf-8'})
+          });
+          assert.equal(response.status,201);
+          const blob=await response.json();
+          assert.equal(blob.sha,expected);
+          fs.copyFileSync('about.html','about-release-evidence/verified-about.html');
+          const manifest={aboutBlob:blob.sha,sourceCommit:'123ab3a62139fd4f8f5571cecdb6068a5eda4b81',productionBase:'6640813a7318a733ef989f06cddde5b413988e4e',productionFilesToChange:['about.html'],sha256:crypto.createHash('sha256').update(bytes).digest('hex'),bytes:bytes.length};
+          fs.writeFileSync('about-release-evidence/release.json',JSON.stringify(manifest,null,2));
+          console.log('VERIFIED_ABOUT_RELEASE '+JSON.stringify(manifest));
+          NODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: about-only-public-release-proof
+          path: about-release-evidence/
+          retention-days: 14
