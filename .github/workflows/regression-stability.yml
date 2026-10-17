@@ -1,4 +1,4 @@
-name: Repeated mobile regression journeys
+name: Repeated interaction regression journeys
 on:
   pull_request:
     branches: [main]
@@ -45,6 +45,28 @@ jobs:
           name: regression-stability-iphone
           path: |
             stability-evidence/
+            playwright-report/
+            test-results/
+          retention-days: 14
+  about-shortcut-stability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Repeat About keyboard and cold-link journeys fifteen times on desktop and Android emulation
+        run: npx playwright test e2e/about-release.spec.js --grep='About native shortcuts' --project=chromium-desktop --project=chromium-android-emulation --repeat-each=15 --retries=0
+      - name: Preserve About shortcut evidence
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-stability-about-shortcuts
+          path: |
             playwright-report/
             test-results/
           retention-days: 14
