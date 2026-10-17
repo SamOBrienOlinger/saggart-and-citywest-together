@@ -85,12 +85,12 @@ jobs:
             assert.ok(m.document <= m.viewport + 1, JSON.stringify(m));
           }
           async function open(page, suffix='about.html') {
-            // Force a document load so deep-link checks test first-load behaviour,
-            // rather than a hash-only navigation whose response is correctly null.
+            // Force a new document. Firefox may report its valid HTTP 304 cache
+            // revalidation instead of 200; subsequent DOM/interaction checks still apply.
             await page.goto('about:blank');
             const response = await page.goto(base+suffix);
             assert.ok(response, 'a new About document was requested');
-            assert.equal(response.status(),200);
+            assert.ok([200,304].includes(response.status()), `About HTTP ${response.status()}`);
             await page.locator('.site-header.nav-ready').waitFor();
           }
           try {
@@ -99,6 +99,7 @@ jobs:
               const context = await browser.newContext({...options,reducedMotion:'no-preference'});
               const page = await context.newPage();
               const errors = [];
+              let checkpoint = 'initial document';
               page.on('pageerror', e => errors.push(e.message));
               try {
                 await open(page);
@@ -112,6 +113,7 @@ jobs:
                 await fits(page);
                 const cards = page.locator('.about-content > .about-section');
                 assert.ok(await page.locator('.about-reveal-pending').count() > 0,'offscreen cards are ready to reveal');
+                checkpoint = 'scroll reveals and images';
                 for (let i=0; i<7; i++) {
                   await cards.nth(i).evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
                   await page.waitForFunction(i=>{
@@ -126,6 +128,7 @@ jobs:
                 assert.equal(await page.locator('.page-jump-nav a').count(),5);
                 await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
                 await page.screenshot({path:`about-release-evidence/${name}-about.png`,fullPage:true});
+                checkpoint = 'native section links';
                 for (let i=0; i<5; i++) {
                   const link=page.locator('.page-jump-nav a').nth(i);
                   const href=await link.getAttribute('href');
@@ -133,8 +136,10 @@ jobs:
                   await page.waitForURL('**/about.html' + href);
                   await page.waitForFunction(id=>getComputedStyle(document.getElementById(id).closest('.about-section')).opacity==='1',href.slice(1));
                 }
+                checkpoint = 'first-load deep link';
                 await open(page,'about.html#sources');
                 await page.waitForFunction(()=>getComputedStyle(document.getElementById('sources').closest('.about-section')).opacity==='1');
+                checkpoint = 'reduced motion and enlarged text';
                 await page.emulateMedia({reducedMotion:'reduce'});
                 await open(page);
                 for (const width of [320,390,768,1440]) {
@@ -145,15 +150,17 @@ jobs:
                   }
                 }
                 assert.ok(await cards.evaluateAll(elements=>elements.every(el=>getComputedStyle(el).opacity==='1' && getComputedStyle(el).transform==='none')));
+                checkpoint = 'missing observer fallback';
                 const fallback=await browser.newContext({...options,reducedMotion:'no-preference'});
                 await fallback.addInitScript(()=>{delete window.IntersectionObserver;});
                 const fallbackPage=await fallback.newPage();
                 await open(fallbackPage);
                 assert.ok(await fallbackPage.locator('.about-section').evaluateAll(elements=>elements.every(el=>getComputedStyle(el).opacity==='1')));
                 await fallback.close();
+                checkpoint = 'JavaScript-disabled navigation';
                 const nojs=await browser.newContext({...options,javaScriptEnabled:false});
                 const plain=await nojs.newPage();
-                assert.equal((await plain.goto(base+'about.html')).status(),200);
+                assert.ok([200,304].includes((await plain.goto(base+'about.html')).status()));
                 assert.equal(await plain.locator('.about-section:visible').count(),7);
                 await plain.locator('.page-jump-nav a[href="#sources"]').click();
                 await plain.waitForURL('**/about.html#sources');
@@ -161,9 +168,10 @@ jobs:
                 await nojs.close();
                 assert.deepEqual(errors,[]);
                 reports.push({profile:name,result:'passed',checks:['seven tinted cards','requested wording/removals','scroll-reveal startup without hash','all seven cards reveal','all images load','five section anchors','direct source deep link','320/390/768/1440px at 100/200% text','reduced motion','no IntersectionObserver fallback','JavaScript-disabled anchors','no page script errors']});
+                console.log(name + ': all About checks passed');
               } catch (error) {
                 await page.screenshot({path:`about-release-evidence/${name}-failure.png`,fullPage:true}).catch(()=>{});
-                reports.push({profile:name,result:'failed',error:String(error),scriptErrors:errors});
+                reports.push({profile:name,result:'failed',checkpoint,error:String(error),scriptErrors:errors});
                 throw error;
               } finally { await browser.close(); }
             }
