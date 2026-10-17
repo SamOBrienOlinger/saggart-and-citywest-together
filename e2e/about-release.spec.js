@@ -7,6 +7,32 @@ async function fits(page) {
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
 }
 
+async function prepareShortcutForKeyboard(link) {
+  // The Chromium failure trace returned to the shortcut row after Enter: a
+  // focus-induced upward smooth scroll overrode the following native hash
+  // scroll. Prepare the control, not its destination, before a single real key.
+  await link.evaluate(el => {
+    el.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+    el.focus({ preventScroll: true });
+  });
+  await expect(link).toBeFocused();
+  let previous;
+  let stableSamples = 0;
+  await expect.poll(async () => {
+    const sample = await link.evaluate(el => {
+      const r = el.getBoundingClientRect();
+      return {
+        position: [r.x, r.y, r.width, r.height, scrollX, scrollY],
+        visible: r.top >= 0 && r.bottom <= innerHeight && r.left >= 0 && r.right <= innerWidth,
+      };
+    });
+    const stationary = previous && sample.position.every((value, i) => Math.abs(value - previous[i]) < .5);
+    stableSamples = sample.visible && stationary ? stableSamples + 1 : 0;
+    previous = sample.position;
+    return stableSamples;
+  }, { message: 'About shortcut focus scroll has settled before Enter', intervals: [50, 100] }).toBeGreaterThanOrEqual(3);
+}
+
 test('published About cards reveal on ordinary page loads and preserve the approved content', async ({ page }) => {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
@@ -38,8 +64,7 @@ test('About native shortcuts and a cold saved link expose the requested card', a
   await expect(links).toHaveCount(5);
   for (const link of await links.all()) {
     const hash = await link.getAttribute('href');
-    // Real keyboard activation avoids racing a previous smooth hash scroll.
-    await link.focus();
+    await prepareShortcutForKeyboard(link);
     await link.press('Enter');
     await expect(page).toHaveURL(new RegExp('about\\.html' + hash + '$'));
     await expect(page.locator(hash)).toBeInViewport();
