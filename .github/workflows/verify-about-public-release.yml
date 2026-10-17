@@ -53,7 +53,9 @@ jobs:
           PY
       - run: npm ci
       - name: Unit tests
-        run: npm test | tee about-release-evidence/unit-tests.txt
+        run: |
+          set -o pipefail
+          npm test | tee about-release-evidence/unit-tests.txt
       - name: Install verification browsers
         run: npx playwright install --with-deps chromium firefox webkit
       - name: Verify About layouts, content and scroll reveals
@@ -83,7 +85,12 @@ jobs:
             assert.ok(m.document <= m.viewport + 1, JSON.stringify(m));
           }
           async function open(page, suffix='about.html') {
-            assert.equal((await page.goto(base+suffix)).status(),200);
+            // Force a document load so deep-link checks test first-load behaviour,
+            // rather than a hash-only navigation whose response is correctly null.
+            await page.goto('about:blank');
+            const response = await page.goto(base+suffix);
+            assert.ok(response, 'a new About document was requested');
+            assert.equal(response.status(),200);
             await page.locator('.site-header.nav-ready').waitFor();
           }
           try {
@@ -119,21 +126,15 @@ jobs:
                 assert.equal(await page.locator('.page-jump-nav a').count(),5);
                 await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
                 await page.screenshot({path:`about-release-evidence/${name}-about.png`,fullPage:true});
-                // Every native section link still selects a visible section.
                 for (let i=0; i<5; i++) {
                   const link=page.locator('.page-jump-nav a').nth(i);
                   const href=await link.getAttribute('href');
                   await link.click();
-                  await page.waitForURL('**/'+ 'about.html' + href);
-                  await page.waitForFunction(id=>{
-                    const section=document.getElementById(id).closest('.about-section');
-                    return getComputedStyle(section).opacity==='1';
-                  },href.slice(1));
+                  await page.waitForURL('**/about.html' + href);
+                  await page.waitForFunction(id=>getComputedStyle(document.getElementById(id).closest('.about-section')).opacity==='1',href.slice(1));
                 }
-                // Direct deep links must remain visible on first load.
                 await open(page,'about.html#sources');
                 await page.waitForFunction(()=>getComputedStyle(document.getElementById('sources').closest('.about-section')).opacity==='1');
-                // Reduced motion removes the animation; test enlarged text and narrow reflow.
                 await page.emulateMedia({reducedMotion:'reduce'});
                 await open(page);
                 for (const width of [320,390,768,1440]) {
@@ -144,14 +145,12 @@ jobs:
                   }
                 }
                 assert.ok(await cards.evaluateAll(elements=>elements.every(el=>getComputedStyle(el).opacity==='1' && getComputedStyle(el).transform==='none')));
-                // Missing IntersectionObserver is a visible-content fallback.
                 const fallback=await browser.newContext({...options,reducedMotion:'no-preference'});
                 await fallback.addInitScript(()=>{delete window.IntersectionObserver;});
                 const fallbackPage=await fallback.newPage();
                 await open(fallbackPage);
                 assert.ok(await fallbackPage.locator('.about-section').evaluateAll(elements=>elements.every(el=>getComputedStyle(el).opacity==='1')));
                 await fallback.close();
-                // With scripts disabled, section anchors and all cards remain available.
                 const nojs=await browser.newContext({...options,javaScriptEnabled:false});
                 const plain=await nojs.newPage();
                 assert.equal((await plain.goto(base+'about.html')).status(),200);
