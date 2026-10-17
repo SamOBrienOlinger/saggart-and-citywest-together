@@ -1,0 +1,203 @@
+name: Whole-site release proof
+on:
+  push:
+    branches: [verify/whole-site-all-clear-20261017]
+    paths: ['.github/workflows/whole-site-release-proof.yml']
+permissions:
+  contents: read
+jobs:
+  stability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 78f777711ce031e516e070c53e5e6368828c93f6
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Record tested source and unit checks
+        shell: bash
+        run: |
+          mkdir -p release-proof
+          git rev-parse HEAD > release-proof/tested-commit.txt
+          git archive --format=tar.gz HEAD > release-proof/tested-source.tar.gz
+          npm test | tee release-proof/unit-tests.txt
+      - name: Repeat native mobile regression journeys without retries
+        run: >-
+          npx playwright test e2e/quiz-startup.spec.js e2e/footer-quiz-label.spec.js e2e/logo-feedback.spec.js
+          --grep 'quiz becomes actionable|footer Quiz opens|logo keyboard focus'
+          --project=chromium-android-emulation --project=webkit-iphone-emulation
+          --repeat-each=10 --retries=0 --workers=2
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: whole-site-stability-proof
+          path: |
+            release-proof/
+            test-results/
+          retention-days: 14
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 78f777711ce031e516e070c53e5e6368828c93f6
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Wait for the approved repair to reach the public site
+        shell: bash
+        run: |
+          mkdir -p live-proof
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const expected = fs.readFileSync('quiz.html');
+          let matched = false;
+          for (let i = 0; i < 60; i++) {
+            const response = await fetch('https://samobrienolinger.github.io/saggart-and-citywest-together/quiz.html', {headers:{'Cache-Control':'no-cache'}});
+            const actual = Buffer.from(await response.arrayBuffer());
+            if (response.ok && actual.equals(expected)) { matched = true; break; }
+            console.log('Waiting for the tested quiz revision to be published.');
+            await new Promise(resolve => setTimeout(resolve, 15000));
+          }
+          if (!matched) throw new Error('The tested repair is not yet published; no live all-clear.');
+          NODE
+          git fetch --depth=1 origin main
+          git diff --exit-code HEAD FETCH_HEAD
+          git rev-parse FETCH_HEAD > live-proof/published-commit.txt
+      - name: Compare every published page and asset with the tested source
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {execFileSync} from 'node:child_process';
+          import {createHash} from 'node:crypto';
+          import assert from 'node:assert/strict';
+          const base = 'https://samobrienolinger.github.io/saggart-and-citywest-together/';
+          const files = execFileSync('git',['ls-files','-z']).toString().split('\0').filter(p => p && (p.startsWith('assets/') || /^[^/]+\.html$/.test(p)));
+          const results = [];
+          let index = 0;
+          async function worker() {
+            while (index < files.length) {
+              const path = files[index++];
+              const expected = fs.readFileSync(path);
+              const response = await fetch(base + path.split('/').map(encodeURIComponent).join('/'), {headers:{'Cache-Control':'no-cache'}});
+              const actual = Buffer.from(await response.arrayBuffer());
+              assert.equal(response.status, 200, path);
+              assert.ok(actual.equals(expected), path + ' differs from the tested source');
+              results.push({path, bytes:actual.length, sha256:createHash('sha256').update(actual).digest('hex')});
+            }
+          }
+          try { await Promise.all(Array.from({length:4},worker)); }
+          finally { fs.writeFileSync('live-proof/published-file-hashes.json',JSON.stringify(results.sort((a,b)=>a.path.localeCompare(b.path)),null,2)); }
+          console.log(`Verified ${results.length} published pages/assets byte-for-byte.`);
+          NODE
+      - name: Exercise the real public website on desktop and iPhone emulation
+        run: |
+          node --input-type=module <<'NODE'
+          import {chromium, webkit, expect} from '@playwright/test';
+          import fs from 'node:fs';
+          import {questions} from './assets/data/questions.js';
+          const base = 'https://samobrienolinger.github.io/saggart-and-citywest-together/';
+          const pages = fs.readdirSync('.').filter(p=>p.endsWith('.html')).sort();
+          const reports = [];
+          for (const [name,engine,options] of [
+            ['desktop-chromium',chromium,{viewport:{width:1440,height:900}}],
+            ['iphone-webkit-emulation',webkit,{viewport:{width:390,height:844},isMobile:true,hasTouch:true}],
+          ]) {
+            const browser=await engine.launch();
+            const context=await browser.newContext(options);
+            const page=await context.newPage();
+            const errors=[];
+            page.on('pageerror',e=>errors.push(e.message));
+            try {
+              for (const path of pages) {
+                const response=await page.goto(base+path);
+                expect(response.status(),path).toBe(200);
+                await expect(page.locator('h1')).toBeVisible();
+                await expect(page.locator('.site-header')).toHaveClass(/nav-ready/);
+                expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth),path).toBeLessThanOrEqual(1);
+                reports.push({profile:name,page:path,result:'passed'});
+              }
+              await page.goto(base+'about.html');
+              const cards=page.locator('.about-content > .about-section');
+              await expect(cards).toHaveCount(7);
+              for (const card of await cards.all()) {
+                await card.evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
+                await expect(card).toHaveCSS('opacity','1');
+                await expect(card).toHaveClass(/about-reveal-visible/);
+              }
+              const text=await page.locator('#main').innerText();
+              expect(text).not.toContain('About the group');
+              expect(text).not.toContain('On this page');
+              expect(text).not.toContain('Get in touch');
+              expect(text).toContain('local residents shared food');
+              await page.locator('img').evaluateAll(images=>images.forEach(img=>img.loading='eager'));
+              await expect.poll(()=>page.locator('img').evaluateAll(images=>images.every(img=>img.complete&&img.naturalWidth>0))).toBe(true);
+              reports.push({profile:name,check:'published About cards, wording and images',result:'passed'});
+              await page.goto(base+'index.html');
+              await expect(page.locator('.community-slide')).toHaveCount(21);
+              for (const index of [6,7,8]) {
+                const thumb=page.locator('.carousel-thumb').nth(index);
+                if(options.hasTouch) await thumb.tap(); else await thumb.click();
+                await expect(page.locator('[data-current]')).toHaveText(String(index+1));
+                const image=page.locator('.community-slide').nth(index).locator('img');
+                await expect.poll(()=>image.evaluate(img=>img.complete&&img.naturalWidth>0)).toBe(true);
+              }
+              reports.push({profile:name,check:'all 21 gallery items and three event posters retained',result:'passed'});
+              for(const targetScore of [3,7]) {
+                await page.goto(base+'index.html');
+                const entry=page.locator('.site-footer a[href="quiz.html"]');
+                if(options.hasTouch) await entry.tap(); else await entry.click();
+                await expect(page).toHaveURL(base+'quiz.html');
+                const start=page.locator('#start-quiz');
+                if(options.hasTouch) await start.tap(); else await start.click();
+                for(let i=0;i<10;i++) {
+                  const question=await page.locator('#question-text').innerText();
+                  const record=questions.find(q=>q.question===question);
+                  expect(record).toBeTruthy();
+                  const answer=record.options[record.correctIndex];
+                  const labels=await page.locator('#answer-options button').allTextContents();
+                  const selected=i<targetScore?answer:labels.find(label=>label!==answer);
+                  const button=page.getByRole('button',{name:selected,exact:true});
+                  if(options.hasTouch) await button.tap(); else await button.click();
+                  await page.locator('#next-question').click();
+                }
+                await expect(page.locator('#result-score')).toHaveText(targetScore+'/10');
+                await expect(page.locator('#stop-confetti')).toBeVisible();
+                await page.locator('#stop-confetti').click();
+                await expect(page.locator('#stop-confetti')).toBeHidden();
+                reports.push({profile:name,check:'footer entry, '+targetScore+'/10 quiz and confetti stop',result:'passed'});
+              }
+              await page.goto(base+'learn.html#photo-mill');
+              await expect(page.locator('[data-gallery-count]')).toHaveText('3 / 6');
+              await expect(page.locator('#photo-mill')).toBeVisible();
+              reports.push({profile:name,check:'mill photograph deep link',result:'passed'});
+              await page.goto(base+'about.html');
+              await page.screenshot({path:'live-proof/'+name+'-about.png',fullPage:false});
+              expect(errors).toEqual([]);
+            } catch(error) {
+              reports.push({profile:name,result:'failed',error:String(error),scriptErrors:errors});
+              throw error;
+            } finally {
+              fs.writeFileSync('live-proof/browser-results.json',JSON.stringify(reports,null,2));
+              await browser.close();
+            }
+          }
+          console.log(JSON.stringify(reports,null,2));
+          NODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: whole-site-live-proof
+          path: live-proof/
+          retention-days: 14
