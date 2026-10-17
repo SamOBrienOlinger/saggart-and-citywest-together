@@ -70,3 +70,25 @@ jobs:
             playwright-report/
             test-results/
           retention-days: 14
+  about-landscape-reveal:
+    runs-on: macos-15
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps webkit
+      - name: Repeat the tall-card landscape reveal fifteen times without retries
+        run: npx playwright test e2e/about-release.spec.js --grep='published About cards' --project=webkit-landscape --repeat-each=15 --retries=0
+      - name: Preserve landscape reveal evidence
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-stability-landscape-reveal
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14

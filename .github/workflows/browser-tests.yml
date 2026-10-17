@@ -24,15 +24,38 @@ jobs:
           - name: Chromium and Android emulation
             os: ubuntu-latest
             browser: chromium
+            evidence: chromium
             projects: --project=chromium-desktop --project=chromium-android-emulation
           - name: Firefox
             os: ubuntu-latest
             browser: firefox
+            evidence: firefox
             projects: --project=firefox-desktop
-          - name: WebKit on macOS and mobile emulation
+          - name: WebKit desktop on macOS
             os: macos-15
             browser: webkit
-            projects: --project=webkit-desktop --project=webkit-iphone-emulation --project=webkit-ipad-emulation --project=webkit-narrow --project=webkit-landscape
+            evidence: webkit-desktop
+            projects: --project=webkit-desktop
+          - name: WebKit iPhone emulation
+            os: macos-15
+            browser: webkit
+            evidence: webkit-iphone
+            projects: --project=webkit-iphone-emulation
+          - name: WebKit iPad emulation
+            os: macos-15
+            browser: webkit
+            evidence: webkit-ipad
+            projects: --project=webkit-ipad-emulation
+          - name: WebKit 320px mobile viewport
+            os: macos-15
+            browser: webkit
+            evidence: webkit-narrow
+            projects: --project=webkit-narrow
+          - name: WebKit landscape iPhone emulation
+            os: macos-15
+            browser: webkit
+            evidence: webkit-landscape
+            projects: --project=webkit-landscape
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     steps:
@@ -51,7 +74,7 @@ jobs:
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: browser-evidence-${{ matrix.browser }}
+          name: browser-evidence-${{ matrix.evidence }}
           path: |
             playwright-report/
             test-results/
@@ -82,3 +105,13 @@ jobs:
           name: browser-evidence-safari
           path: safari-results/
           retention-days: 14
+  webkit-summary:
+    name: WebKit on macOS and mobile emulation
+    needs: playwright
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every browser profile to pass
+        env:
+          MATRIX_RESULT: ${{ needs.playwright.result }}
+        run: test "$MATRIX_RESULT" = success

@@ -344,7 +344,7 @@ body[data-page="about"] #main .about-content .source-list a {
         entry.target.classList.add('about-reveal-visible');
         observer.unobserve(entry.target);
       }
-    }, { threshold: 0.08, rootMargin: '0px 0px -5% 0px' });
+    }, { threshold: 0, rootMargin: '0px 0px -5% 0px' });
     cards.filter(card => card.classList.contains('about-reveal-pending')).forEach(card => observer.observe(card));
     body.classList.add('about-reveal-ready');
     // Direct section links and keyboard navigation must never be blocked by motion.
