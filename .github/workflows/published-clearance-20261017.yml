@@ -10,6 +10,9 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: 5f09a5ae55d2b593612448d84f8264d2e472532e
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -17,6 +20,9 @@ jobs:
       - name: Verify live HTML and assets byte for byte
         run: |
           mkdir -p published-evidence
+          test "$(git rev-parse HEAD^{tree})" = a572f9ea1d382ff41eabaabf2171c468bf7f931f
+          git rev-parse HEAD > published-evidence/commit.txt
+          git rev-parse HEAD^{tree} > published-evidence/tree.txt
           python3 - <<'PY'
           import pathlib, subprocess, hashlib, json, urllib.request, urllib.parse
           from concurrent.futures import ThreadPoolExecutor
@@ -24,7 +30,7 @@ jobs:
           paths = [p for p in subprocess.check_output(['git','ls-files','-z']).decode().split('\0') if p and (p.endswith('.html') or p.startswith('assets/'))]
           def verify(path):
               expected = hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()
-              url = base + urllib.parse.quote(path) + '?clearance=79f8a2b-d0f7308'
+              url = base + urllib.parse.quote(path) + '?clearance=5f09a5ae-final'
               try:
                   req = urllib.request.Request(url,headers={'User-Agent':'SCT-release-verification','Cache-Control':'no-cache'})
                   with urllib.request.urlopen(req,timeout=30) as response:
@@ -39,11 +45,11 @@ jobs:
           assert not failures, 'Published file mismatch or unavailable resource'
           PY
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium webkit
       - name: Open every public page on desktop and mobile
         run: |
           node --input-type=module <<'NODE'
-          import { chromium, expect } from '@playwright/test';
+          import { chromium, webkit, expect } from '@playwright/test';
           import fs from 'node:fs';
           const base='https://samobrienolinger.github.io/saggart-and-citywest-together/';
           const paths=fs.readdirSync('.').filter(p=>p.endsWith('.html')).sort();
@@ -86,6 +92,26 @@ jobs:
               }
               await context.close();
             }
+            const landscape=await webkit.launch();
+            try {
+              const context=await landscape.newContext({viewport:{width:852,height:393},isMobile:true,hasTouch:true,reducedMotion:'no-preference'});
+              const page=await context.newPage();
+              const errors=[];page.on('pageerror',e=>errors.push(e.message));
+              expect((await page.goto(base+'about.html')).status()).toBe(200);
+              await expect(page.locator('body')).toHaveClass(/about-reveal-ready/);
+              const cards=page.locator('.about-content>.about-section');
+              await expect(cards).toHaveCount(7);
+              for(const card of await cards.all()) {
+                await card.evaluate(el=>el.scrollIntoView({block:'start',behavior:'instant'}));
+                await expect(card).toHaveClass(/about-reveal-visible/);
+                await expect(card).toHaveCSS('opacity','1');
+              }
+              await expect(page.locator('.about-reveal-pending')).toHaveCount(0);
+              expect(errors).toEqual([]);
+              expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+              reports.push({profile:'webkit-iphone-landscape-emulation',width:852,height:393,path:'about.html',status:'passed',revealedCards:7});
+              await context.close();
+            } finally {await landscape.close();}
           } finally {
             fs.writeFileSync('published-evidence/live-browser-results.json',JSON.stringify(reports,null,2));
             console.log(JSON.stringify(reports,null,2));
