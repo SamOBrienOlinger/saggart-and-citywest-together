@@ -9,6 +9,39 @@ async function openPage(page, path) {
   if (path === 'gallery.html') await page.waitForURL('**/learn.html#heritage');
 }
 
+// A focus-induced smooth scroll can outlive locator.hover() on mobile WebKit.
+// Position the image without animation, then verify that the native pointer
+// target has settled. Do not force input or dispatch synthetic pointer events.
+async function prepareLogoPointer(link) {
+  const logo = link.locator('img');
+  await logo.evaluate(img => img.scrollIntoView({
+    block: 'center', inline: 'nearest', behavior: 'instant',
+  }));
+  let previous;
+  let stableSamples = 0;
+  await expect.poll(async () => {
+    const sample = await logo.evaluate(img => {
+      const rect = img.getBoundingClientRect();
+      const viewport = window.visualViewport;
+      const top = viewport?.offsetTop ?? 0;
+      const left = viewport?.offsetLeft ?? 0;
+      const height = viewport?.height ?? window.innerHeight;
+      const width = viewport?.width ?? window.innerWidth;
+      const hit = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
+      return {
+        position: [rect.x, rect.y, rect.width, rect.height, window.scrollX, window.scrollY, top, left, height, width],
+        ready: rect.width > 0 && rect.height > 0 && rect.top >= top &&
+          rect.bottom <= top + height && rect.left >= left && rect.right <= left + width && hit === img,
+      };
+    });
+    const stationary = previous && sample.position.every((value, index) => Math.abs(value - previous[index]) < .5);
+    stableSamples = sample.ready && stationary ? stableSamples + 1 : 0;
+    previous = sample.position;
+    return stableSamples;
+  }, { message: 'logo is stationary, fully visible and receives native pointer input', intervals: [50, 100], timeout: 10000 }).toBeGreaterThanOrEqual(3);
+  await logo.hover();
+}
+
 async function expectCircularFeedback(link) {
   const logo = link.locator('img');
   await expect(link).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
@@ -32,7 +65,7 @@ test('logo hover highlights are circular, not rectangular, on every page', async
   for (const path of pages) {
     await openPage(page, path);
     for (const link of await page.locator(logoLinks).all()) {
-      await link.locator('img').hover();
+      await prepareLogoPointer(link);
       await expectCircularFeedback(link);
       await expect(link.locator('img')).toHaveCSS('outline-color', 'rgb(255, 240, 213)');
       if (path === 'index.html') {
@@ -63,11 +96,13 @@ test('logo keyboard focus and pressed feedback stay circular on every page', asy
       await expect(link.locator('img')).toHaveCSS('outline-color', 'rgb(255, 255, 255)');
       await expect(link.locator('img')).toHaveCSS('box-shadow', 'rgb(7, 59, 69) 0px 0px 0px 6px');
       await link.evaluate(a => a.blur());
-      await link.locator('img').hover();
+      await prepareLogoPointer(link);
       await page.mouse.down();
       try {
+        await expect.poll(() => link.evaluate(a => a.matches(':active'))).toBe(true);
         await expectCircularFeedback(link);
         await expect(link.locator('img')).toHaveCSS('outline-color', 'rgb(255, 255, 255)');
+        await expect(link.locator('img')).toHaveCSS('box-shadow', 'rgb(116, 53, 29) 0px 0px 0px 6px');
       } finally {
         // Release outside the link to avoid navigating during this style check.
         await page.mouse.move(1, 1);

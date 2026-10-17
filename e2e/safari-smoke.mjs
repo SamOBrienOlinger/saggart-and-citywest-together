@@ -1,16 +1,19 @@
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
-import { Builder, By, Key, until } from 'selenium-webdriver';
+import { Builder, By, until } from 'selenium-webdriver';
 import { questions } from '../assets/data/questions.js';
 import { inspectTextReflow } from './text-reflow.mjs';
 import { inspectButtonAppearance } from './button-appearance.mjs';
 
 const output = 'safari-results';
 await mkdir(output, { recursive: true });
-const driver = await new Builder().forBrowser('safari').build();
+let driver;
+let checkpoint = 'Create native Safari session';
+const pointerChecks = [];
 const findings = [];
 const base = 'http://127.0.0.1:4180/';
 async function open(path = '') {
+  checkpoint = `Open ${path || 'index.html'}`;
   await driver.get(base + path);
   if (path.startsWith('gallery.html')) await driver.wait(until.urlContains('learn.html'), 10000);
   await driver.wait(() => driver.executeScript('return document.readyState === "complete"'), 10000);
@@ -18,6 +21,7 @@ async function open(path = '') {
 }
 async function setTextScale(scale, expectedFont) {
   const percentage = `${scale}%`;
+  checkpoint = `Check ${scale}% text on ${await driver.getCurrentUrl()}`;
   // Confirm the requested scale has rendered before comparing controls.
   await driver.wait(async () => {
     await driver.executeScript('document.documentElement.style.fontSize = arguments[0]', percentage);
@@ -31,16 +35,50 @@ async function setTextScale(scale, expectedFont) {
     `, percentage, expectedFont || null);
   }, 10000);
 }
-async function click(selector) {
-  const element = await driver.findElement(By.css(selector));
-  await driver.executeScript("arguments[0].scrollIntoView({block:'center'})", element);
+// The site's smooth hash/focus scrolling can still be running when WebDriver
+// clicks. Settle the real target first; keep a single native click and all of
+// the subsequent gallery, dialog, image and quiz assertions.
+async function clickElement(element, label) {
+  checkpoint = `Native click: ${label}`;
+  await driver.wait(until.elementIsVisible(element), 10000, checkpoint);
+  await driver.wait(until.elementIsEnabled(element), 10000, checkpoint);
+  await driver.executeScript("arguments[0].scrollIntoView({block:'center', inline:'nearest', behavior:'instant'})", element);
+  let previous;
+  let stableSamples = 0;
+  let sample;
+  await driver.wait(async () => {
+    sample = await driver.executeScript(function (target) {
+      const rect = target.getBoundingClientRect();
+      const left = Math.max(0, rect.left), right = Math.min(innerWidth, rect.right);
+      const top = Math.max(0, rect.top), bottom = Math.min(innerHeight, rect.bottom);
+      const hit = document.elementFromPoint((left + right) / 2, (top + bottom) / 2);
+      return {
+        position: [rect.x, rect.y, rect.width, rect.height, scrollX, scrollY],
+        ready: right > left && bottom > top && !!hit && target.contains(hit),
+        hit: hit ? hit.tagName.toLowerCase() + (hit.id ? '#' + hit.id : '') : null,
+      };
+    }, element);
+    const stationary = previous && sample.position.every((value, index) => Math.abs(value - previous[index]) < .5);
+    stableSamples = sample.ready && stationary ? stableSamples + 1 : 0;
+    previous = sample.position;
+    return stableSamples >= 3;
+  }, 10000, `${checkpoint}: target must be stationary and receive pointer input`, 100);
+  pointerChecks.push({ checkpoint, url: await driver.getCurrentUrl(), ...sample });
   await element.click();
+}
+async function click(selector) {
+  await clickElement(await driver.findElement(By.css(selector)), selector);
+}
+async function visible(selector) {
+  checkpoint = `Visible after native input: ${selector}`;
+  await driver.wait(until.elementIsVisible(await driver.findElement(By.css(selector))), 10000, checkpoint);
 }
 async function text(selector) { return driver.findElement(By.css(selector)).getText(); }
 async function countIs(value) {
   await driver.wait(async () => (await text('[data-current]')) === String(value), 10000);
 }
 try {
+  driver = await new Builder().forBrowser('safari').build();
   const caps = await driver.getCapabilities();
   findings.push({ browser: caps.get('browserName'), version: caps.get('browserVersion'), platform: caps.get('platformName') });
   await driver.manage().window().setRect({ width: 1440, height: 1000 });
@@ -62,10 +100,11 @@ try {
   }
   await open('gallery.html#photo-mill');
   await driver.wait(until.urlContains('learn.html#photo-mill'), 10000);
-  await driver.wait(until.elementIsVisible(await driver.findElement(By.css('#photo-mill'))), 10000);
+  await visible('#photo-mill');
   await click('#photo-mill [data-gallery-open]');
-  await driver.wait(until.elementIsVisible(await driver.findElement(By.css('.history-dialog'))), 10000);
+  await visible('.history-dialog');
   await click('.history-dialog-close');
+  await driver.wait(() => driver.executeScript('return !document.querySelector(".history-dialog").open'), 10000, 'History dialog closes after native click');
   findings.push({ check: 'History gallery, saved photo links and full-image view', result: 'passed' });
   await open();
   const imageCount = (await driver.findElements(By.css(".community-slide"))).length;
@@ -79,7 +118,7 @@ try {
   await click('[data-previous]');
   await countIs(imageCount);
   await click(`[data-image-index="${imageCount - 1}"]`);
-  await driver.wait(until.elementIsVisible(await driver.findElement(By.css('.image-dialog'))), 10000);
+  await visible('.image-dialog');
   await click('.dialog-close');
   await driver.wait(() => driver.executeScript('return !document.querySelector(".image-dialog").open'), 10000);
   findings.push({ check: 'All community images, wrap-around and full-image dialog', result: 'passed' });
@@ -100,8 +139,7 @@ try {
       if ((await option.getText()) === correct) selected = option;
     }
     assert.ok(selected, 'Correct option retained after shuffle');
-    await driver.executeScript("arguments[0].scrollIntoView({block:'center'})", selected);
-    await selected.click();
+    await clickElement(selected, `Correct answer for question ${index + 1}`);
     assert.equal(await text('#current-score'), String(index + 1));
     await click('#next-question');
   }
@@ -117,9 +155,20 @@ try {
   await writeFile(`${output}/results.json`, JSON.stringify(findings, null, 2));
   console.log(JSON.stringify(findings, null, 2));
 } catch (error) {
-  await writeFile(`${output}/failure.png`, await driver.takeScreenshot(), 'base64').catch(() => {});
-  await writeFile(`${output}/results.json`, JSON.stringify({ findings, error: String(error), stack: error.stack }, null, 2));
+  let pageState = null;
+  if (driver) {
+    await driver.takeScreenshot().then(image => writeFile(`${output}/failure.png`, image, 'base64')).catch(() => {});
+    await driver.getPageSource().then(html => writeFile(`${output}/failure.html`, html)).catch(() => {});
+    pageState = await driver.executeScript(() => ({
+      url: location.href, scrollX, scrollY,
+      activeElement: document.activeElement?.outerHTML.slice(0, 500),
+      dialogs: [...document.querySelectorAll('dialog')].map(dialog => ({
+        id: dialog.id, open: dialog.open, display: getComputedStyle(dialog).display,
+      })),
+    })).catch(() => null);
+  }
+  await writeFile(`${output}/results.json`, JSON.stringify({ findings, checkpoint, pointerChecks, pageState, error: String(error), stack: error.stack }, null, 2));
   throw error;
 } finally {
-  await driver.quit().catch(() => {});
+  if (driver) await driver.quit().catch(() => {});
 }

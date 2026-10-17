@@ -126,7 +126,11 @@ test('approved homepage order, service destinations and visual evidence', async 
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Our area. Our story. Together.', { useInnerText: true });
   await expect(page.getByRole('link', { name: 'Try the 10-question quiz', exact: true })).toHaveCount(1);
-  expect(await page.locator('#local-services').evaluate(el => !!(el.compareDocumentPosition(document.querySelector('.community-section')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
+  // Match the approved community-first order guarded by ui-refinements.test.js.
+  // An exact sequence also detects missing, duplicated or reordered sections.
+  const sectionOrder = await page.locator('main > .community-section, main > #local-services, main > .quiz-strip')
+    .evaluateAll(sections => sections.map(section => section.id || section.className));
+  expect(sectionOrder).toEqual(['community-section', 'local-services', 'quiz-strip']);
   for (const [name, path, target] of [
     ['Health services', 'learn.html#health', '#health'],
     ['English classes', 'citywest-supports.html#english-classes', '#english-classes'],
