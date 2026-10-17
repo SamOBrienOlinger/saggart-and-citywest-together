@@ -21,11 +21,27 @@ export function inspectButtonAppearance(reference) {
   const issues = [];
   for (const element of controls) {
     const actual = appearance(element);
-    const differences = properties.filter(property => actual[property] !== standard[property]);
+    const expected = { ...standard };
+    // The approved portfolio credit has a .75rem label, but retains the shared
+    // 48px touch target, colours, padding, focus feedback and other pill styles.
+    // Check its proportional typography explicitly, including enlarged text,
+    // rather than excluding the credit from the button regression coverage.
+    const isCredit = element.matches('.site-footer > p.container > a[href="https://samobrienolinger.github.io/SamOBrienOlinger/"]');
+    if (isCredit) {
+      expected.fontSize = `${parseFloat(standard.fontSize) * .75}px`;
+      expected.lineHeight = `${parseFloat(standard.lineHeight) * .75}px`;
+    }
+    const differences = properties.filter(property => {
+      if (isCredit && (property === 'fontSize' || property === 'lineHeight')) {
+        // WebKit serialises fractional pixel values with small rounding errors.
+        return !(Math.abs(parseFloat(actual[property]) - parseFloat(expected[property])) < .01);
+      }
+      return actual[property] !== expected[property];
+    });
     if (differences.length) issues.push({
       label: element.getAttribute('aria-label') || element.textContent.trim().slice(0, 90),
       differences: Object.fromEntries(differences.map(property => [property, {
-        expected: standard[property], actual: actual[property],
+        expected: expected[property], actual: actual[property],
       }])),
     });
   }
