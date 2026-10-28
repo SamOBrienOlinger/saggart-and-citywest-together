@@ -46,25 +46,26 @@ test('Facts resources retain all sources and visible context in a task-first rea
     assert.match(article, /class="resource-context"/);
   }
 });
-test('gallery preserves all 21 original images including event posters in their original order', () => {
+test('gallery leads with the Samhain poster and preserves the previous 21 images in order', () => {
   const html = read('index.html');
   const expected = JSON.parse(read('tests/fixtures/community-gallery.json')).images;
   const slides = html.match(/<figure class="community-slide"[\s\S]*?<\/figure>/g);
   const thumbnails = html.match(/<button class="carousel-thumb"[\s\S]*?<\/button>/g);
-  assert.equal(slides.length, 21);
-  assert.equal(thumbnails.length, 21);
-  assert.equal(expected.length, 21);
+  assert.equal(slides.length, 22);
+  assert.equal(thumbnails.length, 22);
+  assert.equal(expected.length, 22);
+  assert.equal(expected[0].src, 'assets/images/community/samhain-gathering-2026.jpg');
   assert.deepEqual(slides.map(slide => slide.match(/<img src="([^"]+)"/)[1]), expected.map(image => image.src));
   slides.forEach((slide, i) => {
     assert.ok(slide.includes(`data-image-index="${i}"`));
-    assert.ok(slide.includes(`aria-label="${i + 1} of 21"`));
+    assert.ok(slide.includes(`aria-label="${i + 1} of 22"`));
     assert.ok(thumbnails[i].includes(`data-slide="${i}"`));
     assert.ok(thumbnails[i].includes(`src="${expected[i].src}"`));
     assert.doesNotMatch(slide, /<figcaption/);
     const bytes = readFileSync(new URL('../' + expected[i].src, import.meta.url));
     assert.equal(createHash('sha256').update(bytes).digest('hex'), expected[i].sha256, expected[i].src);
   });
-  assert.deepEqual(expected.slice(6, 9).map(image => image.src.split('/').pop()), [
+  assert.deepEqual(expected.slice(7, 10).map(image => image.src.split('/').pop()), [
     'potluck-poster.jpg', 'human-library-poster.jpg', 'village-clean-up-poster.jpg',
   ]);
   assert.doesNotMatch(html, /class="event-archive|class="event-posters|class="event-poster-grid/);

@@ -2,18 +2,18 @@ import { test, expect } from '@playwright/test';
 import { expectTextReflow } from './text-reflow.mjs';
 const email = 'saggartcitywesttogether@gmail.com';
 
-// Original event posters remain slides 7-9, not a separate disclosure.
+// Original event posters remain slides 8-10, not a separate disclosure.
 async function checkGalleryPosters(page, hasTouch, scripts = true) {
   const files = ['potluck-poster.jpg', 'human-library-poster.jpg', 'village-clean-up-poster.jpg'];
-  await expect(page.locator('.community-slide')).toHaveCount(21);
+  await expect(page.locator('.community-slide')).toHaveCount(22);
   await expect(page.locator('.event-archive')).toHaveCount(0);
   for (let i = 0; i < files.length; i++) {
-    const slide = page.locator('.community-slide').nth(i + 6);
+    const slide = page.locator('.community-slide').nth(i + 7);
     if (scripts) {
-      const thumbnail = page.locator('.carousel-thumb').nth(i + 6);
+      const thumbnail = page.locator('.carousel-thumb').nth(i + 7);
       if (hasTouch) await thumbnail.tap();
       else await thumbnail.click();
-      await expect(page.locator('[data-current]')).toHaveText(String(i + 7));
+      await expect(page.locator('[data-current]')).toHaveText(String(i + 8));
       await expect(slide).toHaveAttribute('aria-hidden', 'false');
     } else {
       // Scroll the real, native no-script rail; do not change the slide state.

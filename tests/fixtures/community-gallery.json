@@ -2,6 +2,10 @@
   "baseline": "bdad1bf9bbe54a9c779d49590cd37a46e01ec1e4",
   "images": [
     {
+      "src": "assets/images/community/samhain-gathering-2026.jpg",
+      "sha256": "ecc332f43c31ee30a887cc7d1e048bbc893a420e1564cb4e217bc10c23103705"
+    },
+    {
       "src": "assets/images/community/potluck-family-cropped-20261010.jpg",
       "sha256": "164fd5374a086ad31e2c0ca735cb164a308cd1befed6c555da1fc42f61184174"
     },
