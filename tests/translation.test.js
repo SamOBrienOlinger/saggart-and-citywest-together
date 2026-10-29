@@ -4,9 +4,9 @@ import { readFile } from 'node:fs/promises';
 import { buildTranslationUrl, translationLanguages } from '../assets/js/translation.js';
 
 test('translation control offers only the requested languages', () => {
-  assert.deepEqual(translationLanguages.map(language => language.code), ['ar', 'fr', 'nl', 'de', 'it', 'es', 'pt', 'zh-CN', 'uk']);
+  assert.deepEqual(translationLanguages.map(language => language.code), ['ar', 'fr', 'nl', 'de', 'it', 'es', 'pl', 'ro', 'pt', 'zh-CN', 'uk']);
   assert.equal(translationLanguages.find(language => language.code === 'ar').direction, 'rtl');
-  assert.ok(translationLanguages.filter(language => language.direction === 'ltr').length === 8);
+  assert.ok(translationLanguages.filter(language => language.direction === 'ltr').length === 10);
 });
 
 test('translation links preserve the source page and requested target language', () => {
@@ -52,4 +52,35 @@ test('language switching uses the original page and retains its section', () => 
     assert.equal(url.searchParams.get('tl'), code);
   }
   assert.throws(() => buildTranslationUrl('fr', 'javascript:alert(1)'));
+});
+
+test('every public page keeps fallback languages in sync with the shared configuration', async () => {
+  const { readdir } = await import('node:fs/promises');
+  const root = new URL('../', import.meta.url);
+  for (const filename of (await readdir(root)).filter(name => name.endsWith('.html'))) {
+    const html = await readFile(new URL(filename, root), 'utf8');
+    if (!html.includes('translation-fallback')) continue; // redirect/error pages without navigation
+    const fallback = html.match(/<nav[^>]*translation-fallback[\s\S]*?<\/nav>/)[0];
+    const links = [...fallback.matchAll(/<a href="([^"]+)" lang="([^"]+)" hreflang="([^"]+)"[^>]*>([^<]+)/g)];
+    assert.deepEqual(links.map(match => match[2]), translationLanguages.map(language => language.code), filename);
+    for (const [, href, lang, hreflang, label] of links) {
+      const url = new URL(href.replaceAll('&amp;', '&'));
+      assert.equal(url.searchParams.get('tl'), lang, filename);
+      assert.equal(hreflang, lang);
+      assert.equal(label, translationLanguages.find(language => language.code === lang).nativeLabel);
+      assert.equal(url.searchParams.get('u'), `https://samobrienolinger.github.io/saggart-and-citywest-together/${filename}`);
+    }
+  }
+});
+
+test('Polish and Romanian switching preserves each destination page and section', () => {
+  for (const current of ['pl', 'ro']) {
+    for (const page of ['index.html', 'contact.html', 'quiz.html', 'facts.html']) {
+      for (const target of ['pl', 'ro']) {
+        const url = new URL(buildTranslationUrl(target, `https://samobrienolinger-github-io.translate.goog/saggart-and-citywest-together/${page}?_x_tr_sl=en&_x_tr_tl=${current}#main`));
+        assert.equal(url.searchParams.get('tl'), target);
+        assert.equal(url.searchParams.get('u'), `https://samobrienolinger.github.io/saggart-and-citywest-together/${page}#main`);
+      }
+    }
+  }
 });
