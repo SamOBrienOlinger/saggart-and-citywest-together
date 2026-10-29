@@ -435,7 +435,9 @@ test('right-to-left translated layout retains the language switch and English re
   await fitsViewport(page);
 });
 
-test('Polish and Romanian remain keyboard accessible after page navigation', async ({page}) => {
+test('Polish and Romanian remain keyboard accessible after page navigation', async ({page, browserName}) => {
+  // macOS WebKit follows Safari's default: Option-Tab includes links.
+  const nextItem = browserName === 'webkit' && process.platform === 'darwin' ? 'Alt+Tab' : 'Tab';
   await page.goto('/contact.html');
   for (const destination of ['contact.html', 'quiz.html']) {
     if (destination === 'quiz.html') await page.locator('.site-footer a[href="quiz.html"]').click();
@@ -447,7 +449,7 @@ test('Polish and Romanian remain keyboard accessible after page navigation', asy
       const link = page.locator(`[data-language="${code}"]`);
       await expect(link).toContainText(label);
       // Reach each option using the same sequential keyboard navigation as readers.
-      for (let step = 0; step < 12 && !await link.evaluate(el => el === document.activeElement); step++) await page.keyboard.press('Tab');
+      for (let step = 0; step < 12 && !await link.evaluate(el => el === document.activeElement); step++) await page.keyboard.press(nextItem);
       await expect(link).toBeFocused();
       const url = new URL(await link.getAttribute('href'));
       expect(url.searchParams.get('tl')).toBe(code);
