@@ -3,20 +3,20 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 
-// Expected footer markup, including the requested Quiz label change on 16 October 2026.
+// Expected footer markup, including Polish and Romanian fallback links added on 29 October 2026.
 // Intentional future content changes must explicitly update this fixture.
 const originals = {
-  '404.html': 'ac724f753e737025b33aa9bbbfedaf21bd22ed9e47f032766fd93c7e59ab9c17',
-  'about.html': '23ddb79e696a48debf1e9e11dec8e3dcfef2dadbc35ab469d8b7b1c7ca436a20',
-  'accessibility.html': '47fbcb77eb347cf74317d6cac9ac83a13cbc6f917e721e424272429211aa0426',
-  'citywest-supports.html': 'c4dcd69f13fcfc68cf559fd2031456858587af143f91f12e154857c9d6dd0e8a',
-  'contact.html': '0a964bde8f6f0218de54180de52206150602c3fed5264b55f4cc37c5efe2e217',
-  'facts.html': 'cb38b38ca5aa4280a9393ff770c3b503ed569a09ee930e684041b9a2e88ff00e',
-  'gallery.html': 'f32932869e1f69d4c0eeba4251f6a98638bac026e18ab9c07b1a7849488d0a3a',
-  'index.html': 'f25bbedd7d2d90192aa2f27bebf8e6ef3aab232b62611ec13dca5016001f8e3f',
-  'learn.html': '3d28c44831cbe210b567e4a3be4af9ea0b672e6e8f376bc7de8722104ba7e2a2',
-  'privacy.html': 'cd623b5ebf4999552e99c838f3bba3b34d7c754e15104452e54fd54eb9239604',
-  'quiz.html': '72a7f61b27bda6f175a5d38b1416336e0cf08fb4079bd5cc18c80845ee12779c',
+  '404.html': 'e496dddb194b6c114ab85c1549883955b7299744b15d736f397b5a100e3d1b55',
+  'about.html': 'b96972041746079c5cdcc285ca7026725497ca78b337588958f9606176c1aa40',
+  'accessibility.html': '4a740db91f34d1acea1217c1a781b513c5c94663b696222c0c8badf8f6ac0501',
+  'citywest-supports.html': 'be46981406c5d8a0e6355981f077e329e46303e6ae61b443f5e03677589b3a6f',
+  'contact.html': '5f6d2bc58735b6a18d2b2a805e0a27bd607fab61dd430b90b15ce07da40f7ac3',
+  'facts.html': 'f237bf842e57cec9155cafeb207e307c69e3f26665879d9eead1a6508b8998ee',
+  'gallery.html': '70bfc9b2c70f62865462351ec23229d61cb444394e6318de2b84fe4fbac3dc49',
+  'index.html': 'a14c6a537fa1c79ba7739d16688e2ac8e2103f96e439f40d0cf9633bf641360e',
+  'learn.html': 'a07f57ca4515dc3d1a1dac296a44bed0518004d2f5a7aae7b2eee300a631161e',
+  'privacy.html': '75d16f38649804580d2df93fc3050f19db3a0222ac3fee70445a1a64da2d9305',
+  'quiz.html': '04fb449b693d8152bc352c3d36e4ba32e7f3a20f57b8679f5af6f26e4c14a1df',
 };
 
 test('footer retains the requested Quiz label and every other link, image and no-script route verbatim', () => {

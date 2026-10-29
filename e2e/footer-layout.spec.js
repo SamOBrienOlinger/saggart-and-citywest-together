@@ -101,7 +101,7 @@ test.describe('without JavaScript', () => {
     for (const path of ['index.html', 'contact.html', 'accessibility.html', '404.html']) {
       await page.goto('/' + path);
       await checkLayout(page);
-      await expect(page.locator('.site-footer .translation-fallback a')).toHaveCount(9);
+      await expect(page.locator('.site-footer .translation-fallback a')).toHaveCount(11);
       await expect(page.locator('.site-footer .translation-fallback')).toBeVisible();
     }
   });

@@ -5,6 +5,8 @@ export const translationLanguages = Object.freeze([
   { code: 'de', label: 'German', nativeLabel: 'Deutsch', direction: 'ltr' },
   { code: 'it', label: 'Italian', nativeLabel: 'Italiano', direction: 'ltr' },
   { code: 'es', label: 'Spanish', nativeLabel: 'Español', direction: 'ltr' },
+  { code: 'pl', label: 'Polish', nativeLabel: 'Polski', direction: 'ltr' },
+  { code: 'ro', label: 'Romanian', nativeLabel: 'Română', direction: 'ltr' },
   { code: 'pt', label: 'Portuguese', nativeLabel: 'Português', direction: 'ltr' },
   { code: 'zh-CN', label: 'Mandarin', nativeLabel: '简体中文', direction: 'ltr' },
   { code: 'uk', label: 'Ukrainian', nativeLabel: 'Українська', direction: 'ltr' }

@@ -264,7 +264,7 @@ test('navigation, languages and real contact route work', async ({ page, context
   await openMenuIfNeeded(page);
   await activate(page.getByRole('button', { name: 'Languages', exact: true }), hasTouch);
   await expect(page.locator('.translation-panel')).toBeVisible();
-  await expect(page.locator('.translation-link')).toHaveCount(9);
+  await expect(page.locator('.translation-link')).toHaveCount(11);
   await page.keyboard.press('Escape');
   await expect(page.locator('.translation-panel')).not.toBeVisible();
   await page.locator('#site-menu').getByRole('link', { name: 'Get involved', exact: true }).click();
@@ -399,11 +399,11 @@ test('language choices cover every page and follow the current section', async (
     await openMenuIfNeeded(page);
     await activate(page.getByRole('button', {name:'Languages', exact:true}), hasTouch);
     const links = page.locator('.translation-link');
-    await expect(links).toHaveCount(9);
+    await expect(links).toHaveCount(11);
     for (const link of await links.all()) {
       const url = new URL(await link.getAttribute('href'));
       expect(url.searchParams.get('u')).toBe(page.url());
-      expect(['ar','fr','nl','de','it','es','pt','zh-CN','uk']).toContain(url.searchParams.get('tl'));
+      expect(['ar','fr','nl','de','it','es','pl','ro','pt','zh-CN','uk']).toContain(url.searchParams.get('tl'));
       await expect(link).toHaveAttribute('target', '_blank');
     }
     await fitsViewport(page);
@@ -433,4 +433,31 @@ test('right-to-left translated layout retains the language switch and English re
   await expect(page.locator('.translation-original')).toHaveAttribute('href','https://samobrienolinger.github.io/saggart-and-citywest-together/facts.html#digital-literacy');
   expect(new URL(await page.locator('[data-language="fr"]').getAttribute('href')).searchParams.get('u')).toBe('https://samobrienolinger.github.io/saggart-and-citywest-together/facts.html#digital-literacy');
   await fitsViewport(page);
+});
+
+test('Polish and Romanian remain keyboard accessible after page navigation', async ({page}) => {
+  await page.goto('/contact.html');
+  for (const destination of ['contact.html', 'quiz.html']) {
+    if (destination === 'quiz.html') await page.locator('.site-footer a[href="quiz.html"]').click();
+    await openMenuIfNeeded(page);
+    const toggle = page.getByRole('button', {name:'Languages', exact:true});
+    await toggle.focus();
+    await page.keyboard.press('Enter');
+    for (const [code, label] of [['pl','Polski (Polish)'], ['ro','Română (Romanian)']]) {
+      const link = page.locator(`[data-language="${code}"]`);
+      await expect(link).toContainText(label);
+      // Reach each option using the same sequential keyboard navigation as readers.
+      for (let step = 0; step < 12 && !await link.evaluate(el => el === document.activeElement); step++) await page.keyboard.press('Tab');
+      await expect(link).toBeFocused();
+      const url = new URL(await link.getAttribute('href'));
+      expect(url.searchParams.get('tl')).toBe(code);
+      expect(url.searchParams.get('u')).toBe(page.url());
+      await expect(link).toBeInViewport();
+    }
+    await expect(page.locator('.translation-note')).toHaveText('Machine translation by Google may contain errors.');
+    await page.keyboard.press('Escape');
+    await expect(toggle).toBeFocused();
+    await expect(page.locator('.translation-panel')).toBeHidden();
+    await fitsViewport(page);
+  }
 });
