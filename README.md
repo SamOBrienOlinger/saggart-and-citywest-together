@@ -6,7 +6,7 @@ A community information website that supports connection, inclusion and local kn
 
 [Visit the website](https://samobrienolinger.github.io/saggart-and-citywest-together/) · [Distinctive proposition](#distinctive-proposition-and-educational-contribution) · [Getting started](#getting-started) · [Repository guide](#repository-guide) · [Checks](#checks-and-review) · [Credits](#credits-and-reuse)
 
-<img src="assets/images/hero-saggart-citywest-v10.webp" alt="Illustrated view of Saggart and Citywest" width="880">
+<img src="assets/images/hero-saggart-citywest-v12.jpg" alt="Illustrated view of Saggart and Citywest" width="880">
 
 ## Distinctive proposition and educational contribution
 
