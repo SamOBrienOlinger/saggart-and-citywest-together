@@ -88,6 +88,30 @@
     {
       "src": "assets/images/community/community-group-gathering.jpg",
       "sha256": "0497e78561344b5d3f8ed5d594d72bc4f1b9f75d14b452a85b4a77e54d7075da"
+    },
+    {
+      "src": "assets/images/community/samhain-costume-activities-2026.jpg",
+      "sha256": "261343592d74b59d98404e9916f1a47707a22b4915556dcc5a3fec9f7b434b84"
+    },
+    {
+      "src": "assets/images/community/samhain-outdoor-gathering-2026.jpg",
+      "sha256": "1b845a4dbbf3998cf33248e9e746b2c0bb51c80af591f3efeded80980d09424c"
+    },
+    {
+      "src": "assets/images/community/samhain-pumpkin-and-costume-2026.jpg",
+      "sha256": "b90f2e0be6e170ae2a01d465fdadf9ce6f53e15ce0da6eee4c8266395d41b53e"
+    },
+    {
+      "src": "assets/images/community/samhain-costumed-performers-2026.jpg",
+      "sha256": "b6d0a448135aca774acc66cbc9c18dc9f82bdfad641d0b3da38e816a88c7d59d"
+    },
+    {
+      "src": "assets/images/community/samhain-community-costumes-2026.jpg",
+      "sha256": "7334efc4afe691aa1e71e20dedc23dac64cf7daf67a5e949b79e596291fdacb1"
+    },
+    {
+      "src": "assets/images/community/samhain-storytelling-2026.jpg",
+      "sha256": "3da98c772b1e7dd8ebca4ba3886cd3ca54d91ad654342827b5a3416c35bdc3ca"
     }
   ]
 }

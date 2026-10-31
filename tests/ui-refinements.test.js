@@ -46,19 +46,19 @@ test('Facts resources retain all sources and visible context in a task-first rea
     assert.match(article, /class="resource-context"/);
   }
 });
-test('gallery leads with the Samhain poster and preserves the previous 21 images in order', () => {
+test('gallery preserves the original 22 images and appends six Samhain photographs', () => {
   const html = read('index.html');
   const expected = JSON.parse(read('tests/fixtures/community-gallery.json')).images;
   const slides = html.match(/<figure class="community-slide"[\s\S]*?<\/figure>/g);
   const thumbnails = html.match(/<button class="carousel-thumb"[\s\S]*?<\/button>/g);
-  assert.equal(slides.length, 22);
-  assert.equal(thumbnails.length, 22);
-  assert.equal(expected.length, 22);
+  assert.equal(slides.length, 28);
+  assert.equal(thumbnails.length, 28);
+  assert.equal(expected.length, 28);
   assert.equal(expected[0].src, 'assets/images/community/samhain-gathering-2026.jpg');
   assert.deepEqual(slides.map(slide => slide.match(/<img src="([^"]+)"/)[1]), expected.map(image => image.src));
   slides.forEach((slide, i) => {
     assert.ok(slide.includes(`data-image-index="${i}"`));
-    assert.ok(slide.includes(`aria-label="${i + 1} of 22"`));
+    assert.ok(slide.includes(`aria-label="${i + 1} of 28"`));
     assert.ok(thumbnails[i].includes(`data-slide="${i}"`));
     assert.ok(thumbnails[i].includes(`src="${expected[i].src}"`));
     assert.doesNotMatch(slide, /<figcaption/);
