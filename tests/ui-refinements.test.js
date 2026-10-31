@@ -46,7 +46,7 @@ test('Facts resources retain all sources and visible context in a task-first rea
     assert.match(article, /class="resource-context"/);
   }
 });
-test('gallery preserves the original 22 images and appends six Samhain photographs', () => {
+test('gallery leads with six Samhain photographs and preserves the previous 22 images in order', () => {
   const html = read('index.html');
   const expected = JSON.parse(read('tests/fixtures/community-gallery.json')).images;
   const slides = html.match(/<figure class="community-slide"[\s\S]*?<\/figure>/g);
@@ -54,7 +54,7 @@ test('gallery preserves the original 22 images and appends six Samhain photograp
   assert.equal(slides.length, 28);
   assert.equal(thumbnails.length, 28);
   assert.equal(expected.length, 28);
-  assert.equal(expected[0].src, 'assets/images/community/samhain-gathering-2026.jpg');
+  assert.equal(expected[0].src, 'assets/images/community/samhain-costume-activities-2026.jpg');
   assert.deepEqual(slides.map(slide => slide.match(/<img src="([^"]+)"/)[1]), expected.map(image => image.src));
   slides.forEach((slide, i) => {
     assert.ok(slide.includes(`data-image-index="${i}"`));
@@ -65,7 +65,7 @@ test('gallery preserves the original 22 images and appends six Samhain photograp
     const bytes = readFileSync(new URL('../' + expected[i].src, import.meta.url));
     assert.equal(createHash('sha256').update(bytes).digest('hex'), expected[i].sha256, expected[i].src);
   });
-  assert.deepEqual(expected.slice(7, 10).map(image => image.src.split('/').pop()), [
+  assert.deepEqual(expected.slice(13, 16).map(image => image.src.split('/').pop()), [
     'potluck-poster.jpg', 'human-library-poster.jpg', 'village-clean-up-poster.jpg',
   ]);
   assert.doesNotMatch(html, /class="event-archive|class="event-posters|class="event-poster-grid/);
