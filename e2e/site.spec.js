@@ -385,7 +385,12 @@ test('Facts is discoverable and its local-data directory works', async ({ page, 
   await expect(page.locator('#cso-title')).toBeInViewport();
   await expect(page.locator('.facts-publications:not(.facts-additional-publications) li')).toHaveCount(10);
   const earlier = page.locator('summary', { hasText: 'Earlier census data' });
+  // Seeing the CSO heading does not mean its smooth anchor scroll has ended.
+  // Centre the actual control before one native click/tap, rather than letting
+  // WebKit focus-scroll it away between Playwright's pointer down and up.
+  await earlier.evaluate(summary => summary.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' }));
   await activate(earlier, hasTouch);
+  await expect(earlier.locator('..')).toHaveAttribute('open', '');
   await expect(page.getByRole('link', { name: /^Census 2016 Small Area Population Statistics/ })).toBeVisible();
   await fitsViewport(page);
   await page.goto('/facts.html');
