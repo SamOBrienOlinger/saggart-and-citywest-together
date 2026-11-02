@@ -33,6 +33,21 @@ async function translatedFrame() {
   }
   return null;
 }
+async function scrollForTranslation(frame, source) {
+  // Google may translate content lazily as a reader scrolls. A full-page
+  // screenshot alone does not put off-screen paragraphs into the viewport.
+  const height = await frame.evaluate(() => document.documentElement.scrollHeight);
+  for (let y = 0; y < height; y += 650) {
+    await frame.evaluate(top => scrollTo({ top, behavior: 'instant' }), y);
+    await page.waitForTimeout(350);
+  }
+  const ending = source.visibleText.trim().split('\n').filter(line => line.trim()).at(-1);
+  await frame.waitForFunction(english => {
+    const main = document.querySelector('main');
+    return main && !main.innerText.includes(english);
+  }, ending, { timeout: 8000 }).catch(() => {});
+  await frame.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
+}
 async function waitForTranslatedQuestion(frame) {
   // Wait for the actual provider to translate newly inserted quiz text. Do not
   // inject translations or treat the English fallback as translated output.
@@ -96,6 +111,7 @@ try {
           const h1 = document.querySelector('main h1');
           return h1 && h1.innerText.trim() !== heading.trim();
         }, source.heading, { timeout: 10000 }).catch(() => {});
+        await scrollForTranslation(frame, source);
         entry.desktop = await snapshot(frame);
         entry.status = entry.desktop.heading.trim() === source.heading.trim() ? 'untranslated-output' : 'captured-awaiting-language-review';
         await page.screenshot({ path: `${output}/${language.code}-${path}-desktop.png`, fullPage: true });
@@ -113,11 +129,19 @@ try {
               unchangedEnglish: questions.some(item => item.question === question.trim()) };
             entry.quiz.questions.push(sample);
             await frame.locator('#answer-options button').first().click();
+            await frame.waitForFunction(explanations => {
+              const text = document.querySelector('#feedback')?.innerText || '';
+              return text && !explanations.some(explanation => text.includes(explanation));
+            }, questions.map(item => item.explanation), { timeout: 8000 }).catch(() => {});
             sample.feedback = await frame.locator('#feedback').innerText();
             if (sample.unchangedEnglish) { entry.quiz.status = 'dynamic-text-remained-English'; break; }
             await frame.locator('#next-question').click();
           }
           if (entry.quiz.questions.length === 10 && entry.quiz.questions.every(q => !q.unchangedEnglish)) {
+            await frame.waitForFunction(() => {
+              const heading = document.querySelector('#result-heading')?.innerText || '';
+              return heading && !['Excellent local knowledge!', 'A strong start!', 'Every question is a chance to learn.'].includes(heading.trim());
+            }, undefined, { timeout: 8000 }).catch(() => {});
             entry.quiz.status = 'completed-awaiting-language-review';
             entry.quiz.results = await frame.locator('#results-panel').innerText();
           }

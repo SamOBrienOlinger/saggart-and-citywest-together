@@ -72,7 +72,8 @@ async function click(selector) {
 }
 async function visible(selector) {
   checkpoint = `Visible after native input: ${selector}`;
-  await driver.wait(until.elementIsVisible(await driver.findElement(By.css(selector))), 10000, checkpoint);
+  const element = await driver.wait(until.elementLocated(By.css(selector)), 10000, checkpoint);
+  await driver.wait(until.elementIsVisible(element), 10000, checkpoint);
 }
 async function text(selector) { return driver.findElement(By.css(selector)).getText(); }
 async function countIs(value) {
