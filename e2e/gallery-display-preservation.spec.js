@@ -3,12 +3,12 @@ import { readFileSync } from 'node:fs';
 
 const originals = JSON.parse(readFileSync(new URL('../tests/fixtures/community-gallery.json', import.meta.url), 'utf8')).images;
 
-test('gallery leads with the Samhain poster and preserves the previous image order and framing', async ({ page }) => {
+test('gallery preserves the approved 28-image order and framing', async ({ page }) => {
   await page.goto('/');
   const slides = page.locator('.community-slide');
   const thumbnails = page.locator('.carousel-thumb img');
-  await expect(slides).toHaveCount(22);
-  await expect(thumbnails).toHaveCount(22);
+  await expect(slides).toHaveCount(originals.length);
+  await expect(thumbnails).toHaveCount(originals.length);
   await expect(page.locator('.event-archive')).toHaveCount(0);
   expect(await slides.locator('img').evaluateAll(images => images.map(image => image.getAttribute('src'))))
     .toEqual(originals.map(image => image.src));
@@ -21,6 +21,6 @@ test('gallery leads with the Samhain poster and preserves the previous image ord
     .toEqual(originalFraming);
   expect(await slides.locator('img').evaluateAll(images => images.map(image => getComputedStyle(image).objectFit)))
     .toEqual(originals.map(() => 'contain'));
-  expect(originals.slice(7, 10).map(image => image.src.split('/').pop()))
+  expect(originals.slice(13, 16).map(image => image.src.split('/').pop()))
     .toEqual(['potluck-poster.jpg', 'human-library-poster.jpg', 'village-clean-up-poster.jpg']);
 });
