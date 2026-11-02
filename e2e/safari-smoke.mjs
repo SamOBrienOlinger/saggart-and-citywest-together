@@ -104,8 +104,13 @@ try {
   // than inferring Safari behavior from the Playwright WebKit profiles.
   await open();
   for (const [nav, path] of [['learn', 'learn.html'], ['quiz', 'quiz.html'], ['services', 'index.html#local-services'], ['contact', 'contact.html#contact-details'], ['facts', 'facts.html'], ['about', 'about.html']]) {
+    const previousDocument = await driver.findElement(By.css('html'));
     await click(`.nav-list a[data-nav="${nav}"]`);
+    // Safari can expose the destination URL while the previous document's
+    // elements still exist. Await the real navigation before locating controls.
+    await driver.wait(until.stalenessOf(previousDocument), 10000);
     await driver.wait(until.urlIs(base + path), 10000);
+    await driver.wait(() => driver.executeScript('return document.readyState === "complete" && !!document.querySelector(".nav-ready .translate-toggle")'), 10000);
     await visible('.translate-toggle');
     await click('.translate-toggle');
     await visible('.translation-panel');
