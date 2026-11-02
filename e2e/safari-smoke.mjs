@@ -102,7 +102,7 @@ try {
   // Exercise native Safari navigation and language-menu interaction, rather
   // than inferring Safari behavior from the Playwright WebKit profiles.
   await open();
-  for (const [nav, path] of [['learn', 'learn.html'], ['quiz', 'quiz.html'], ['services', 'citywest-supports.html'], ['facts', 'facts.html'], ['about', 'about.html']]) {
+  for (const [nav, path] of [['learn', 'learn.html'], ['quiz', 'quiz.html'], ['services', 'index.html#local-services'], ['contact', 'contact.html#contact-details'], ['facts', 'facts.html'], ['about', 'about.html']]) {
     await click(`.nav-list a[data-nav="${nav}"]`);
     await driver.wait(until.urlIs(base + path), 10000);
     await visible('.translate-toggle');
