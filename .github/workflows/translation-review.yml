@@ -1,0 +1,32 @@
+name: Collect live machine-translation review evidence
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/collect-live-translation-review.mjs'
+      - '.github/workflows/translation-review.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  collect:
+    name: Capture actual translated output for language review
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Collect live output without translation stubs or provider retries
+        run: node scripts/collect-live-translation-review.mjs
+      - name: Preserve output and explicit unavailable results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-translation-review-evidence
+          path: translation-review-results/
+          retention-days: 14

@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
-import { Builder, By, until } from 'selenium-webdriver';
+import { Builder, By, Key, until } from 'selenium-webdriver';
 import { questions } from '../assets/data/questions.js';
+import { translationLanguages } from '../assets/js/translation.js';
 import { inspectTextReflow } from './text-reflow.mjs';
 import { inspectButtonAppearance } from './button-appearance.mjs';
 
@@ -97,6 +98,33 @@ try {
       assert.deepEqual(buttons.issues, [], `Button appearance differs on ${path} at ${scale}% text`);
       findings.push({ page: path, textScale: scale, ...dimensions, result: 'passed' });
     }
+  }
+  // Exercise native Safari navigation and language-menu interaction, rather
+  // than inferring Safari behavior from the Playwright WebKit profiles.
+  await open();
+  for (const [nav, path] of [['learn', 'learn.html'], ['quiz', 'quiz.html'], ['services', 'citywest-supports.html'], ['facts', 'facts.html'], ['about', 'about.html']]) {
+    await click(`.nav-list a[data-nav="${nav}"]`);
+    await driver.wait(until.urlIs(base + path), 10000);
+    await visible('.translate-toggle');
+    await click('.translate-toggle');
+    await visible('.translation-panel');
+    const choices = await driver.findElements(By.css('.translation-options [data-language]'));
+    assert.equal(choices.length, translationLanguages.length);
+    for (let index = 0; index < choices.length; index++) {
+      const choice = choices[index];
+      const language = translationLanguages[index];
+      assert.equal(await choice.getAttribute('data-language'), language.code);
+      assert.ok((await choice.getText()).includes(language.nativeLabel));
+      const destination = new URL(await choice.getAttribute('href'));
+      assert.equal(destination.origin, 'https://translate.google.com');
+      assert.equal(destination.searchParams.get('tl'), language.code);
+      assert.equal(destination.searchParams.get('u'), base + path);
+      assert.equal(await choice.getAttribute('target'), '_blank');
+    }
+    await driver.findElement(By.css('.translate-toggle')).sendKeys(Key.ESCAPE);
+    await driver.wait(async () => !await driver.findElement(By.css('.translation-panel')).isDisplayed(), 10000);
+    assert.ok((await (await driver.switchTo().activeElement()).getAttribute('class')).includes('translate-toggle'));
+    findings.push({ check: 'Native navigation and 11 language choices, Escape and focus return', page: path, result: 'passed' });
   }
   await open('gallery.html#photo-mill');
   await driver.wait(until.urlContains('learn.html#photo-mill'), 10000);
