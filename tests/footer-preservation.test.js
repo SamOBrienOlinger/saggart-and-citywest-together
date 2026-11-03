@@ -6,17 +6,17 @@ import { createHash } from 'node:crypto';
 // Expected footer markup, including the verified PPN membership added on 3 November 2026.
 // Intentional future content changes must explicitly update this fixture.
 const originals = {
-  '404.html': '2a4227a055f77b23d042c31f6af7da4c81ab3a7febda1989d13a822bab661393',
-  'about.html': '7976458c5cb921b5923e5e0752f726718c60a1182ba10a460fd23339bf3898e2',
-  'accessibility.html': '10f11e083d06b5ead7a38c3c56c26fb4158342435bd9bfbb3cccb0e7fa3019c3',
-  'citywest-supports.html': '9b13eaf556ccfe196e44acef3ef2d4d7aaae888abf37f52410cb8f16230bd440',
-  'contact.html': 'aac669999d8fb4498580620cdf7c465ed1a70bf5658a75bc43f0ad611a60967f',
-  'facts.html': '3f11fb1e335a4a0a0f91c583fc2780358af96ca0110068c569d761ef670abdce',
-  'gallery.html': 'f345fc83c55de7cdb45d7f227e601a1070b7012e372a1486fcb657da44cdfc85',
-  'index.html': 'c3818c1a488bc93ec211783aa6ee988012a84627d6724ee1124bd040d7898725',
-  'learn.html': '907682c827c111a335742b48ce6d7537401a9f405e9ee2ad445527624d9b2568',
-  'privacy.html': '67d98f5a08108246b1dfbf70b438a9d3077991f87c395ef581a101156e8003e9',
-  'quiz.html': '371adc6cfadb58e211a324b62149a3354493700a398aac61f3320575451199f0',
+  '404.html': 'd223b4ed0171eee4ad2b1634ea9af8d6a5d5d1c74e457d6a0f6ef3940fa95c0d',
+  'about.html': '81fa3acc5f06eaa110138c810f38432550e439a0fb2ec31bd6457cce0ff12145',
+  'accessibility.html': 'deea163f47afa1074ab22e2e69770246242d07e35fe1b7de5a80e2a89c83d336',
+  'citywest-supports.html': '6238509bc75b867acdb71fd4cfa3fc7cd7c0054d3e70a6dbbb7bc0c21dc1776b',
+  'contact.html': '2264f4bf7f1e774ee89eebb937658542baed32c508f210992871535f11c49bec',
+  'facts.html': 'b69e59ce75087a63281e10c080bd06775796a5d6a71447ff92d075f526dcab93',
+  'gallery.html': '48521215c8d43292e743b083bc94fba912cd7b5ffcad8a00487e429c931a814b',
+  'index.html': 'cc21dcb74b7d6c46d1db585b904b3a831eaae2dde9127c73d56159acfa429774',
+  'learn.html': '489250dbc69d25b391e08b757b496ca40a053ad0de4bf52f18d7c0dec39f4d0a',
+  'privacy.html': '14ed1989ccef0eb305da60664db285de4bdbd42d0acbb2c67499b3b80829aa03',
+  'quiz.html': '8adf2312ce71a507b2f91d4677483166b060f6266608f3e75c3291bd6546856b',
 };
 
 test('footer retains the verified PPN membership, Quiz label, links, images and no-script routes', () => {
