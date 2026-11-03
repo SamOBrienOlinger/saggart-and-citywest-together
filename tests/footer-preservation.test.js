@@ -3,23 +3,23 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 
-// Expected footer markup, including Polish and Romanian fallback links added on 29 October 2026.
+// Expected footer markup, including the verified PPN membership added on 3 November 2026.
 // Intentional future content changes must explicitly update this fixture.
 const originals = {
-  '404.html': 'e496dddb194b6c114ab85c1549883955b7299744b15d736f397b5a100e3d1b55',
-  'about.html': 'b96972041746079c5cdcc285ca7026725497ca78b337588958f9606176c1aa40',
-  'accessibility.html': '4a740db91f34d1acea1217c1a781b513c5c94663b696222c0c8badf8f6ac0501',
-  'citywest-supports.html': 'be46981406c5d8a0e6355981f077e329e46303e6ae61b443f5e03677589b3a6f',
-  'contact.html': '5f6d2bc58735b6a18d2b2a805e0a27bd607fab61dd430b90b15ce07da40f7ac3',
-  'facts.html': 'f237bf842e57cec9155cafeb207e307c69e3f26665879d9eead1a6508b8998ee',
-  'gallery.html': '70bfc9b2c70f62865462351ec23229d61cb444394e6318de2b84fe4fbac3dc49',
-  'index.html': 'a14c6a537fa1c79ba7739d16688e2ac8e2103f96e439f40d0cf9633bf641360e',
-  'learn.html': 'a07f57ca4515dc3d1a1dac296a44bed0518004d2f5a7aae7b2eee300a631161e',
-  'privacy.html': '75d16f38649804580d2df93fc3050f19db3a0222ac3fee70445a1a64da2d9305',
-  'quiz.html': '04fb449b693d8152bc352c3d36e4ba32e7f3a20f57b8679f5af6f26e4c14a1df',
+  '404.html': '2a4227a055f77b23d042c31f6af7da4c81ab3a7febda1989d13a822bab661393',
+  'about.html': '7976458c5cb921b5923e5e0752f726718c60a1182ba10a460fd23339bf3898e2',
+  'accessibility.html': '10f11e083d06b5ead7a38c3c56c26fb4158342435bd9bfbb3cccb0e7fa3019c3',
+  'citywest-supports.html': '9b13eaf556ccfe196e44acef3ef2d4d7aaae888abf37f52410cb8f16230bd440',
+  'contact.html': 'aac669999d8fb4498580620cdf7c465ed1a70bf5658a75bc43f0ad611a60967f',
+  'facts.html': '3f11fb1e335a4a0a0f91c583fc2780358af96ca0110068c569d761ef670abdce',
+  'gallery.html': 'f345fc83c55de7cdb45d7f227e601a1070b7012e372a1486fcb657da44cdfc85',
+  'index.html': 'c3818c1a488bc93ec211783aa6ee988012a84627d6724ee1124bd040d7898725',
+  'learn.html': '907682c827c111a335742b48ce6d7537401a9f405e9ee2ad445527624d9b2568',
+  'privacy.html': '67d98f5a08108246b1dfbf70b438a9d3077991f87c395ef581a101156e8003e9',
+  'quiz.html': '371adc6cfadb58e211a324b62149a3354493700a398aac61f3320575451199f0',
 };
 
-test('footer retains the requested Quiz label and every other link, image and no-script route verbatim', () => {
+test('footer retains the verified PPN membership, Quiz label, links, images and no-script routes', () => {
   for (const [path, expected] of Object.entries(originals)) {
     const html = readFileSync(new URL('../' + path, import.meta.url), 'utf8');
     const footer = html.match(/<footer\b[\s\S]*?<\/footer>/)?.[0];
