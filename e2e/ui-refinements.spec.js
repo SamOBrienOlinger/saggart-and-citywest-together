@@ -6,7 +6,7 @@ const email = 'saggartcitywesttogether@gmail.com';
 async function checkGalleryPosters(page, hasTouch, scripts = true) {
   const files = ['potluck-poster.jpg', 'human-library-poster.jpg', 'village-clean-up-poster.jpg'];
   const posterStart = 13;
-  await expect(page.locator('.community-slide')).toHaveCount(28);
+  await expect(page.locator('.community-slide')).toHaveCount(31);
   await expect(page.locator('.event-archive')).toHaveCount(0);
   for (let i = 0; i < files.length; i++) {
     const slide = page.locator('.community-slide').nth(posterStart + i);

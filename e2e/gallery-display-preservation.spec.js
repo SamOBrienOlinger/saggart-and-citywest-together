@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 
 const originals = JSON.parse(readFileSync(new URL('../tests/fixtures/community-gallery.json', import.meta.url), 'utf8')).images;
 
-test('gallery preserves the approved 28-image order and framing', async ({ page }) => {
+test('gallery preserves the approved 31-image order and framing', async ({ page }) => {
   await page.goto('/');
   const slides = page.locator('.community-slide');
   const thumbnails = page.locator('.carousel-thumb img');
@@ -14,9 +14,10 @@ test('gallery preserves the approved 28-image order and framing', async ({ page 
     .toEqual(originals.map(image => image.src));
   expect(await thumbnails.evaluateAll(images => images.map(image => image.getAttribute('src'))))
     .toEqual(originals.map(image => image.src));
-  // Match the original homepage.css rules, including its last-three exception.
+  // Preserve the original 28 thumbnails: slides 1–25 use cover and 26–28 contain.
+  // The three appended council photographs also retain their full thumbnail framing.
   // File hashes alone cannot detect an unintended change to visible framing.
-  const originalFraming = originals.map((_, index) => index < originals.length - 3 ? 'cover' : 'contain');
+  const originalFraming = originals.map((_, index) => index < 25 ? 'cover' : 'contain');
   await expect.poll(() => thumbnails.evaluateAll(images => images.map(image => getComputedStyle(image).objectFit)))
     .toEqual(originalFraming);
   expect(await slides.locator('img').evaluateAll(images => images.map(image => getComputedStyle(image).objectFit)))

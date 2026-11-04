@@ -112,6 +112,18 @@
     {
       "src": "assets/images/community/community-group-gathering.jpg",
       "sha256": "0497e78561344b5d3f8ed5d594d72bc4f1b9f75d14b452a85b4a77e54d7075da"
+    },
+    {
+      "src": "assets/images/community/council-group-20261104.webp",
+      "sha256": "ce578fd10ea3836077943daddfacf0119ec1cd72dd5a1ea6bc37814211b97334"
+    },
+    {
+      "src": "assets/images/community/council-chamber-20261104.webp",
+      "sha256": "e4879b96e191ab68b215356b878c1189579add409be89758e0bafba299d64bdb"
+    },
+    {
+      "src": "assets/images/community/community-certificates-20261104.webp",
+      "sha256": "e07fe70834c72616d26f1d79cf2be1dcbab3b00e7f72a6f02ec3bb5030e0501b"
     }
   ]
 }

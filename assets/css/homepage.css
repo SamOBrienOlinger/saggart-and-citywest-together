@@ -112,7 +112,8 @@ h2 { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; letter-sp
 .carousel-thumbnails { display: flex; gap: .55rem; overflow-x: auto; overscroll-behavior-x: contain; padding: .3rem .2rem .65rem; scrollbar-width: thin; scrollbar-color: #7caaa7 transparent; }
 .carousel-thumb { flex: 0 0 calc((100% - 1.65rem) / 4.3); min-width: 54px; aspect-ratio: 1; padding: 3px; border: 2px solid transparent; border-radius: .6rem; background: #e9eeeb; }
 .carousel-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: .3rem; }
-.carousel-thumb:nth-last-child(-n+3) img { object-fit: contain; }
+/* Preserve the full framing of the original slides 26–28 and the added photos. */
+.carousel-thumb:nth-child(n+26) img { object-fit: contain; }
 .carousel-thumb[aria-current] { border-color: var(--teal); background: white; }
 .carousel-thumb:focus-visible { outline-offset: -3px; }
 .quiz-strip { background: white; border-block: 1px solid #eeeee6; padding-block: 1.5rem; }

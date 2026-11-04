@@ -120,6 +120,8 @@ Media acknowledgements already recorded on the site include:
 
 Other gallery items retain their individual source links. These acknowledgements do not grant additional rights to the photographs, article screenshot, illustrations or third-party content.
 
+On 4 November 2026, three supplied photographs were added as images 29–31 in the homepage community carousel: a group photo in the council chamber (`IMG_1724.jpeg`), a panoramic view of the gathering (`IMG_1722.jpeg`) and a group holding certificates (`IMG_1723.jpeg`). The local WebP copies retain the original dimensions and full framing. They use the existing thumbnails and full-image viewer, with descriptive alternative text and no added image captions.
+
 Design decisions, original feature notes, historical testing evidence and detailed acknowledgements remain available in the preserved project record:
 
 - [README.md · original project record](https://github.com/SamOBrienOlinger/saggart-and-citywest-together/blob/75a78455c6315b4a32c274f5c1f48c5341d8c6d9/README.md)
