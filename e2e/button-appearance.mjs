@@ -26,7 +26,8 @@ export function inspectButtonAppearance(reference) {
     const isPortfolioCredit = element.matches('.site-footer > p.container > '
       + 'a[href="https://samobrienolinger.github.io/SamOBrienOlinger/"]');
     const isMembership = element.matches('.site-footer .footer-membership > a[href]');
-    const typeScale = isPortfolioCredit ? .5025 : .75;
+    const membershipScale = Math.SQRT1_2;
+    const typeScale = isPortfolioCredit ? .5025 : .75 * membershipScale;
     const expected = isPortfolioCredit || isMembership ? { ...standard,
       fontSize: `${parseFloat(standard.fontSize) * typeScale}px`,
       lineHeight: `${parseFloat(standard.lineHeight) * typeScale}px`,
@@ -39,15 +40,15 @@ export function inspectButtonAppearance(reference) {
     if (isMembership) {
       expected.backgroundColor = 'rgb(255, 255, 255)';
       expected.color = 'rgb(209, 118, 95)';
-      expected.borderRadius = `${parseFloat(standard.fontSize) * .625}px`;
+      expected.borderRadius = `${parseFloat(standard.fontSize) * .625 * membershipScale}px`;
       for (const property of ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft']) {
-        expected[property] = `${parseFloat(standard.fontSize) * .375}px`;
+        expected[property] = `${parseFloat(standard.fontSize) * .375 * membershipScale}px`;
       }
     }
     const differences = properties.filter(property => {
       if (actual[property] === expected[property]) return false;
       // WebKit rounds fractional computed line heights at the subpixel level.
-      if ((isPortfolioCredit || isMembership) && ['fontSize', 'lineHeight', 'minHeight',
+      if ((isPortfolioCredit || isMembership) && ['fontSize', 'lineHeight', 'minHeight', 'borderRadius',
         'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'].includes(property)) {
         const difference = Math.abs(parseFloat(actual[property]) - parseFloat(expected[property]));
         return !actual[property].endsWith('px') || !Number.isFinite(difference) || difference > .001;

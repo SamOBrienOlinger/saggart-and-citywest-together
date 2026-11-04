@@ -147,31 +147,33 @@
 }
 /* Group identity and independently verifiable PPN membership. */
 :root body .site-footer .footer-membership {
+  /* Scale both axes by 1/sqrt(2) for a further 50% reduction in area. */
+  --membership-scale: .70710678;
   margin: .75rem auto 0;
   text-align: center;
   overflow-wrap: anywhere;
 }
-/* Halve the badge's footprint while retaining readable membership text. */
+/* Scale the badge, logo and typography together without reserving empty space. */
 :root body .site-footer > p.footer-membership > a[href] {
   flex-direction: column;
-  gap: .25rem;
-  width: 13.5rem;
+  gap: calc(.25rem * var(--membership-scale));
+  width: calc(13.5rem * var(--membership-scale));
   max-width: 100%;
-  padding: .375rem;
-  border-radius: .625rem;
-  font-size: .75rem;
+  padding: calc(.375rem * var(--membership-scale));
+  border-radius: calc(.625rem * var(--membership-scale));
+  font-size: calc(.75rem * var(--membership-scale));
   background: #fff;
   color: #d1765f;
 }
 .site-footer .footer-ppn-logo {
   display: block;
   flex: none;
-  width: 6.25rem;
+  width: calc(6.25rem * var(--membership-scale));
   max-width: 100%;
   height: auto;
   object-fit: contain;
   background: #fff;
-  border-radius: .35rem;
+  border-radius: calc(.35rem * var(--membership-scale));
 }
 .site-footer .footer-membership > a > span {
   max-width: 100%;
