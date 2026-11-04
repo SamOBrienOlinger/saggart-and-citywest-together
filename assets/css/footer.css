@@ -141,7 +141,7 @@
 }
 /* About half the previous 40rem desktop width, with half the shared padding.
    Let both lines wrap and retain a comfortable touch target on small screens. */
-:root body .site-footer .footer-membership > a[href] {
+:root body .site-footer > p.footer-membership > a[href] {
   flex-direction: column;
   gap: .25rem;
   width: 20rem;
