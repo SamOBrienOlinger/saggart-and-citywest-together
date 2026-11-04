@@ -15,7 +15,9 @@ async function checkLayout(page) {
     boxes.forEach((box, i) => {
       const label = links[i].textContent.trim() || links[i].querySelector('img')?.alt;
       if (box.left < -1 || box.right > viewport + 1) issues.push({ label, reason: 'horizontal overflow' });
-      if (box.height < 47 || box.width < 44) issues.push({ label, reason: 'undersized target', width: box.width, height: box.height });
+      const isCredit = links[i].getAttribute('href') === 'https://samobrienolinger.github.io/SamOBrienOlinger/';
+      const minimumHeight = isCredit ? 32 : 47;
+      if (box.height < minimumHeight || box.width < 44) issues.push({ label, reason: 'undersized target', width: box.width, height: box.height });
       for (let j = 0; j < i; j++) {
         const other = boxes[j];
         if (Math.min(box.right, other.right) - Math.max(box.left, other.left) > 1 && Math.min(box.bottom, other.bottom) - Math.max(box.top, other.top) > 1) {

@@ -21,24 +21,32 @@ export function inspectButtonAppearance(reference) {
   const issues = [];
   for (const element of controls) {
     const actual = appearance(element);
-    // Footer credits use compact typography; the membership button also has
-    // half the shared padding. Retain every other pill appearance check.
+    // Footer credits and the branded membership badge have approved compact
+    // dimensions. Retain the shared colour and interaction checks.
     const isPortfolioCredit = element.matches('.site-footer > p.container > '
       + 'a[href="https://samobrienolinger.github.io/SamOBrienOlinger/"]');
     const isMembership = element.matches('.site-footer .footer-membership > a[href]');
+    const typeScale = isPortfolioCredit ? .5025 : .75;
     const expected = isPortfolioCredit || isMembership ? { ...standard,
-      fontSize: `${parseFloat(standard.fontSize) * .75}px`,
-      lineHeight: `${parseFloat(standard.lineHeight) * .75}px`,
+      fontSize: `${parseFloat(standard.fontSize) * typeScale}px`,
+      lineHeight: `${parseFloat(standard.lineHeight) * typeScale}px`,
     } : standard;
+    if (isPortfolioCredit) {
+      for (const property of ['minHeight', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft']) {
+        expected[property] = `${parseFloat(standard[property]) * .67}px`;
+      }
+    }
     if (isMembership) {
+      expected.borderRadius = `${parseFloat(standard.fontSize) * 1.25}px`;
       for (const property of ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft']) {
-        expected[property] = `${parseFloat(standard[property]) * .5}px`;
+        expected[property] = `${parseFloat(standard.fontSize) * .75}px`;
       }
     }
     const differences = properties.filter(property => {
       if (actual[property] === expected[property]) return false;
       // WebKit rounds fractional computed line heights at the subpixel level.
-      if ((isPortfolioCredit || isMembership) && ['fontSize', 'lineHeight'].includes(property)) {
+      if ((isPortfolioCredit || isMembership) && ['fontSize', 'lineHeight', 'minHeight',
+        'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'].includes(property)) {
         const difference = Math.abs(parseFloat(actual[property]) - parseFloat(expected[property]));
         return !actual[property].endsWith('px') || !Number.isFinite(difference) || difference > .001;
       }

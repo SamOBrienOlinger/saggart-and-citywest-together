@@ -22,7 +22,10 @@ function inspect({ scale = 1, credit = true, override = {} } = {}) {
     fontSize: `${16 * scale}px`, lineHeight: `${24.8 * scale}px`,
   };
   const styles = { ...reference, visibility: 'visible',
-    ...(credit ? { fontSize: `${12 * scale}px`, lineHeight: `${18.6 * scale}px` } : {}),
+    ...(credit ? { fontSize: `${8.04 * scale}px`, lineHeight: `${12.462 * scale}px`,
+      minHeight: `${48 * .67}px`, paddingTop: `${12 * .67}px`, paddingRight: `${24 * .67}px`,
+      paddingBottom: `${12 * .67}px`, paddingLeft: `${24 * .67}px`,
+    } : {}),
     ...override,
   };
   const element = {
@@ -43,7 +46,7 @@ function inspect({ scale = 1, credit = true, override = {} } = {}) {
 }
 
 for (const scale of [1, 1.5, 2]) {
-  test(`portfolio credit retains 75% typography at ${scale * 100}% text`, () => {
+  test(`portfolio credit retains its 33% size reduction at ${scale * 100}% text`, () => {
     const result = inspect({ scale });
     assert.equal(result.checked, 1);
     assert.deepEqual(result.issues, []);
@@ -51,14 +54,14 @@ for (const scale of [1, 1.5, 2]) {
   });
 }
 test('portfolio typography permits only subpixel rounding, including Safari line heights', () => {
-  assert.deepEqual(inspect({ override: { lineHeight: '18.599998px' } }).issues, []);
-  assert.equal(inspect({ override: { lineHeight: '18.59px' } }).issues.length, 1);
+  assert.deepEqual(inspect({ override: { lineHeight: '12.461998px' } }).issues, []);
+  assert.equal(inspect({ override: { lineHeight: '12.45px' } }).issues.length, 1);
 });
 test('full-size or undersized portfolio labels remain failures', () => {
   for (const fontSize of ['16px', '11px', '24px', 'normal', 'NaNpx']) {
     const issues = inspect({ override: { fontSize } }).issues;
     assert.equal(issues.length, 1, fontSize);
-    assert.equal(issues[0].differences.fontSize.expected, '12px');
+    assert.equal(issues[0].differences.fontSize.expected, '8.04px');
   }
 });
 test('portfolio credit still requires the shared colours, touch target and pill appearance', () => {
