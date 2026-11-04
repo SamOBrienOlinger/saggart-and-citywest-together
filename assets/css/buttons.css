@@ -177,9 +177,12 @@
 :root body .site-footer .footer-connect p { display: flex; flex-direction: column; align-items: flex-start; gap: .75rem; }
 :root body .site-footer .footer-connect p > br { display: none; }
 
-/* A tall phone header must scroll away so enlarged text cannot cover controls. */
-@media (max-width: 430px) {
-  :root body .site-header { position: relative; }
+/* Keep navigation pinned on phones, landscape screens and desktop alike.
+   The compact menu already scrolls within the available viewport height. */
+:root body .site-header.nav-ready {
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 /* Override older page-wide reduced-motion durations with the reference's zero delay. */

@@ -39,9 +39,9 @@ export function inspectButtonAppearance(reference) {
     if (isMembership) {
       expected.backgroundColor = 'rgb(255, 255, 255)';
       expected.color = 'rgb(209, 118, 95)';
-      expected.borderRadius = `${parseFloat(standard.fontSize) * 1.25}px`;
+      expected.borderRadius = `${parseFloat(standard.fontSize) * .625}px`;
       for (const property of ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft']) {
-        expected[property] = `${parseFloat(standard.fontSize) * .75}px`;
+        expected[property] = `${parseFloat(standard.fontSize) * .375}px`;
       }
     }
     const differences = properties.filter(property => {
