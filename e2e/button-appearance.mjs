@@ -37,6 +37,8 @@ export function inspectButtonAppearance(reference) {
       }
     }
     if (isMembership) {
+      expected.backgroundColor = 'rgb(255, 255, 255)';
+      expected.color = 'rgb(209, 118, 95)';
       expected.borderRadius = `${parseFloat(standard.fontSize) * 1.25}px`;
       for (const property of ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft']) {
         expected[property] = `${parseFloat(standard.fontSize) * .75}px`;

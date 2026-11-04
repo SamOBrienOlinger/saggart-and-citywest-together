@@ -4,10 +4,11 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="Discover local stories, find useful services and take part in community life with Saggart &amp; Citywest Together.">
 <title>Saggart &amp; Citywest Together</title>
-<link rel="stylesheet" href="assets/css/homepage.css?v=service-icons-20261014">
+<link rel="stylesheet" href="assets/css/homepage.css?v=sunrise-20261104">
+<script type="module" src="assets/js/hero-sunrise.js?v=20261104"></script>
 <script type="module" src="assets/js/main.js?v=plain-20260920"></script>
 <script type="module" src="assets/js/community-carousel.js?v=20260920-2"></script>
-<link rel="stylesheet" href="assets/css/link-states.css?v=20260920-links"><link rel="stylesheet" href="assets/css/footer.css?v=20261104-ppn-logo"><link rel="stylesheet" href="assets/css/text-reflow.css?v=20261013-text"><link rel="stylesheet" href="assets/css/buttons.css?v=nav-footer-20261014"><link rel="stylesheet" href="assets/css/branding.css?v=pride-20261014"></head>
+<link rel="stylesheet" href="assets/css/link-states.css?v=20260920-links"><link rel="stylesheet" href="assets/css/footer.css?v=20261104-ppn-white"><link rel="stylesheet" href="assets/css/text-reflow.css?v=20261013-text"><link rel="stylesheet" href="assets/css/buttons.css?v=nav-footer-20261014"><link rel="stylesheet" href="assets/css/branding.css?v=pride-20261014"></head>
 <body data-page="home">
 <a class="skip-link" href="#main">Skip to main content</a>
 <header class="site-header"><nav class="nav container" aria-label="Main navigation">
@@ -25,7 +26,23 @@
 <main id="main">
 <section class="home-hero" aria-labelledby="hero-title"><div class="container home-hero-grid">
 <div class="home-hero-copy"><h1 id="hero-title"><span class="word-gold">Our area.</span><br>Our story.<br><span class="word-coral">Together.</span></h1><p>A place for everyone to discover and connect.</p></div>
-<img class="home-hero-art" src="assets/images/hero-saggart-citywest-v12.jpg" alt="Illustration of Saggart and Citywest, with the village church, homes, a Luas tram and green hills." width="1536" height="1024" fetchpriority="high">
+<div class="home-hero-art" data-sunrise-state="loading">
+<img class="home-hero-still" src="assets/images/hero-saggart-citywest-v12.jpg" alt="Illustration of Saggart and Citywest, with the village church, homes, a Luas tram and green hills." width="1536" height="1024" fetchpriority="high">
+<svg class="hero-sunrise-overlay" viewBox="0 0 1536 1024" aria-hidden="true" focusable="false" hidden>
+<defs>
+<radialGradient id="sunrise-sky-blend"><stop offset="0" stop-color="white"/><stop offset=".45" stop-color="white"/><stop offset="1" stop-color="white" stop-opacity="0"/></radialGradient>
+<mask id="sunrise-sky-mask" maskUnits="userSpaceOnUse" x="1012" y="0" width="310" height="304"><circle cx="1167" cy="149" r="155" fill="url(#sunrise-sky-blend)"/></mask>
+<clipPath id="sunrise-hills"><path d="M0 0H1536V432L1470 426L1380 420L1280 431L1220 433L1180 427L1140 421L1100 416L1060 409L1020 402L980 399L930 404L870 416L820 409L770 385L720 369L680 366L610 377L530 391L440 416L340 400L240 374L130 376L0 354Z"/></clipPath>
+<clipPath id="sunrise-logo-circle"><circle cx="1167" cy="149" r="45"/></clipPath>
+<radialGradient id="sunrise-disc"><stop offset="0" stop-color="#fff591"/><stop offset="1" stop-color="#ffe873"/></radialGradient>
+</defs>
+<image class="hero-sunrise-sky" href="assets/images/hero-sunrise-sky.webp" width="1536" height="1024" mask="url(#sunrise-sky-mask)"/>
+<g clip-path="url(#sunrise-hills)"><g class="hero-rising-sun">
+<circle class="hero-sun-glow" cx="1167" cy="149" r="50" fill="url(#sunrise-disc)"/>
+<image class="hero-sun-logo" href="assets/images/hero-sun-logo.jpeg" x="1121" y="103" width="92" height="92" clip-path="url(#sunrise-logo-circle)"/>
+</g></g>
+</svg>
+</div>
 </div></section>
 <nav class="home-shortcuts container" aria-label="Explore and find support">
 <a class="pill-button" href="learn.html">Explore the area</a>

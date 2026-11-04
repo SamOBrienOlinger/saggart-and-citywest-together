@@ -57,7 +57,19 @@ h2 { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; letter-sp
 .home-hero-copy { min-width: 0; }
 .home-hero h1 { font-size: clamp(2.9rem, 12.3vw, 5.1rem); line-height: .98; font-weight: 800; letter-spacing: -.045em; }
 .home-hero-copy p { max-width: 36ch; font-size: 1.1rem; line-height: 1.5; margin-top: 1.3rem; }
-.home-hero-art { width: 100%; order: -1; border-radius: 1rem; }
+.home-hero-art { position: relative; width: 100%; order: -1; border-radius: 1rem; overflow: hidden; isolation: isolate; aspect-ratio: 3 / 2; }
+.home-hero-still { width: 100%; height: auto; }
+.hero-sunrise-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.hero-rising-sun { transform: translateY(360px); }
+.hero-sun-glow { filter: drop-shadow(0 0 16px #ffdb78); }
+.sunrise-running .hero-rising-sun { animation: hero-sun-rise 3s cubic-bezier(.25,.65,.35,1) both; }
+.sunrise-running .hero-sun-logo { animation: hero-logo-fade 1.8s ease-in-out 3s both; }
+.sunrise-running .hero-sunrise-overlay { animation: hero-sky-settle .3s linear 4.5s both; }
+@keyframes hero-sun-rise { from { transform: translateY(360px); } to { transform: translateY(0); } }
+@keyframes hero-logo-fade { from { opacity: 1; } to { opacity: 0; } }
+@keyframes hero-sky-settle { from { opacity: 1; } to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .hero-sunrise-overlay { display: none !important; } }
+@media print { .hero-sunrise-overlay { display: none !important; } }
 /* Direct routes keep common tasks easy to find without changing the shared pills. */
 .home-shortcuts {
   display: flex;

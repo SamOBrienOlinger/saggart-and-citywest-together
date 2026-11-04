@@ -160,6 +160,8 @@
   padding: .75rem;
   border-radius: 1.25rem;
   font-size: .75rem;
+  background: #fff;
+  color: #d1765f;
 }
 .site-footer .footer-ppn-logo {
   display: block;
