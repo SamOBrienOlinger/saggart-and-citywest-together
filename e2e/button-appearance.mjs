@@ -21,18 +21,24 @@ export function inspectButtonAppearance(reference) {
   const issues = [];
   for (const element of controls) {
     const actual = appearance(element);
-    // The approved portfolio credit is 25% smaller, not a full-size action label.
-    // Check its exact scaled typography while retaining every other pill check.
+    // Footer credits use compact typography; the membership button also has
+    // half the shared padding. Retain every other pill appearance check.
     const isPortfolioCredit = element.matches('.site-footer > p.container > '
       + 'a[href="https://samobrienolinger.github.io/SamOBrienOlinger/"]');
-    const expected = isPortfolioCredit ? { ...standard,
+    const isMembership = element.matches('.site-footer .footer-membership > a[href]');
+    const expected = isPortfolioCredit || isMembership ? { ...standard,
       fontSize: `${parseFloat(standard.fontSize) * .75}px`,
       lineHeight: `${parseFloat(standard.lineHeight) * .75}px`,
     } : standard;
+    if (isMembership) {
+      for (const property of ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft']) {
+        expected[property] = `${parseFloat(standard[property]) * .5}px`;
+      }
+    }
     const differences = properties.filter(property => {
       if (actual[property] === expected[property]) return false;
       // WebKit rounds fractional computed line heights at the subpixel level.
-      if (isPortfolioCredit && ['fontSize', 'lineHeight'].includes(property)) {
+      if ((isPortfolioCredit || isMembership) && ['fontSize', 'lineHeight'].includes(property)) {
         const difference = Math.abs(parseFloat(actual[property]) - parseFloat(expected[property]));
         return !actual[property].endsWith('px') || !Number.isFinite(difference) || difference > .001;
       }
