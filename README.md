@@ -4,7 +4,7 @@ A community information website that supports connection, inclusion and local kn
 
 **HTML · CSS · JavaScript**
 
-[Visit the website](https://samobrienolinger.github.io/saggart-and-citywest-together/) · [Distinctive proposition](#distinctive-proposition-and-educational-contribution) · [Getting started](#getting-started) · [Repository guide](#repository-guide) · [Checks](#checks-and-review) · [Credits](#credits-and-reuse)
+[Visit the website](https://samobrienolinger.github.io/saggart-and-citywest-together/) · [Distinctive proposition](#distinctive-proposition-and-educational-contribution) · [Getting started](#getting-started) · [Data model](#entity-relationship-diagrams) · [Repository guide](#repository-guide) · [Checks](#checks-and-review) · [Credits](#credits-and-reuse)
 
 <img src="assets/images/hero-saggart-citywest-v12.jpg" alt="Illustrated view of Saggart and Citywest" width="880">
 
@@ -50,6 +50,70 @@ Local content review and user testing are needed to establish whether visitors f
 3. Explore the gallery and community work, or take the local-knowledge quiz.
 
 > **Project notes:** Information is independently compiled from linked public sources. Check the relevant service provider for current eligibility and availability. The contact page provides a direct email link and a copyable address. Visitors send messages from their own email service.
+
+## Entity relationship diagrams
+
+The site defines its learning content, history photographs and quiz questions in JavaScript. The diagrams show the content structure and the quiz state that runs in the browser.
+
+### Local learning and history
+
+A learning section contains cards, each with a key into the source directory. The history gallery is built separately from photograph records with their own original source links. [Learning content](assets/data/content.js) · [History photographs](assets/data/history-photos.js) · [Gallery builder](scripts/history-gallery.mjs)
+
+```mermaid
+erDiagram
+    accTitle: Local learning and history content
+    accDescr: Learning sections contain sourced cards. The gallery contains photographs with their own source URLs.
+    "Learning Section" ||--|{ "Learning Card" : contains
+    Source ||..o{ "Learning Card" : supports
+    "History Gallery" ||--|{ Photograph : displays
+
+    "Learning Section" {
+        string id
+        string title
+    }
+    "Learning Card" {
+        string title
+        string scope
+        string source
+    }
+    Source {
+        string title
+        string publisher
+        url url
+    }
+    Photograph {
+        string id
+        string alt
+        url source
+    }
+```
+
+### Local-knowledge quiz
+
+Each run draws ten approved questions without repetition and shuffles their options. Every question carries its own source title and URL. The browser saves the highest score across runs. [Question bank](assets/data/questions.js) · [Quiz engine](assets/js/quiz-engine.js) · [Quiz state and storage](assets/js/quiz.js)
+
+```mermaid
+erDiagram
+    accTitle: Local-knowledge quiz data
+    accDescr: A quiz run draws from approved questions. Each question has answer options and an index that marks the correct one.
+    "Quiz Run" }o..|{ Question : draws
+    Question ||--|{ "Answer Option" : offers
+
+    "Quiz Run" {
+        number index
+        number score
+    }
+    Question {
+        string id
+        string topic
+        string status
+        number correctIndex
+        url sourceUrl
+    }
+    "Answer Option" {
+        string text
+    }
+```
 
 ## Getting started
 
