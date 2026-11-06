@@ -59,61 +59,13 @@ The site defines its learning content, history photographs and quiz questions in
 
 A learning section contains cards, each with a key into the source directory. The history gallery is built separately from photograph records with their own original source links. [Learning content](assets/data/content.js) · [History photographs](assets/data/history-photos.js) · [Gallery builder](scripts/history-gallery.mjs)
 
-```mermaid
-erDiagram
-    accTitle: Local learning and history content
-    accDescr: Learning sections contain sourced cards. The gallery contains photographs with their own source URLs.
-    "Learning Section" ||--|{ "Learning Card" : contains
-    Source ||..o{ "Learning Card" : supports
-    "History Gallery" ||--|{ Photograph : displays
-
-    "Learning Section" {
-        string id
-        string title
-    }
-    "Learning Card" {
-        string title
-        string scope
-        string source
-    }
-    Source {
-        string title
-        string publisher
-        url url
-    }
-    Photograph {
-        string id
-        string alt
-        url source
-    }
-```
+[![Learning sections contain sourced cards. The gallery contains photographs with their own source URLs.](docs/diagrams/local-learning-and-history-content.svg)](docs/diagrams/local-learning-and-history-content.svg)
 
 ### Local-knowledge quiz
 
 Each run draws ten approved questions without repetition and shuffles their options. Every question carries its own source title and URL. The browser saves the highest score across runs. [Question bank](assets/data/questions.js) · [Quiz engine](assets/js/quiz-engine.js) · [Quiz state and storage](assets/js/quiz.js)
 
-```mermaid
-erDiagram
-    accTitle: Local-knowledge quiz data
-    accDescr: A quiz run draws from approved questions. Each question has answer options and an index that marks the correct one.
-    "Quiz Run" }o..|{ Question : draws
-    Question ||--|{ "Answer Option" : offers
-
-    "Quiz Run" {
-        number index
-        number score
-    }
-    Question {
-        string id
-        string topic
-        string status
-        number correctIndex
-        url sourceUrl
-    }
-    "Answer Option" {
-        string text
-    }
-```
+[![A quiz run draws from approved questions. Each question has answer options and an index that marks the correct one.](docs/diagrams/local-knowledge-quiz-data.svg)](docs/diagrams/local-knowledge-quiz-data.svg)
 
 ## Getting started
 
