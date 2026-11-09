@@ -185,6 +185,13 @@
   z-index: 100;
 }
 
+/* At the narrowest viewport or a short landscape viewport, an enlarged sticky
+   header can cover most of the page and intercept the next control. Keep the
+   same compact menu, but let the header scroll with the document. */
+@media (max-width: 22rem), (max-height: 32rem) {
+  :root body .site-header.nav-ready { position: relative; }
+}
+
 /* Override older page-wide reduced-motion durations with the reference's zero delay. */
 @media (prefers-reduced-motion: reduce) {
   :root body :is(button, summary, .button, .pill-button, .service-button,
