@@ -37,6 +37,7 @@ test('pointer and keyboard navigation reach the working quiz in the same tab', a
     await expect(page.locator('body')).toHaveAttribute('data-page', 'quiz');
     await expect(quiz(page)).toHaveAttribute('aria-current', 'page');
     await expect(page.locator('#start-quiz')).toBeVisible();
+    await expect(page.locator('#start-quiz')).toBeEnabled({ timeout: 15000 });
     await page.locator('#start-quiz').click();
     await expect(page.locator('#question-panel')).toBeVisible();
     await expect(page.locator('#answer-options button')).toHaveCount(4);

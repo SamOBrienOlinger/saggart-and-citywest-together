@@ -29,6 +29,7 @@ test('footer Quiz opens the working quiz with touch, click and keyboard', async 
     else await link.click();
     await expect(page).toHaveURL(/\/quiz\.html$/);
     await expect(page.locator('#start-quiz')).toBeVisible();
+    await expect(page.locator('#start-quiz')).toBeEnabled({ timeout: 15000 });
     await page.locator('#start-quiz').click();
     await expect(page.locator('#question-panel')).toBeVisible();
   }

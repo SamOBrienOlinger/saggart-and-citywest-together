@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { chromium } from 'playwright';
 import { buildTranslationUrl, translationLanguages } from '../assets/js/translation.js';
+import { protectedServiceTerms } from '../assets/js/protected-terms.js';
 import { questions } from '../assets/data/questions.js';
 
 const base = 'https://samobrienolinger.github.io/saggart-and-citywest-together/';
@@ -67,12 +68,20 @@ try {
     }
   });
   for (const path of paths) {
-    const response = await page.goto(base + path, { waitUntil: 'domcontentloaded', timeout: 30000 });
-    assert.equal(response.status(), 200, `Live English source unavailable: ${path}`);
-    await page.locator('main h1').waitFor();
     const sha256 = value => createHash('sha256').update(value).digest('hex');
-    const liveSha256 = sha256(await response.body());
     const sourceSha256 = sha256(await readFile(path));
+    let response;
+    let liveSha256;
+    // A push can start before GitHub Pages finishes publishing that commit.
+    // Wait for the exact reviewed source instead of reviewing an older deploy.
+    for (let attempt = 0; attempt < 20; attempt++) {
+      response = await page.goto(`${base}${path}?translation-review=${Date.now()}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      assert.equal(response.status(), 200, `Live English source unavailable: ${path}`);
+      liveSha256 = sha256(await response.body());
+      if (liveSha256 === sourceSha256) break;
+      await page.waitForTimeout(15000);
+    }
+    await page.locator('main h1').waitFor();
     assert.equal(liveSha256, sourceSha256, `Live source differs from the reviewed checkout: ${path}`);
     report.originals.push({ path, url: page.url(), liveSha256, sourceSha256, ...await snapshot(page.mainFrame()) });
   }
@@ -113,7 +122,14 @@ try {
         }, source.heading, { timeout: 10000 }).catch(() => {});
         await scrollForTranslation(frame, source);
         entry.desktop = await snapshot(frame);
-        entry.status = entry.desktop.heading.trim() === source.heading.trim() ? 'untranslated-output' : 'captured-awaiting-language-review';
+        const expectedProtectedTerms = protectedServiceTerms.filter(term => source.visibleText.includes(term));
+        entry.protectedTerms = {
+          expected: expectedProtectedTerms,
+          missing: expectedProtectedTerms.filter(term => !entry.desktop.visibleText.includes(term)),
+        };
+        entry.status = entry.desktop.heading.trim() === source.heading.trim() ? 'untranslated-output'
+          : entry.protectedTerms.missing.length ? 'protected-term-changed'
+            : 'captured-awaiting-language-review';
         await page.screenshot({ path: `${output}/${language.code}-${path}-desktop.png`, fullPage: true });
         await page.setViewportSize({ width: 390, height: 844 });
         entry.mobile = await snapshot(frame);

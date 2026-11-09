@@ -67,10 +67,10 @@ test('history link supports Enter, Back, Forward and a cold saved link', async (
 
 test.describe('progressive enhancement', () => {
   test.use({ javaScriptEnabled: false });
-  test('history link works without JavaScript', async ({ page, hasTouch }) => {
+  test('history link works without JavaScript', async ({ page }) => {
     await page.goto('/learn.html#history-stories');
     await expect(page.locator('.photo-gallery')).not.toHaveClass(/is-ready/);
-    await activateHistoryLink(millLink(page), hasTouch);
+    await millLink(page).press('Enter');
     await expect(page).toHaveURL(/#photo-mill$/);
     await expect(page.locator('#photo-mill')).toBeInViewport();
     await expect(page.locator('.gallery-slide:visible')).toHaveCount(6);

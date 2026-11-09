@@ -61,7 +61,9 @@ test('text reflow: enlarged quiz questions, answers, feedback and results', asyn
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/quiz.html');
   await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
-  await page.getByRole('button', { name: 'Start quiz', exact: true }).click();
+  const startQuiz = page.getByRole('button', { name: 'Start quiz', exact: true });
+  await expect(startQuiz).toBeEnabled({ timeout: 15000 });
+  await startQuiz.click();
   for (let index = 0; index < 10; index++) {
     await expect(page.locator('#question-progress')).toHaveText(`Question ${index + 1} of 10`);
     await expectTextReflow(page, expect, `question ${index + 1} and answers`);

@@ -48,6 +48,7 @@ test('all text and icon buttons match Get involved, including generated controls
     body: await page.locator('.site-footer').screenshot(), contentType: 'image/png',
   });
   await open(page, 'quiz.html');
+  await expect(page.locator('#start-quiz')).toBeEnabled({ timeout: 15000 });
   await page.locator('#start-quiz').click();
   await expect.poll(() => page.locator('.answer-button').count()).toBeGreaterThanOrEqual(2);
   expect((await page.evaluate(inspectButtonAppearance, reference)).issues).toEqual([]);

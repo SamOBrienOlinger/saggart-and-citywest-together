@@ -96,6 +96,9 @@ test('logo keyboard focus and pressed feedback stay circular on every page', asy
       await expect(link.locator('img')).toHaveCSS('outline-color', 'rgb(255, 255, 255)');
       await expect(link.locator('img')).toHaveCSS('box-shadow', 'rgb(7, 59, 69) 0px 0px 0px 6px');
       await link.evaluate(a => a.blur());
+      // Touch-only profiles have no persistent hover pointer. Keyboard focus
+      // remains covered above; native touch journeys cover their press input.
+      if (!await page.evaluate(() => matchMedia('(hover: hover)').matches)) continue;
       await prepareLogoPointer(link);
       await page.mouse.down();
       try {

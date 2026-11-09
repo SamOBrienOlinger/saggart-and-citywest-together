@@ -89,6 +89,6 @@ test('returning visitors receive the revised bank and the broader topic introduc
   const html = readFileSync(new URL('../quiz.html', import.meta.url), 'utf8');
   assert.match(js, /questions\.js\?v=topics-20261016/);
   assert.match(html, /quiz\.js\?v=confetti-20261016-topics/);
-  assert.match(html, /local services, migration facts, IPAS, human rights and community contributions/);
+  assert.match(html, /local services, migration facts, <span class="notranslate service-term" translate="no">IPAS<\/span>, human rights and community contributions/);
   assert.match(js, /confetti\.play\(score,session\.length\)/);
 });

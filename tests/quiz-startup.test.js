@@ -36,7 +36,7 @@ function initialise({ invalid = false, storageDenied = false } = {}) {
 
 test('quiz entry markup is disabled until its versioned startup script is ready', () => {
   assert.match(html, /<button\b[^>]*id="start-quiz"[^>]*\bdisabled(?:[\s=>])/);
-  assert.match(html, /quiz\.js\?v=confetti-20261016-topics-ready-20261102/);
+  assert.match(html, /quiz\.js\?v=confetti-20261016-topics-ready-20261109/);
 });
 test('valid question data enables the quiz only after the click listener is installed', () => {
   const result = initialise();

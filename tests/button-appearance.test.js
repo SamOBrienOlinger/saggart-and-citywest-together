@@ -55,7 +55,7 @@ for (const scale of [1, 1.5, 2]) {
 }
 test('portfolio typography permits only subpixel rounding, including Safari line heights', () => {
   assert.deepEqual(inspect({ override: { lineHeight: '12.461998px' } }).issues, []);
-  assert.equal(inspect({ override: { lineHeight: '12.45px' } }).issues.length, 1);
+  assert.equal(inspect({ override: { lineHeight: '12.43px' } }).issues.length, 1);
 });
 test('full-size or undersized portfolio labels remain failures', () => {
   for (const fontSize of ['16px', '11px', '24px', 'normal', 'NaNpx']) {

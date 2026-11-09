@@ -1,11 +1,13 @@
 name: Collect live machine-translation review evidence
 on:
-  pull_request:
-    # Collect once when a review PR opens; updates must not automatically retry
-    # a provider that may have returned HTTP 429. Further runs are explicit.
-    types: [opened]
+  push:
     branches: [main]
     paths:
+      - 'assets/js/protected-terms.js'
+      - 'assets/js/quiz.js'
+      - 'citywest-supports.html'
+      - 'facts.html'
+      - 'quiz.html'
       - 'scripts/collect-live-translation-review.mjs'
       - '.github/workflows/translation-review.yml'
   workflow_dispatch:

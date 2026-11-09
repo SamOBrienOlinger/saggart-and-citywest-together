@@ -21,8 +21,11 @@ test('sun rises before the logo fades, then restores the original hero', async (
   expect(await sun.evaluate(node => new DOMMatrix(getComputedStyle(node).transform).m42)).toBeGreaterThan(0);
   await expect(logo).toHaveCSS('opacity', '1');
   // At the arrival point the sun has stopped; only the logo is fading.
-  await expect.poll(() => sun.evaluate(node => new DOMMatrix(getComputedStyle(node).transform).m42),
-    { timeout: 4000 }).toBeLessThan(.01);
+  await sun.evaluate(async node => {
+    const rise = node.getAnimations().find(animation => animation.animationName === 'hero-sun-rise');
+    if (rise) await rise.finished;
+  });
+  expect(await sun.evaluate(node => new DOMMatrix(getComputedStyle(node).transform).m42)).toBeLessThan(.01);
   await expect.poll(() => logo.evaluate(node => Number(getComputedStyle(node).opacity)),
     { timeout: 1200 }).toBeLessThan(.95);
   expect(await logo.evaluate(node => Number(getComputedStyle(node).opacity))).toBeGreaterThan(0);
