@@ -32,6 +32,7 @@ test('translated protected terms keep a visible boundary from surrounding words'
   assert.match(homepageStyles, /html:not\(\[lang="en"\]\) \.service-term\s*\{[^}]*display:\s*inline-block;[^}]*margin-inline:\s*\.2em;/s);
   const collector = read('scripts/collect-live-translation-review.mjs');
   assert.match(collector, /protectedTermLayout/);
+  assert.match(collector, /term\.display === 'inline'/);
   assert.match(collector, /protected-term-boundary-missing/);
 });
 
