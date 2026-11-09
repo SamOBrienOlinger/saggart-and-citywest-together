@@ -136,7 +136,7 @@ try {
           expected: expectedProtectedTerms,
           missing: expectedProtectedTerms.filter(term => !entry.desktop.visibleText.includes(term)),
           unseparated: entry.desktop.protectedTermLayout.filter(term =>
-            term.display !== 'inline-block' || term.marginInlineStart <= 0 || term.marginInlineEnd <= 0),
+            term.display === 'inline' && (term.marginInlineStart <= 0 || term.marginInlineEnd <= 0)),
         };
         entry.status = entry.desktop.heading.trim() === source.heading.trim() ? 'untranslated-output'
           : entry.protectedTerms.missing.length ? 'protected-term-changed'
