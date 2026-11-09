@@ -223,3 +223,11 @@ body{background:var(--cream)}
 .card-content{display:flex;flex:1;flex-direction:column;padding:clamp(1.3rem,2.5vw,2rem)}
 .card-title{display:block;font-family:Georgia,"Times New Roman",serif;font-size:clamp(1.8rem,3vw,2.35rem);font-weight:700;line-height:1.12;letter-spacing:-.025em;margin-bottom:.7em}
 .card-content .text-link{margin-top:auto}
+
+/* Google Translate keeps service names unchanged but can remove the text-node
+   spaces around a translate="no" span. Restore a visible word boundary only
+   on translated pages; the English source keeps its original spacing. */
+html:not([lang="en"]) .service-term{
+  display:inline-block;
+  margin-inline:.2em;
+}

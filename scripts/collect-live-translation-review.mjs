@@ -23,6 +23,15 @@ async function snapshot(frame) {
     heading: el.querySelector('h1')?.innerText,
     visibleText: el.innerText,
     links: [...el.querySelectorAll('a')].map(a => ({ text: a.innerText, href: a.href })),
+    protectedTermLayout: [...el.querySelectorAll('.service-term')].map(term => {
+      const style = getComputedStyle(term);
+      return {
+        text: term.innerText,
+        display: style.display,
+        marginInlineStart: parseFloat(style.marginInlineStart),
+        marginInlineEnd: parseFloat(style.marginInlineEnd),
+      };
+    }),
     lang: document.documentElement.lang, dir: document.documentElement.dir,
     viewport: document.documentElement.clientWidth,
     width: document.documentElement.scrollWidth,
@@ -126,9 +135,12 @@ try {
         entry.protectedTerms = {
           expected: expectedProtectedTerms,
           missing: expectedProtectedTerms.filter(term => !entry.desktop.visibleText.includes(term)),
+          unseparated: entry.desktop.protectedTermLayout.filter(term =>
+            term.display !== 'inline-block' || term.marginInlineStart <= 0 || term.marginInlineEnd <= 0),
         };
         entry.status = entry.desktop.heading.trim() === source.heading.trim() ? 'untranslated-output'
           : entry.protectedTerms.missing.length ? 'protected-term-changed'
+            : entry.protectedTerms.unseparated.length ? 'protected-term-boundary-missing'
             : 'captured-awaiting-language-review';
         await page.screenshot({ path: `${output}/${language.code}-${path}-desktop.png`, fullPage: true });
         await page.setViewportSize({ width: 390, height: 844 });
