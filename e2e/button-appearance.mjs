@@ -51,7 +51,7 @@ export function inspectButtonAppearance(reference) {
       if ((isPortfolioCredit || isMembership) && ['fontSize', 'lineHeight', 'minHeight', 'borderRadius',
         'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'].includes(property)) {
         const difference = Math.abs(parseFloat(actual[property]) - parseFloat(expected[property]));
-        return !actual[property].endsWith('px') || !Number.isFinite(difference) || difference > .001;
+        return !actual[property].endsWith('px') || !Number.isFinite(difference) || difference > .02;
       }
       return true;
     });

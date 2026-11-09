@@ -27,8 +27,8 @@ test('contact supports native email plus an optional, accessible clipboard inter
 });
 test('supports have short headings, task anchors and organisation names beside the relevant links', () => {
   const html = read('citywest-supports.html');
-  assert.match(html, /<h1>Citywest IPAS supports<\/h1>/);
-  assert.match(html, /Local services for people living at the Citywest International Protection Accommodation Service \(IPAS\) centre\./);
+  assert.match(html, /<h1>Citywest <span class="notranslate service-term" translate="no">IPAS<\/span> supports<\/h1>/);
+  assert.match(html, /Local services for people living at the Citywest International Protection Accommodation Service \(<span class="notranslate service-term" translate="no">IPAS<\/span>\) centre\./);
   for (const id of ['english-classes', 'work-and-training', 'rights-and-advice', 'local-service-help']) {
     assert.ok(html.includes(`href="#${id}"`) && html.includes(`id="${id}"`), id);
   }

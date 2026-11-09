@@ -30,11 +30,13 @@ test('Welcome has one caption heading and retains its original image and control
   assert.equal(photo.label, 'Welcome');
   assert.equal(photo.title, 'Welcome');
   assert.equal(photo.description, '');
+  assert.equal(photo.credit, 'Image source: Dublin’s Outdoors. The photographer and reuse terms are not stated on the source page.');
   assert.ok(html.includes(renderHistoryGallery()), 'The published gallery must match its renderer');
   const slide = html.match(/<figure class="gallery-slide" id="photo-welcome"[\s\S]*?<\/figure>/)?.[0];
   assert.ok(slide);
   assert.match(slide, /<h3 id="title-photo-welcome" data-gallery-title>Welcome<\/h3>/);
-  assert.doesNotMatch(slide, /gallery-topic|<p[\s>]|Welcome to the village|Explore visitor information/);
+  assert.doesNotMatch(slide, /gallery-topic|Welcome to the village|Explore visitor information/);
+  assert.match(slide, /<p class="gallery-attribution">Image source: Dublin’s Outdoors\./);
   assert.match(slide, /data-gallery-open hidden>View full photograph<\/button>/);
   assert.equal(photo.source, 'https://www.dublinsoutdoors.ie/visit/our-villages/saggart/');
   assert.ok(slide.includes(`href="${photo.source}" target="_blank" rel="noopener noreferrer"`));

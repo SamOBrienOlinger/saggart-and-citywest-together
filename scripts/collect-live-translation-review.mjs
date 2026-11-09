@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { chromium } from 'playwright';
 import { buildTranslationUrl, translationLanguages } from '../assets/js/translation.js';
+import { protectedServiceTerms } from '../assets/js/protected-terms.js';
 import { questions } from '../assets/data/questions.js';
 
 const base = 'https://samobrienolinger.github.io/saggart-and-citywest-together/';
@@ -113,7 +114,14 @@ try {
         }, source.heading, { timeout: 10000 }).catch(() => {});
         await scrollForTranslation(frame, source);
         entry.desktop = await snapshot(frame);
-        entry.status = entry.desktop.heading.trim() === source.heading.trim() ? 'untranslated-output' : 'captured-awaiting-language-review';
+        const expectedProtectedTerms = protectedServiceTerms.filter(term => source.visibleText.includes(term));
+        entry.protectedTerms = {
+          expected: expectedProtectedTerms,
+          missing: expectedProtectedTerms.filter(term => !entry.desktop.visibleText.includes(term)),
+        };
+        entry.status = entry.desktop.heading.trim() === source.heading.trim() ? 'untranslated-output'
+          : entry.protectedTerms.missing.length ? 'protected-term-changed'
+            : 'captured-awaiting-language-review';
         await page.screenshot({ path: `${output}/${language.code}-${path}-desktop.png`, fullPage: true });
         await page.setViewportSize({ width: 390, height: 844 });
         entry.mobile = await snapshot(frame);
