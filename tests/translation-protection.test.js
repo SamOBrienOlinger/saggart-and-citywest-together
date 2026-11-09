@@ -25,6 +25,16 @@ test('visible static service terms use Google Translate protection', () => {
   }
 });
 
+test('translated protected terms keep a visible boundary from surrounding words', () => {
+  const styles = read('assets/css/styles.css');
+  assert.match(styles, /html:not\(\[lang="en"\]\) \.service-term\s*\{[^}]*display:inline-block;[^}]*margin-inline:\.2em;/s);
+  const homepageStyles = read('assets/css/homepage.css');
+  assert.match(homepageStyles, /html:not\(\[lang="en"\]\) \.service-term\s*\{[^}]*display:\s*inline-block;[^}]*margin-inline:\s*\.2em;/s);
+  const collector = read('scripts/collect-live-translation-review.mjs');
+  assert.match(collector, /protectedTermLayout/);
+  assert.match(collector, /protected-term-boundary-missing/);
+});
+
 test('quiz-generated service terms use the protected renderer', () => {
   const quiz = read('assets/js/quiz.js');
   assert.match(quiz, /setProtectedText\(els\.text,item\.question\)/);
