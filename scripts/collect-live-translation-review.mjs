@@ -68,12 +68,20 @@ try {
     }
   });
   for (const path of paths) {
-    const response = await page.goto(base + path, { waitUntil: 'domcontentloaded', timeout: 30000 });
-    assert.equal(response.status(), 200, `Live English source unavailable: ${path}`);
-    await page.locator('main h1').waitFor();
     const sha256 = value => createHash('sha256').update(value).digest('hex');
-    const liveSha256 = sha256(await response.body());
     const sourceSha256 = sha256(await readFile(path));
+    let response;
+    let liveSha256;
+    // A push can start before GitHub Pages finishes publishing that commit.
+    // Wait for the exact reviewed source instead of reviewing an older deploy.
+    for (let attempt = 0; attempt < 20; attempt++) {
+      response = await page.goto(`${base}${path}?translation-review=${Date.now()}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      assert.equal(response.status(), 200, `Live English source unavailable: ${path}`);
+      liveSha256 = sha256(await response.body());
+      if (liveSha256 === sourceSha256) break;
+      await page.waitForTimeout(15000);
+    }
+    await page.locator('main h1').waitFor();
     assert.equal(liveSha256, sourceSha256, `Live source differs from the reviewed checkout: ${path}`);
     report.originals.push({ path, url: page.url(), liveSha256, sourceSha256, ...await snapshot(page.mainFrame()) });
   }
