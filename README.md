@@ -142,7 +142,13 @@ Design decisions, original feature notes, historical testing evidence and detail
 
 - [README.md · original project record](https://github.com/SamOBrienOlinger/saggart-and-citywest-together/blob/75a78455c6315b4a32c274f5c1f48c5341d8c6d9/README.md)
 
-No repository-level licence file is present in this snapshot. This README does not grant additional reuse permissions. Check with the relevant rights holders before reusing code, written content or assets.
+## Copyright & reuse
+
+Copyright in the original project code and content belongs to the respective rights holders.
+
+You may use the [live website](https://samobrienolinger.github.io/saggart-and-citywest-together/) as intended. [GitHub’s Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#5-license-grant-to-other-users) govern viewing and forking this public repository through GitHub.
+
+For other copying, adaptation, redistribution, rehosting or commercial reuse of original project materials, obtain prior written permission from the relevant rights holder unless an applicable licence or law permits it. Third-party materials are governed by their own licences and terms.
 
 ## Support
 
