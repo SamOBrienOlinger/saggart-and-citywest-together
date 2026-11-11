@@ -1,3 +1,4 @@
+import './privacy.js?v=20261111';
 import { initialiseUIRefinements } from './ui-refinements.js?v=20261014-ux';
 import{initialiseTranslationControl}from'./translation.js?v=plain-20260920';
 const toggle = document.querySelector('.nav-toggle');
@@ -60,7 +61,5 @@ const page=document.body.dataset.page;
 const current=document.querySelector(`[data-nav="${page}"]`);if(current)current.setAttribute('aria-current','page');
 document.querySelectorAll('a[target="_blank"]').forEach(link=>{link.rel='noopener noreferrer'});
 
-
 initialiseTranslationControl(menu);
-
 initialiseUIRefinements();
