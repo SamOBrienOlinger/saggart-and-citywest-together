@@ -19,6 +19,11 @@ async function open(path = '') {
   if (path.startsWith('gallery.html')) await driver.wait(until.urlContains('learn.html'), 10000);
   await driver.wait(() => driver.executeScript('return document.readyState === "complete"'), 10000);
   await driver.wait(until.elementLocated(By.css('.nav-ready')), 10000);
+  const privacyReject = await driver.findElements(By.css('#site-privacy-banner:not([hidden]) [data-reject]'));
+  if (privacyReject.length && await privacyReject[0].isDisplayed()) {
+    await clickElement(privacyReject[0], 'Reject optional privacy features');
+    findings.push({ check: 'First-visit privacy rejection leaves the site usable', result: 'passed' });
+  }
 }
 async function setTextScale(scale, expectedFont) {
   const percentage = `${scale}%`;

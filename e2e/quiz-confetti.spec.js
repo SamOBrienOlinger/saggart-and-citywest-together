@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { questions } from '../assets/data/questions.js';
+import { startWithPrivacyChoice } from './privacy-test-helpers.mjs';
 
 const answers = new Map(questions.map(item => [item.question, item.options[item.correctIndex]]));
 
@@ -71,7 +72,7 @@ for (const score of [0, 3, 4, 6, 7, 10]) {
 
 test('confetti uses this attempt, not a previously saved high score, and retry clears it', async ({ page, hasTouch }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.addInitScript(() => localStorage.setItem('kykQuizHighScore', '10'));
+  await startWithPrivacyChoice(page, { preferences: true, score: 10 });
   await completeQuiz(page, 3);
   await expect(page.locator('#best-score-result')).toHaveText('Your best score: 10/10');
   await expect(page.locator('.quiz-confetti-piece')).toHaveCount(6);
@@ -101,7 +102,7 @@ for (const score of [3, 7]) {
     await completeQuiz(page, score);
     await expect(page.locator('.quiz-confetti')).toHaveCount(0);
     await expect(page.locator('#stop-confetti')).toBeHidden();
-    await expect(page.locator('#best-score-result')).toHaveText(`Your best score: ${score}/10`);
+    await expect(page.locator('#best-score-result')).toHaveText(`Best score this visit: ${score}/10 (not saved)`);
   });
 }
 

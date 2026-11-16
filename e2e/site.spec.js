@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { questions } from '../assets/data/questions.js';
 import { activateHistoryLink } from './history-link-actions.mjs';
+import { startWithPrivacyChoice } from './privacy-test-helpers.mjs';
 
 const pages = ['index.html', 'learn.html', 'facts.html', 'citywest-supports.html', 'quiz.html', 'contact.html', 'about.html', 'privacy.html', 'accessibility.html'];
 const answers = new Map(questions.map(q => [q.question, q.options[q.correctIndex]]));
@@ -260,6 +261,7 @@ test('saved gallery links, right-to-left browsing and translated captions work',
 });
 
 test('navigation, languages and real contact route work', async ({ page, context, hasTouch }) => {
+  await startWithPrivacyChoice(page, { translation: true });
   await page.goto('/');
   await openMenuIfNeeded(page);
   await activate(page.getByRole('button', { name: 'Languages', exact: true }), hasTouch);
@@ -290,6 +292,7 @@ test('navigation, languages and real contact route work', async ({ page, context
 });
 
 test('complete shuffled quiz scores correctly and restarts', async ({ page, hasTouch }) => {
+  await startWithPrivacyChoice(page, { preferences: true });
   await page.goto('/quiz.html');
   await activate(page.getByRole('button', { name: 'Start quiz', exact: true }), hasTouch);
   const seen = new Set();
