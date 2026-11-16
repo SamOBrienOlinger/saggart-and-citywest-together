@@ -24,36 +24,46 @@ jobs:
           - name: Chromium and Android emulation
             os: ubuntu-latest
             browser: chromium
+            workers: 2
             evidence: chromium
             projects: --project=chromium-desktop --project=chromium-android-emulation
           - name: Firefox
             os: ubuntu-latest
             browser: firefox
+            # Firefox creates a fresh profile for context variants such as the
+            # no-JavaScript checks. Serialise these on the shared Linux runner
+            # to avoid profile-startup contention and false geometry failures.
+            workers: 1
             evidence: firefox
             projects: --project=firefox-desktop
           - name: WebKit desktop on macOS
             os: macos-15
             browser: webkit
+            workers: 2
             evidence: webkit-desktop
             projects: --project=webkit-desktop
           - name: WebKit iPhone emulation
             os: macos-15
             browser: webkit
+            workers: 2
             evidence: webkit-iphone
             projects: --project=webkit-iphone-emulation
           - name: WebKit iPad emulation
             os: macos-15
             browser: webkit
+            workers: 2
             evidence: webkit-ipad
             projects: --project=webkit-ipad-emulation
           - name: WebKit 320px mobile viewport
             os: macos-15
             browser: webkit
+            workers: 2
             evidence: webkit-narrow
             projects: --project=webkit-narrow
           - name: WebKit landscape iPhone emulation
             os: macos-15
             browser: webkit
+            workers: 2
             evidence: webkit-landscape
             projects: --project=webkit-landscape
     runs-on: ${{ matrix.os }}
@@ -69,7 +79,7 @@ jobs:
       - name: Install test browser
         run: npx playwright install --with-deps ${{ matrix.browser }}
       - name: Run browser regression suite
-        run: npm run test:browser -- ${{ matrix.projects }}
+        run: npm run test:browser -- ${{ matrix.projects }} --workers=${{ matrix.workers }}
       - name: Preserve reports and screenshots
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
