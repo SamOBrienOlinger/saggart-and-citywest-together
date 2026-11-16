@@ -71,14 +71,18 @@ test('the additional pill fits phone, tablet and desktop navigation layouts', as
   }
 });
 
-test('the Quiz navigation link also works without JavaScript', async ({ browser, baseURL }) => {
-  const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 1000 } });
-  try {
-    const page = await context.newPage();
+test.describe('Quiz navigation without JavaScript', () => {
+  test.use({
+    javaScriptEnabled: false,
+    viewport: { width: 390, height: 1000 },
+    storageState: { cookies: [], origins: [] },
+  });
+
+  test('the Quiz navigation link also works without JavaScript', async ({ page, baseURL }) => {
     await page.goto(new URL('/index.html', baseURL).href);
     await expect(quiz(page)).toBeVisible();
     await quiz(page).click();
     await expect(page).toHaveURL(/\/quiz\.html$/);
     await expect(quiz(page)).toHaveAttribute('aria-current', 'page');
-  } finally { await context.close(); }
+  });
 });

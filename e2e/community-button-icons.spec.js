@@ -83,14 +83,18 @@ test('three icons and the label fit at narrow widths, enlarged text and RTL', as
   }
 });
 
-test('Community icons and anchor work without JavaScript', async ({ browser, baseURL }) => {
-  const context = await browser.newContext({ javaScriptEnabled: false, reducedMotion: 'reduce' });
-  const page = await context.newPage();
-  try {
+test.describe('Community shortcut without JavaScript', () => {
+  test.use({
+    javaScriptEnabled: false,
+    reducedMotion: 'reduce',
+    storageState: { cookies: [], origins: [] },
+  });
+
+  test('Community icons and anchor work without JavaScript', async ({ page, baseURL }) => {
     await page.goto(new URL('/learn.html', baseURL).href);
     const button = await checkIcons(page);
     await button.click();
     await expect(page).toHaveURL(/learn\.html#community$/);
     await expect(page.locator('#community')).toBeInViewport();
-  } finally { await context.close(); }
+  });
 });
