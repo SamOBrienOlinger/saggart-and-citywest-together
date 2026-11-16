@@ -66,7 +66,7 @@ test('history link supports Enter, Back, Forward and a cold saved link', async (
 });
 
 test.describe('progressive enhancement', () => {
-  test.use({ javaScriptEnabled: false });
+  test.use({ javaScriptEnabled: false, storageState: { cookies: [], origins: [] } });
   test('history link works without JavaScript', async ({ page }) => {
     await page.goto('/learn.html#history-stories');
     await expect(page.locator('.photo-gallery')).not.toHaveClass(/is-ready/);

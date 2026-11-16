@@ -19,13 +19,15 @@ Run `npm test`. The suite validates:
 - [ ] Verify the mobile menu at 320 px and 375 px.
 - [ ] Verify page reflow at 200% and 400% browser zoom.
 - [ ] Run a complete quiz: exactly ten questions, no repeats, score only increases for correct answers.
-- [ ] Refresh and confirm the best score persists; block local storage and confirm the quiz still completes.
+- [ ] Reject optional storage and confirm the quiz completes without persistence; then allow score storage, refresh and confirm the best score persists.
 - [ ] Confirm feedback is announced by NVDA or VoiceOver.
 - [ ] Confirm reduced-motion mode removes non-essential transitions.
-- [ ] Submit the empty contact form and confirm native validation; complete it and confirm the page explicitly says nothing was sent.
+- [ ] Confirm the contact link opens the visitor's email application and that no embedded form is present.
 - [ ] Check external source links and the source register.
 - [ ] Run Lighthouse and axe against every page and the quiz intro/question/feedback/results states.
 - [ ] Test current Chrome, Firefox, Edge and Safari plus representative iOS/Android viewports.
+
+Playwright journeys start with optional features explicitly rejected so the privacy banner does not obscure unrelated controls. Dedicated first-visit tests remove that saved choice and verify rejection, quiz startup, translation permission and responsive support/Facts journeys. See `docs/community-information-user-test.md` for the separate human review protocol and `docs/fluent-translation-review.md` for language review.
 
 No Lighthouse score or accessibility claim from AllyIndex is carried forward; this MVP must be tested independently before public release.
 

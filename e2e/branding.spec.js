@@ -45,7 +45,7 @@ test('Pride logos load as matching circular frames on every page', async ({ page
 });
 
 test.describe('without JavaScript', () => {
-  test.use({ javaScriptEnabled: false });
+  test.use({ javaScriptEnabled: false, storageState: { cookies: [], origins: [] } });
   test('all pages retain the supplied logo and circular styling', async ({ page }) => {
     for (const path of pages) {
       await page.goto('/' + path);

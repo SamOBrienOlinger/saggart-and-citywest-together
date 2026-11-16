@@ -70,7 +70,7 @@ test('About cards stay readable at 200% text with reduced motion', async ({ page
 });
 
 test.describe('About without JavaScript', () => {
-  test.use({ javaScriptEnabled: false });
+  test.use({ javaScriptEnabled: false, storageState: { cookies: [], origins: [] } });
   test('cards and native source shortcut remain available', async ({ page }) => {
     await page.goto('/about.html');
     await expect(page.locator(cardSelector + ':visible')).toHaveCount(7);

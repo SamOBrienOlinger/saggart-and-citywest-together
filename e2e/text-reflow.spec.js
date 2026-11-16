@@ -49,7 +49,7 @@ for (const scale of [1, 2]) {
 }
 
 test.describe('text reflow without JavaScript', () => {
-  test.use({ javaScriptEnabled: false });
+  test.use({ javaScriptEnabled: false, storageState: { cookies: [], origins: [] } });
   for (const scale of [1, 2]) {
     test(`all fallback pages at ${scale * 100}% text`, async ({ page }, testInfo) => {
       await checkPages(page, scale, testInfo, false);

@@ -115,7 +115,7 @@ test('cancelled pointer press and blur always reset the Get involved movement', 
   await expect(cta).not.toHaveAttribute('data-pressed', '');
 });
 test.describe('without JavaScript', () => {
-  test.use({ javaScriptEnabled: false });
+  test.use({ javaScriptEnabled: false, storageState: { cookies: [], origins: [] } });
   test('contact, task shortcuts, Facts and gallery posters remain available', async ({ page, hasTouch }) => {
     await page.goto('/contact.html');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Contact us and get involved');

@@ -97,7 +97,7 @@ test('footer retains readable controls and circular artwork at 200 percent text 
 });
 
 test.describe('without JavaScript', () => {
-  test.use({ javaScriptEnabled: false });
+  test.use({ javaScriptEnabled: false, storageState: { cookies: [], origins: [] } });
   test('footer navigation, QR links and all nine language routes remain available', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     for (const path of ['index.html', 'contact.html', 'accessibility.html', '404.html']) {

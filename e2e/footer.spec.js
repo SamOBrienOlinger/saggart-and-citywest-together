@@ -17,8 +17,12 @@ async function footerSnapshot(page) {
         height: Math.round(element.getBoundingClientRect().height * 100) / 100,
       };
     };
+    const { height: dynamicHeight, ...footerAppearance } = appearance(footer);
     return {
-      appearance: appearance(footer),
+      // Privacy controls are injected after load and can wrap differently while
+      // Firefox settles the enlarged root font. Compare the shared footer
+      // component geometry; image completion is asserted before this snapshot.
+      appearance: footerAppearance,
       components: Object.fromEntries(selectors.map(selector => [selector, appearance(footer.querySelector(selector))])),
       links: [...footer.querySelectorAll('a')].map(link => ({
         text: link.textContent.trim(), href: link.getAttribute('href'),

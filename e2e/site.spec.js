@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { questions } from '../assets/data/questions.js';
 import { activateHistoryLink } from './history-link-actions.mjs';
+import { startWithPrivacyChoice } from './privacy-test-helpers.mjs';
 
 const pages = ['index.html', 'learn.html', 'facts.html', 'citywest-supports.html', 'quiz.html', 'contact.html', 'about.html', 'privacy.html', 'accessibility.html'];
 const answers = new Map(questions.map(q => [q.question, q.options[q.correctIndex]]));
@@ -260,6 +261,7 @@ test('saved gallery links, right-to-left browsing and translated captions work',
 });
 
 test('navigation, languages and real contact route work', async ({ page, context, hasTouch }) => {
+  await startWithPrivacyChoice(page, { translation: true });
   await page.goto('/');
   await openMenuIfNeeded(page);
   await activate(page.getByRole('button', { name: 'Languages', exact: true }), hasTouch);
@@ -290,6 +292,7 @@ test('navigation, languages and real contact route work', async ({ page, context
 });
 
 test('complete shuffled quiz scores correctly and restarts', async ({ page, hasTouch }) => {
+  await startWithPrivacyChoice(page, { preferences: true });
   await page.goto('/quiz.html');
   await activate(page.getByRole('button', { name: 'Start quiz', exact: true }), hasTouch);
   const seen = new Set();
@@ -341,7 +344,7 @@ test('enlarged text, reduced motion and RTL carousel remain usable', async ({ pa
 });
 
 test.describe('without JavaScript', () => {
-  test.use({ javaScriptEnabled: false });
+  test.use({ javaScriptEnabled: false, storageState: { cookies: [], origins: [] } });
   test('essential navigation, services and contact remain available', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('#site-menu')).toBeVisible();
@@ -429,6 +432,9 @@ test('right-to-left translated layout retains the language switch and English re
     const contentType = pathname.endsWith('.css') ? 'text/css' : pathname.endsWith('.js') ? 'text/javascript' : pathname.endsWith('.png') ? 'image/png' : 'text/html';
     await route.fulfill({body:await readFile(pathname || 'index.html'),contentType});
   });
+  // The translated host has a separate localStorage origin. Record the same
+  // privacy-preserving choice there before exercising the translated layout.
+  await startWithPrivacyChoice(page);
   await page.goto('https://samobrienolinger-github-io.translate.goog/saggart-and-citywest-together/facts.html?_x_tr_sl=en&_x_tr_tl=ar#digital-literacy');
   await expect(page.locator('html')).toHaveAttribute('dir','rtl');
   await expect(page.locator('html')).toHaveAttribute('lang','ar');

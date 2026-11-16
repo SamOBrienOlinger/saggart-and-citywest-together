@@ -1,5 +1,12 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const rejectedPrivacyChoice = JSON.stringify({
+  version: '2026-11-11.1',
+  at: Date.now(),
+  translation: false,
+  preferences: false,
+});
+
 export default defineConfig({
   testDir: './e2e',
   testMatch: '**/*.spec.js',
@@ -14,6 +21,19 @@ export default defineConfig({
     baseURL: 'http://127.0.0.1:4180',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
+    // Most journeys are unrelated to consent. Start them from an explicit,
+    // privacy-preserving choice so the fixed banner cannot obscure controls.
+    // Consent behavior itself is covered in dedicated first-visit tests.
+    storageState: {
+      cookies: [],
+      origins: [{
+        origin: 'http://127.0.0.1:4180',
+        localStorage: [{
+          name: 'saggart-and-citywest-together:privacy:v1',
+          value: rejectedPrivacyChoice,
+        }],
+      }],
+    },
   },
   webServer: {
     command: 'python3 scripts/serve-test-site.py',
