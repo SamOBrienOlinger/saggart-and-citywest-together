@@ -344,7 +344,7 @@ test('enlarged text, reduced motion and RTL carousel remain usable', async ({ pa
 });
 
 test.describe('without JavaScript', () => {
-  test.use({ javaScriptEnabled: false });
+  test.use({ javaScriptEnabled: false, storageState: { cookies: [], origins: [] } });
   test('essential navigation, services and contact remain available', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('#site-menu')).toBeVisible();
