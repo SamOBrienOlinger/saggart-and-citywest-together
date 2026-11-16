@@ -24,6 +24,8 @@ test('translation stays blocked until the visitor explicitly allows it', async (
   await startAsFirstVisitor(page);
   await page.locator('#site-privacy-banner').getByRole('button', { name: 'Reject optional', exact: true }).click();
   await context.route('https://translate.google.com/**', route => route.fulfill({ body: 'Translation handoff' }));
+  const menu = page.getByRole('button', { name: 'Toggle navigation', exact: true });
+  if (await menu.isVisible()) await menu.click();
   await page.getByRole('button', { name: 'Languages', exact: true }).click();
   await page.locator('.translation-link').first().click();
   const dialog = page.getByRole('dialog', { name: 'Cookie and privacy settings' });

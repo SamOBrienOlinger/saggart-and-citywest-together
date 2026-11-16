@@ -432,6 +432,9 @@ test('right-to-left translated layout retains the language switch and English re
     const contentType = pathname.endsWith('.css') ? 'text/css' : pathname.endsWith('.js') ? 'text/javascript' : pathname.endsWith('.png') ? 'image/png' : 'text/html';
     await route.fulfill({body:await readFile(pathname || 'index.html'),contentType});
   });
+  // The translated host has a separate localStorage origin. Record the same
+  // privacy-preserving choice there before exercising the translated layout.
+  await startWithPrivacyChoice(page);
   await page.goto('https://samobrienolinger-github-io.translate.goog/saggart-and-citywest-together/facts.html?_x_tr_sl=en&_x_tr_tl=ar#digital-literacy');
   await expect(page.locator('html')).toHaveAttribute('dir','rtl');
   await expect(page.locator('html')).toHaveAttribute('lang','ar');
